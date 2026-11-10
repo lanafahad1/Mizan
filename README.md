@@ -1,4 +1,4 @@
-# Wastelimiting · CareBite
+# CareBite
 
 **CareBite** supports healthy eating for **obesity and chronic diseases** (obesity, type 2 diabetes, high blood pressure, heart and kidney disease). It is a university Health Informatics project with two spaces:
 
@@ -79,8 +79,8 @@ The meal workflow is **Options offered → Patient choice submitted → Confirme
 Requirements: **Node.js 22 or newer** and a **Postgres database**: a free [Neon](https://neon.tech) database (a development branch works well), or Postgres installed locally.
 
 ```bash
-git clone https://github.com/lanafahad1/Wastelimiting.git
-cd Wastelimiting
+git clone https://github.com/lanafahad1/CareBite.git
+cd CareBite
 npm install
 cp .env.example .env.local
 # edit .env.local:
