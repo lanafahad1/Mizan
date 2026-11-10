@@ -5,7 +5,7 @@
 
 export const PASSWORD_MIN = 8;
 export const PASSWORD_MAX = 128;
-export const PASSWORD_RULE = `Use at least ${PASSWORD_MIN} characters. A short phrase you will remember works well.`;
+export const PASSWORD_RULE = `Use at least ${PASSWORD_MIN} characters. A short phrase you’ll remember works well.`;
 
 export const USERNAME_RULE = '3–20 characters: letters, numbers, dots or underscores, starting with a letter.';
 export const USERNAME_RE = /^[A-Za-z][A-Za-z0-9._]{2,19}$/;
@@ -27,9 +27,9 @@ export function passwordProblem(password: string, context: { username?: string |
   if (pw.length < PASSWORD_MIN) return `Use at least ${PASSWORD_MIN} characters.`;
   if (pw.length > PASSWORD_MAX) return `Passwords can be at most ${PASSWORD_MAX} characters.`;
   const lower = pw.toLowerCase();
-  if (COMMON.has(lower) || /^(.)\1+$/.test(pw)) return 'This password is too common and easy to guess. Choose another one.';
+  if (COMMON.has(lower) || /^(.)\1+$/.test(pw)) return 'This password is too common and easy to guess. Try a different one.';
   const user = String(context.username ?? '').toLowerCase();
   const local = String(context.email ?? '').toLowerCase().split('@')[0];
-  if ((user && lower === user) || (local && local.length >= 3 && lower === local)) return 'Do not use your username or email as your password.';
+  if ((user && lower === user) || (local && local.length >= 3 && lower === local)) return 'Please don’t use your username or email as your password.';
   return null;
 }

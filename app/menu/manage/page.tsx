@@ -1,10 +1,14 @@
 import { requirePermission, getViewer } from '@/lib/server/session';
 import { serviceCall, param } from '@/lib/server/data';
 import { privateMetadata } from '@/lib/seo';
+import { getT } from '@/lib/i18n/server';
 import { isTab } from './tabs';
 import { ManageView } from './manage-view';
 
-export const metadata = privateMetadata('Menu Management');
+export async function generateMetadata() {
+  const t = await getT();
+  return privateMetadata(t('Menu Management'));
+}
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 

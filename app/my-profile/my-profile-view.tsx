@@ -14,12 +14,14 @@ import { SectionFields, SectionSummary, readSection, type Section } from '@/comp
 import { FormErrors, scrollToFirstError } from '@/components/forms/errors';
 import { RequestDialog, type RequestTarget } from '@/components/patient/request-dialog';
 import { PERMISSION_TEXT } from '@/components/patient/helpers';
+import { useT } from '@/components/site/lang';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Record_ = any;
 type Editable = Extract<Section, 'preferences' | 'appetite'>;
 
 export function MyProfileView({ pid, initial, reference, openReport, today }: { pid: string; initial: Record_; reference: any; openReport: boolean; today: string }) {
+  const { t } = useT();
   const key = `/api/patients/${pid}`;
   const { data, error, mutate } = useApi<Record_>(key, initial);
   const rec = data ?? initial;
@@ -39,52 +41,52 @@ export function MyProfileView({ pid, initial, reference, openReport, today }: { 
 
   return (
     <>
-      <PageHead eyebrow={`${p.demoId} · My food profile`} title="My Food Profile">
+      <PageHead eyebrow={`${p.demoId} · ${t('My food profile')}`} title={t('My Food Profile')} space="member">
         <div className="flex flex-col gap-3 pt-1">
-          <Notice tone="info" role="note" icon={<Lock aria-hidden />} title={PERMISSION_TEXT}>
-            Your preferences change the order of the options you are offered. They never override your prescribed diet or allergy exclusions.
+          <Notice tone="info" role="note" icon={<Lock aria-hidden />} title={t(PERMISSION_TEXT)}>
+            {t('Your preferences decide which meals we show you first. They never override your prescribed diet or allergies.')}
           </Notice>
-          {discharged ? <Notice tone="warn" icon={<Info aria-hidden />}>You have been discharged, so this profile is shown for reference and can no longer be changed here.</Notice> : null}
+          {discharged ? <Notice tone="warn" icon={<Info aria-hidden />}>{t('You have been discharged. You can still see your profile, but you can’t change it here.')}</Notice> : null}
         </div>
       </PageHead>
-      <PageBody>
-        {error ? <Notice tone="danger" title="We couldn’t refresh your profile.">{error.message} Check your connection and try again.</Notice> : null}
+      <PageBody space="member">
+        {error ? <Notice tone="danger" title={t('We couldn’t refresh your profile.')}>{t(error.message)} {t('Check your connection and try again.')}</Notice> : null}
         <div className="grid items-start gap-4 md:grid-cols-2">
           <Card aria-labelledby="pf-pref">
             <CardHeader>
-              <CardTitle id="pf-pref" className="flex items-center gap-2"><Heart className="size-5" aria-hidden />My food preferences</CardTitle>
-              {discharged ? null : <Button size="sm" className="min-h-10" onClick={() => setEdit('preferences')} aria-label="Update my food preferences"><Pencil aria-hidden />Update</Button>}
+              <CardTitle id="pf-pref" className="flex items-center gap-2"><Heart className="size-5" aria-hidden />{t('My food preferences')}</CardTitle>
+              {discharged ? null : <Button size="sm" className="min-h-10" onClick={() => setEdit('preferences')} aria-label={t('Update my food preferences')}><Pencil aria-hidden />{t('Update')}</Button>}
             </CardHeader>
             <SectionSummary section="preferences" p={p} reference={reference} />
-            <p className="text-sm text-muted-foreground">You can change these yourself at any time.</p>
+            <p className="text-sm text-muted-foreground">{t('You can change these yourself at any time.')}</p>
           </Card>
           <Card aria-labelledby="pf-app">
             <CardHeader>
-              <CardTitle id="pf-app" className="flex items-center gap-2"><Activity className="size-5" aria-hidden />My appetite</CardTitle>
-              {discharged ? null : <Button size="sm" className="min-h-10" onClick={() => setEdit('appetite')} aria-label="Update my appetite"><Pencil aria-hidden />Update</Button>}
+              <CardTitle id="pf-app" className="flex items-center gap-2"><Activity className="size-5" aria-hidden />{t('My appetite')}</CardTitle>
+              {discharged ? null : <Button size="sm" className="min-h-10" onClick={() => setEdit('appetite')} aria-label={t('Update my appetite')}><Pencil aria-hidden />{t('Update')}</Button>}
             </CardHeader>
             <SectionSummary section="appetite" p={p} reference={reference} />
-            <p className="text-sm text-muted-foreground">If your appetite is low, smaller portions are suggested within your prescribed plan.</p>
+            <p className="text-sm text-muted-foreground">{t('If you’re not very hungry, we’ll suggest smaller portions that still fit your plan.')}</p>
           </Card>
           <Card tone="mint" aria-labelledby="pf-diet" className="md:col-span-2">
             <CardHeader>
-              <CardTitle id="pf-diet" className="flex items-center gap-2"><Lock className="size-5" aria-hidden />My prescribed diet and allergies</CardTitle>
-              {discharged ? null : <Button size="sm" variant="outline" className="min-h-10" onClick={() => setReport({ type: 'clinical-change' })}><HeartPulse aria-hidden />Report a change</Button>}
+              <CardTitle id="pf-diet" className="flex items-center gap-2"><Lock className="size-5" aria-hidden />{t('My prescribed diet and allergies')}</CardTitle>
+              {discharged ? null : <Button size="sm" variant="outline" className="min-h-10" onClick={() => setReport({ type: 'clinical-change' })}><HeartPulse aria-hidden />{t('Tell us about a change')}</Button>}
             </CardHeader>
-            <p className="text-sm">Recorded by your care team. Only an authorised admin can change this. If something is wrong or has changed, report it: your nutrition team reviews it, and nothing changes until they do.</p>
+            <p className="text-sm">{t('Your care team recorded this, and only an authorised admin can change it. If something looks wrong or has changed, tell us. Your nutrition team will check it, and nothing changes until they do.')}</p>
             <SectionSummary section="clinical" p={p} reference={reference} />
             {reports.length ? (
               <div className="flex flex-col gap-2 border-t border-sage pt-4">
-                <h3 className="text-base">Changes I reported</h3>
+                <h3 className="text-base">{t('Changes I reported')}</h3>
                 <ul className="flex flex-col gap-2">
                   {reports.map((r: any) => (
                     <li key={r.id} className="flex flex-col gap-1.5 rounded-[14px] border border-border bg-card px-3.5 py-3 text-[.95rem]">
-                      <span className="flex flex-wrap items-center gap-2"><RequestStatusChip status={r.status} /><b>{r.reportLabel ?? r.typeLabel}{r.allergenLabel ? `: ${r.allergenLabel}` : ''}</b></span>
+                      <span className="flex flex-wrap items-center gap-2"><RequestStatusChip status={r.status} /><b>{t(r.reportLabel ?? r.typeLabel)}{r.allergenLabel ? `: ${t(r.allergenLabel)}` : ''}</b></span>
                       <span className="min-w-0 break-words">“{r.message}”</span>
                       {r.response
-                        ? <span className="text-sm">Response from {r.resolvedBy}: {r.response}</span>
-                        : <span className="flex items-center gap-1.5 text-sm text-muted-foreground"><Clock className="size-4" aria-hidden />Waiting for an admin’s review.</span>}
-                      <Link href={`/my-requests?id=${encodeURIComponent(r.id)}`} className="inline-flex min-h-10 w-fit items-center text-sm" aria-label={`View report: ${r.reportLabel ?? r.typeLabel}`}>View</Link>
+                        ? <span className="text-sm">{t('Reply from {name}: {response}', { name: r.resolvedBy, response: t(r.response) })}</span>
+                        : <span className="flex items-center gap-1.5 text-sm text-muted-foreground"><Clock className="size-4" aria-hidden />{t('Waiting for an admin to review it.')}</span>}
+                      <Link href={`/my-requests?id=${encodeURIComponent(r.id)}`} className="inline-flex min-h-10 w-fit items-center text-sm" aria-label={t('View report: {type}', { type: t(r.reportLabel ?? r.typeLabel) })}>{t('View')}</Link>
                     </li>
                   ))}
                 </ul>
@@ -101,6 +103,7 @@ export function MyProfileView({ pid, initial, reference, openReport, today }: { 
 }
 
 function EditDialog({ pid, section, p, reference, onClose, onSaved }: { pid: string; section: Editable | null; p: any; reference: any; onClose: () => void; onSaved: () => Promise<unknown> }) {
+  const { t } = useT();
   const last = React.useRef<Editable | null>(null);
   if (section) last.current = section;
   const s = section ?? last.current;
@@ -117,12 +120,12 @@ function EditDialog({ pid, section, p, reference, onClose, onSaved }: { pid: str
     try {
       const res = await apiSend<{ warnings?: string[] }>('PATCH', `/api/patients/${pid}/sections/${s}`, readSection(s, e.currentTarget));
       onClose();
-      toast('Saved. Your nutrition team will see your update.');
-      for (const w of res.warnings ?? []) toast(w, { tone: 'warn', timeout: 9000 });
+      toast(t('Saved. Your nutrition team will see your update.'));
+      for (const w of res.warnings ?? []) toast(t(w), { tone: 'warn', timeout: 9000 });
       await onSaved();
     } catch (err) {
       const ae = err as ApiError;
-      if (Object.keys(ae.errors ?? {}).length) { setErrors(ae.errors); scrollToFirstError(formRef.current); } else setFormError(ae.message);
+      if (Object.keys(ae.errors ?? {}).length) { setErrors(Object.fromEntries(Object.entries(ae.errors).map(([k, v]) => [k, t(v)]))); scrollToFirstError(formRef.current); } else setFormError(t(ae.message));
     } finally { setBusy(false); }
   }
 
@@ -130,8 +133,8 @@ function EditDialog({ pid, section, p, reference, onClose, onSaved }: { pid: str
     <Dialog open={Boolean(section)} onOpenChange={(o) => { if (!o) onClose(); }}>
       <DialogContent wide={s === 'preferences'}>
         <DialogHeader>
-          <DialogTitle>{s === 'preferences' ? 'Update my food preferences' : 'Update my appetite'}</DialogTitle>
-          <DialogDescription>{s === 'preferences' ? 'Preferences change the order of your options. They never override your diet or allergies.' : 'Tell us how your appetite is now. Portions are suggested within your prescribed plan.'}</DialogDescription>
+          <DialogTitle>{s === 'preferences' ? t('Update my food preferences') : t('Update my appetite')}</DialogTitle>
+          <DialogDescription>{s === 'preferences' ? t('Your preferences decide which meals we show you first. They never override your diet or allergies.') : t('How is your appetite now? We’ll suggest portions that fit your plan.')}</DialogDescription>
         </DialogHeader>
         <DialogBody>
           {s ? (
@@ -144,8 +147,8 @@ function EditDialog({ pid, section, p, reference, onClose, onSaved }: { pid: str
           ) : null}
         </DialogBody>
         <DialogFooter>
-          <DialogClose className={buttonVariants({ variant: 'outline' })}>Cancel</DialogClose>
-          <Button type="submit" form="pf-form" disabled={busy}>{busy ? 'Saving…' : 'Save'}</Button>
+          <DialogClose className={buttonVariants({ variant: 'outline' })}>{t('Cancel')}</DialogClose>
+          <Button type="submit" form="pf-form" disabled={busy}>{busy ? t('Saving…') : t('Save')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

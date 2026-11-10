@@ -3,24 +3,27 @@ import * as React from 'react';
 import { OctagonAlert, Loader2 } from 'lucide-react';
 import { Button, type ButtonProps } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useT } from '@/components/site/lang';
 
 /** "Show password" switch: reveals every password field of the form it sits in. */
 export function ShowPassword({ id, checked, onChange }: { id: string; checked: boolean; onChange: (v: boolean) => void }) {
+  const { t } = useT();
   return (
     <label htmlFor={id} className="flex min-h-11 cursor-pointer items-center gap-2.5 self-start text-sm">
       <input id={id} type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="size-5 shrink-0 accent-[var(--color-primary)]" />
-      <span>Show password</span>
+      <span>{t('Show password')}</span>
     </label>
   );
 }
 
 /** Form-level error (credential errors, rate limits, network problems). */
 export function FormError({ message, className }: { message: string | null; className?: string }) {
+  const { t } = useT();
   return (
     <div role="alert" aria-live="assertive" className={cn('empty:hidden', className)}>
       {message ? (
         <p className="flex items-start gap-2 rounded-[14px] border border-[#F3C9D3] bg-destructive-soft px-3.5 py-2.5 text-sm font-semibold text-destructive">
-          <OctagonAlert aria-hidden className="mt-0.5 size-4 shrink-0" />{message}
+          <OctagonAlert aria-hidden className="mt-0.5 size-4 shrink-0" />{t(message)}
         </p>
       ) : null}
     </div>

@@ -1,5 +1,7 @@
+'use client';
 import type { CSSProperties } from 'react';
 import { cn } from '@/lib/utils';
+import { useT } from '@/components/site/lang';
 
 /** Placeholder that pulses while content loads (transitions.dev "Skeleton loader" pulse). */
 export function Skeleton({ className }: { className?: string }) {
@@ -12,9 +14,10 @@ export function Skeleton({ className }: { className?: string }) {
 
 /** Loading region announced to screen readers. */
 export function LoadingBlock({ label = 'Loading…', rows = 3 }: { label?: string; rows?: number }) {
+  const { t } = useT();
   return (
     <div role="status" aria-live="polite" className="flex flex-col gap-3">
-      <span className="sr-only">{label}</span>
+      <span className="sr-only">{t(label)}</span>
       {Array.from({ length: rows }, (_, i) => <Skeleton key={i} className={i === 0 ? 'h-24' : 'h-16'} />)}
     </div>
   );

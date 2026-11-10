@@ -16,7 +16,7 @@ export function Textarea({ className, ...props }: React.ComponentProps<'textarea
 export function NativeSelect({ className, ...props }: React.ComponentProps<'select'>) {
   return (
     <select
-      className={cn(inputClass, 'appearance-none bg-[url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Cpath d=%27M4 6.5 8 10.5 12 6.5%27 fill=%27none%27 stroke=%27%23526B59%27 stroke-width=%271.6%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E")] bg-[length:16px] bg-[right_12px_center] bg-no-repeat pr-10', className)}
+      className={cn(inputClass, 'appearance-none bg-[url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Cpath d=%27M4 6.5 8 10.5 12 6.5%27 fill=%27none%27 stroke=%27%23526B59%27 stroke-width=%271.6%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E")] bg-[length:16px] bg-[right_12px_center] rtl:bg-[left_12px_center] bg-no-repeat pe-10', className)}
       {...props}
     />
   );

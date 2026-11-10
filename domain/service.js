@@ -32,6 +32,7 @@ import { LOCAL_PRODUCTION, LOCAL_PRODUCTION_SOURCES } from '../data/local-produc
 import { SFCT_LIBRARY, SFCT_META } from '../data/sfct-dishes.js';
 import { createWorkflow } from './workflow.js';
 import { createMenuAdmin } from './menu-admin.js';
+import { createHealthService } from './health-service.js';
 
 export class ServiceError extends Error {
   constructor(status, code, message, details) {
@@ -56,10 +57,11 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
   const deny = (message = 'You do not have permission to do this.') => { throw new ServiceError(403, 'forbidden', message); };
   const invalid = (message, errors) => { throw new ServiceError(422, 'validation_failed', message, errors ? { errors } : undefined); };
   const conflict = (code, message, details) => { throw new ServiceError(409, code, message, details); };
+  const notFound = (message = 'Not found.') => { throw new ServiceError(404, 'not_found', message); };
   /** RBAC: every operation names the permission it needs (see rbac.js). */
   const requirePermission = (actor, permission, message) => {
     if (!actor) throw new ServiceError(401, 'unauthenticated', 'Please log in to continue.');
-    if (actor.status && actor.status !== 'active') deny('Your account is not active. An admin must approve it first.');
+    if (actor.status && actor.status !== 'active') deny('Your account is not active yet. An admin needs to approve it first.');
     if (!can(actor.role, permission)) deny(message);
   };
 
@@ -103,7 +105,7 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
   }
   function assertPeriod(period) { if (!PERIOD_IDS.includes(period)) invalid('Choose breakfast, lunch, dinner or snack.'); }
   function assertDate(date, { from, to, what = 'This date' } = {}) {
-    if (!isValidIso(date)) invalid('Dates must be written as YYYY-MM-DD.');
+    if (!isValidIso(date)) invalid('Write the date as YYYY-MM-DD.');
     if (from && date < from) conflict('date_out_of_range', `${what} is too far in the past.`);
     if (to && date > to) conflict('date_out_of_range', `${what} is too far ahead.`);
   }
@@ -393,7 +395,7 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
   }
   function redeemLinkCode(user, code) {
     const p = checkLinkCode(code);
-    if (!p) throw new ServiceError(422, 'invalid_link_code', 'This link code is not valid or has expired. Ask the nutrition team for a new code.', { errors: { linkCode: 'This code is not valid or has expired.' } });
+    if (!p) throw new ServiceError(422, 'invalid_link_code', 'That link code didn’t work. It may be mistyped or expired. Ask your nutrition team for a new one.', { errors: { linkCode: 'This code is not valid or has expired.' } });
     if (repo.listUsersByPatient(p.id).length) conflict('already_linked', 'This patient profile already has a personal account. Ask the nutrition team for help.', { errors: { linkCode: 'This profile already has a personal account.' } });
     repo.updatePatient(p.id, { ...p, linkCode: null, linkCodeExpiresAt: null });
     repo.updateUser(user.id, { patientId: p.id });
@@ -406,7 +408,7 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
    */
   function claimLinkCode(code) {
     const p = checkLinkCode(code);
-    if (!p) throw new ServiceError(422, 'invalid_link_code', 'This link code is not valid or has expired. Ask the nutrition team for a new code.', { errors: { linkCode: 'This code is not valid or has expired.' } });
+    if (!p) throw new ServiceError(422, 'invalid_link_code', 'That link code didn’t work. It may be mistyped or expired. Ask your nutrition team for a new one.', { errors: { linkCode: 'This code is not valid or has expired.' } });
     if (repo.listUsersByPatient(p.id).length) conflict('already_linked', 'This patient profile already has a personal account. Ask the nutrition team for help.', { errors: { linkCode: 'This profile already has an account.' } });
     repo.updatePatient(p.id, { ...p, linkCode: null, linkCodeExpiresAt: null });
     return p;
@@ -435,12 +437,12 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
     if (!entry || entry.status !== 'delivered') {
       conflict('not_delivered', staff
         ? 'Intake can be recorded once the meal has been marked as delivered. Delivery does not mean the meal was eaten, so intake is recorded separately.'
-        : 'You can tell us how your meal was once it has been delivered.');
+        : 'You can tell us how your meal was once it arrives.');
     }
     const errors = {};
     const appetiteBefore = input.appetiteBefore || null;
     if (appetiteBefore != null && !APPETITE.some((a) => a.id === appetiteBefore)) errors.appetiteBefore = 'Choose the appetite before the meal.';
-    if (typeof input.accepted !== 'boolean') errors.accepted = staff ? 'Say whether the meal was accepted or refused.' : 'Tell us whether you ate the meal.';
+    if (typeof input.accepted !== 'boolean') errors.accepted = staff ? 'Say whether the meal was accepted or refused.' : 'Let us know if you ate the meal.';
     const amount = input.accepted === false ? 'none' : input.amount;
     if (input.accepted && !INTAKE_AMOUNTS.some((a) => a.id === amount)) errors.amount = 'Choose about how much was eaten.';
     const reasons = [...new Set((Array.isArray(input.reasons) ? input.reasons : []).filter((r) => REFUSAL_REASONS.some((x) => x.id === r)))];
@@ -478,10 +480,10 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
   // ------------------------------------------------------------ requests
   function createRequest(actor, id, input = {}) {
     const p = accessPatient(actor, id);
-    if (p.status === 'discharged') conflict('discharged', actor.role === 'patient' ? 'You have been discharged, so new requests cannot be sent here. Please speak to your care team.' : `${p.demoId} has been discharged.`);
+    if (p.status === 'discharged') conflict('discharged', actor.role === 'patient' ? 'You’ve been discharged, so new requests can’t be sent here. Please talk to your care team.' : `${p.demoId} has been discharged.`);
     const type = REQUEST_TYPES.find((t) => t.id === input.type);
     const errors = {};
-    if (!type) errors.type = 'Choose what the request is about.';
+    if (!type) errors.type = 'Choose what your request is about.';
     const message = clean(input.message, 400);
     if (!message) errors.message = 'Describe what you need in a few words.';
     let date = null;
@@ -514,8 +516,8 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
     return {
       request: requestView(request), recheck,
       note: type.clinical
-        ? 'Your report was sent to your nutrition team. An admin will review it before your diet or allergy record changes. If you have symptoms of an allergic reaction, tell your nurse immediately.'
-        : 'Your request was sent to the nutrition team. You can follow its status under My Requests.',
+        ? 'Thank you for telling us. An admin on your nutrition team will review your report before your diet or allergy record changes. If you have symptoms of an allergic reaction, tell your nurse right away.'
+        : 'Your request is with the nutrition team. You can follow it under My Requests.',
     };
   }
 
@@ -631,7 +633,8 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
   });
   function listStaff(actor) {
     requirePermission(actor, 'staff:manage', 'Only an admin can manage staff access.');
-    const users = repo.listUsers().filter((u) => u.role !== 'patient');
+    // Patients and members (personal accounts) are not staff and are never listed here.
+    const users = repo.listUsers().filter((u) => u.role !== 'patient' && u.role !== 'member');
     return {
       pending: users.filter((u) => u.status === 'pending').sort((a, b) => (a.createdAt ?? '').localeCompare(b.createdAt ?? '')).map(staffView),
       staff: users.filter((u) => u.status !== 'pending').sort((a, b) => (a.role ?? '').localeCompare(b.role ?? '') || a.username.localeCompare(b.username)).map(staffView),
@@ -705,16 +708,21 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
       out.mealSchedule = repo.listEntries({ patientId: p.id }).map((e) => ({ date: e.date, period: e.period, status: e.status, meal: e.mealName, portion: e.portion, history: e.history }));
       out.intakeAndFeedback = repo.listIntake({ patientId: p.id }).filter((r) => r.source === 'patient');
       out.requests = repo.listRequests({ patientId: p.id });
+      out.health = repo.listHealth({ owner: `p:${p.id}` });
     }
+    // A member's private health space (profile, targets, assessments, readings, food diary, own foods).
+    if (actor.role === 'member') out.health = repo.listHealth({ owner: `m:${actor.id}` });
     return out;
   }
+
+  const health = createHealthService({ repo, today, stamp, requirePermission, accessPatient, invalid, deny, notFound, audit, catalog });
 
   return {
     listPatients, getPatient, createPatient, updatePatientSection, deletePatient, dischargePatient, readmitPatient,
     createLinkCode, checkLinkCode, redeemLinkCode, claimLinkCode, recordAccountLink, unlinkAccounts,
     recordIntake, createRequest, listRequests, listPatientRequests, resolveRequest,
     getDashboard, getReference, exportData, listStaff, decideStaff,
-    ...workflow.api, ...menuAdmin.api,
+    ...workflow.api, ...menuAdmin.api, ...health.api,
     reloadCatalog, catalog, menu, today,
   };
 }

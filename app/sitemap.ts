@@ -12,6 +12,7 @@ const PAGES: [string, MetadataRoute.Sitemap[number]['changeFrequency'], number][
   ['/about', 'monthly', 0.7],
   ['/diets', 'monthly', 0.8],
   ['/sources', 'monthly', 0.7],
+  ['/tools/calculator', 'monthly', 0.8],
   ['/contact', 'yearly', 0.4],
   ['/privacy', 'yearly', 0.4],
   ['/disclaimer', 'yearly', 0.4],

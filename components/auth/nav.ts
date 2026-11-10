@@ -28,6 +28,7 @@ export function safeNext(value: unknown): string | null {
 export function startPageFor(user: { role?: string | null; status?: string | null } | null | undefined): string {
   if (!user) return '/';
   if (user.status !== 'active') return '/access-pending';
+  if (user.role === 'member') return '/home';
   return user.role === 'patient' ? '/my-meals' : '/patients';
 }
 

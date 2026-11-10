@@ -6,10 +6,14 @@
 //
 // Nutrition: a dish is linked to an SFDA Saudi Food Composition Tables entry
 // (nutrition: { source: 'sfct', sfctId }) only when the kitchen prepares it to
-// that SFCT standard recipe (data/sfct-hospital-dishes.js). The international
-// dishes below are the project team's synthetic recipes; the SFCT does not
-// cover them, so they have no nutrient values (source: 'none'). Nothing is
-// estimated.
+// that SFCT standard recipe (data/sfct-hospital-dishes.js); those laboratory
+// values always win. The international dishes and sides below are the project
+// team's synthetic recipes, which the SFCT does not cover. Their values
+// (nutrition: { source: 'ingredients' }) are calculated from the ingredient
+// grams per portion × USDA FoodData Central (SR Legacy) values per 100 g of each
+// ingredient (data/ingredient-nutrients.js): calculated, not laboratory-
+// analysed, and cooking losses are not modelled. An ingredient without a USDA
+// value leaves that nutrient incomplete; nothing is estimated.
 
 import { SFCT_HOSPITAL_DISHES } from './sfct-hospital-dishes.js';
 
@@ -39,7 +43,7 @@ const INTERNATIONAL = [
       'In the morning stir, then top with blueberries and sliced strawberries.',
     ],
     art: { vessel: 'jar', base: 'oats', items: ['blueberry*9', 'strawberry*4', 'seed*16', 'mint*2'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'vegetable-shakshuka',
@@ -72,7 +76,7 @@ const INTERNATIONAL = [
     ],
     notes: ['Cook eggs until the whites are fully set and the yolks begin to thicken.'],
     art: { vessel: 'pan', base: 'tomato-sauce', items: ['egg-fried*4', 'herb*10', 'pepper-red*5'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'foul-medames',
@@ -103,7 +107,7 @@ const INTERNATIONAL = [
     ],
     notes: ['People with G6PD deficiency are generally advised to avoid fava beans.'],
     art: { vessel: 'bowl', base: 'beans-brown', items: ['tomato-dice*8', 'herb*10', 'drizzle*1', 'pita*2'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'yogurt-parfait-pomegranate',
@@ -130,7 +134,7 @@ const INTERNATIONAL = [
       'Finish with the chopped walnuts and a drizzle of honey.',
     ],
     art: { vessel: 'glass', base: 'yogurt', items: ['pomegranate*14', 'walnut*4', 'oat*10'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'spinach-feta-egg-muffins',
@@ -161,7 +165,7 @@ const INTERNATIONAL = [
     ],
     notes: ['Keeps for up to 3 days in the refrigerator. Reheat until steaming hot.'],
     art: { vessel: 'board', base: 'none', items: ['egg-muffin*5', 'herb*8', 'tomato-cherry*3'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'avocado-egg-toast',
@@ -188,7 +192,7 @@ const INTERNATIONAL = [
       'Finish with a pinch of red pepper flakes if you like.',
     ],
     art: { vessel: 'plate', base: 'none', items: ['toast*2', 'avocado-mash*2', 'egg-half*2', 'tomato-slice*3', 'chili*6'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'tofu-veggie-scramble',
@@ -220,7 +224,7 @@ const INTERNATIONAL = [
       'Serve topped with halved cherry tomatoes.',
     ],
     art: { vessel: 'plate', base: 'tofu-scramble', items: ['spinach*5', 'mushroom*4', 'pepper-red*5', 'tomato-cherry*3'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'banana-pb-oat-smoothie',
@@ -245,7 +249,7 @@ const INTERNATIONAL = [
       'Pour into a glass and serve immediately.',
     ],
     art: { vessel: 'glass', base: 'smoothie-tan', items: ['banana*3', 'oat*6'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'yogurt-cucumber-zaatar-bowl',
@@ -276,7 +280,7 @@ const INTERNATIONAL = [
       'Za\'atar has no verified nutrient data, so this recipe\'s nutrition is incomplete and its sodium cannot be screened.',
     ],
     art: { vessel: 'bowl', base: 'yogurt', items: ['cucumber*5', 'tomato-cherry*3', 'mint*4', 'zaatar*18', 'drizzle*1', 'pita*1'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'mediterranean-quinoa-salad',
@@ -310,7 +314,7 @@ const INTERNATIONAL = [
     ],
     notes: ['Keeps for up to 3 days refrigerated. Add the feta just before serving.'],
     art: { vessel: 'bowl', base: 'quinoa', items: ['chickpea*10', 'cucumber*5', 'tomato-cherry*5', 'feta*5', 'onion-ring*3', 'herb*10'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'red-lentil-soup',
@@ -342,7 +346,7 @@ const INTERNATIONAL = [
     ],
     notes: ['Made with water rather than stock to keep sodium low. Using store-bought stock will increase sodium.'],
     art: { vessel: 'bowl', base: 'soup-orange', items: ['herb*8', 'drizzle*1', 'lemon*1', 'cumin*10'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'fattoush-grilled-chicken',
@@ -377,7 +381,7 @@ const INTERNATIONAL = [
       'Top with sliced chicken and toasted pita just before serving.',
     ],
     art: { vessel: 'bowl', base: 'none', items: ['chicken*4', 'tomato-dice*6', 'cucumber*5', 'radish*4', 'pita-chip*5', 'mint*3'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'chicken-veggie-wrap',
@@ -408,7 +412,7 @@ const INTERNATIONAL = [
       'Roll up tightly, folding in the sides, and cut in half.',
     ],
     art: { vessel: 'board', base: 'none', items: ['wrap*2', 'carrot*4', 'herb*6'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'tuna-white-bean-salad',
@@ -438,7 +442,7 @@ const INTERNATIONAL = [
       'Serve over the arugula.',
     ],
     art: { vessel: 'plate', base: 'none', items: ['tuna*5', 'bean-white*10', 'tomato-cherry*5', 'onion-ring*3', 'lemon*1'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'black-bean-sweet-potato-bowl',
@@ -475,7 +479,7 @@ const INTERNATIONAL = [
       base: 'rice-brown',
       items: ['bean-black*12', 'sweet-potato*6', 'corn*10', 'avocado*3', 'tomato-dice*5', 'lime*1', 'herb*6'],
     },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'peanut-noodle-salad',
@@ -506,7 +510,7 @@ const INTERNATIONAL = [
       'Serve topped with cilantro.',
     ],
     art: { vessel: 'bowl', base: 'noodles', items: ['edamame*10', 'red-cabbage*6', 'carrot*6', 'cucumber*4', 'peanut*6', 'herb*5'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'tabbouleh-chickpeas',
@@ -537,7 +541,7 @@ const INTERNATIONAL = [
       'Dress with lemon juice, olive oil and salt. Toss and rest for 10 minutes before serving.',
     ],
     art: { vessel: 'bowl', base: 'herbs', items: ['bulgur*20', 'tomato-dice*8', 'chickpea*8', 'cucumber*4', 'lemon*1'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'shrimp-mango-salad',
@@ -568,7 +572,7 @@ const INTERNATIONAL = [
       'Arrange the greens, mango, avocado and onion on plates, top with shrimp, drizzle with dressing and scatter with cilantro.',
     ],
     art: { vessel: 'plate', base: 'none', items: ['shrimp*6', 'mango*6', 'avocado*3', 'onion-ring*3', 'lime*1', 'herb*5'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'salmon-quinoa-asparagus',
@@ -598,7 +602,7 @@ const INTERNATIONAL = [
       'Stir the parsley and remaining lemon juice through the warm quinoa and serve with the salmon and asparagus.',
     ],
     art: { vessel: 'plate', base: 'none', items: ['salmon*1', 'quinoa-mound*1', 'asparagus*5', 'lemon*1', 'herb*6'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'turkey-bean-chili',
@@ -631,7 +635,7 @@ const INTERNATIONAL = [
     ],
     notes: ['Chili powder blends usually contain salt, so there is no added salt in this recipe.'],
     art: { vessel: 'bowl', base: 'chili', items: ['bean-red*12', 'pepper-green*5', 'corn*6', 'herb*6', 'yogurt-dollop*1'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'chickpea-spinach-curry',
@@ -666,7 +670,7 @@ const INTERNATIONAL = [
       'Serve over brown rice, topped with cilantro.',
     ],
     art: { vessel: 'bowl', base: 'curry', items: ['chickpea*12', 'spinach*6', 'rice-side*1', 'herb*6'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'herb-chicken-sweet-potato',
@@ -697,7 +701,7 @@ const INTERNATIONAL = [
       'Rest the chicken for 5 minutes before slicing.',
     ],
     art: { vessel: 'plate', base: 'none', items: ['chicken-breast*1', 'sweet-potato*7', 'green-bean*7', 'herb*6'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'baked-cod-tomato-olive',
@@ -728,7 +732,7 @@ const INTERNATIONAL = [
       'Serve over couscous, scattered with parsley.',
     ],
     art: { vessel: 'plate', base: 'couscous', items: ['fish-white*1', 'tomato-cherry*6', 'olive*5', 'zucchini*5', 'herb*6', 'lemon*1'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'tofu-vegetable-stir-fry',
@@ -761,7 +765,7 @@ const INTERNATIONAL = [
       'Serve over brown rice.',
     ],
     art: { vessel: 'bowl', base: 'rice-brown', items: ['tofu*7', 'broccoli*5', 'snow-pea*5', 'carrot*5', 'pepper-red*4', 'sesame*12'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'whole-wheat-pasta-primavera',
@@ -792,7 +796,7 @@ const INTERNATIONAL = [
       'Serve with basil, Parmesan and black pepper.',
     ],
     art: { vessel: 'bowl', base: 'pasta', items: ['tomato-cherry*6', 'zucchini*5', 'spinach*4', 'basil*4', 'parmesan*14'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'lentil-stuffed-peppers',
@@ -826,7 +830,7 @@ const INTERNATIONAL = [
       'Uncover, sprinkle with mozzarella and bake 8–10 minutes more until golden. Finish with parsley.',
     ],
     art: { vessel: 'dish', base: 'none', items: ['stuffed-pepper*4', 'herb*8'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'harissa-fish-vegetables',
@@ -858,7 +862,7 @@ const INTERNATIONAL = [
     ],
     notes: ['Harissa sodium varies widely between brands; the kitchen checks the label.'],
     art: { vessel: 'plate', base: 'bulgur', items: ['fish-red*1', 'eggplant*5', 'zucchini*4', 'pepper-red*4', 'herb*6', 'lemon*1'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'hummus-veggie-sticks',
@@ -888,7 +892,7 @@ const INTERNATIONAL = [
       'Serve with the vegetable sticks.',
     ],
     art: { vessel: 'board', base: 'none', items: ['hummus-bowl*1', 'carrot-stick*6', 'cucumber-stick*5', 'pepper-strip*4'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'apple-almond-butter',
@@ -907,7 +911,7 @@ const INTERNATIONAL = [
     ],
     steps: ['Core and slice the apple.', 'Serve with almond butter for dipping, dusted with cinnamon.'],
     art: { vessel: 'plate', base: 'none', items: ['apple-slice*7', 'nut-butter*1', 'cinnamon*8'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'roasted-spiced-chickpeas',
@@ -933,7 +937,7 @@ const INTERNATIONAL = [
       'Cool completely. They crisp further as they cool.',
     ],
     art: { vessel: 'bowl', base: 'none', items: ['chickpea-roasted*22', 'paprika*10'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'dates-walnuts',
@@ -951,7 +955,7 @@ const INTERNATIONAL = [
     ],
     steps: ['Pit the dates and press a walnut half into each one.'],
     art: { vessel: 'plate', base: 'none', items: ['date*3', 'walnut*3'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'yogurt-berries',
@@ -970,7 +974,7 @@ const INTERNATIONAL = [
     ],
     steps: ['Spoon the yogurt into a bowl.', 'Top with raspberries and pumpkin seeds.'],
     art: { vessel: 'bowl', base: 'yogurt', items: ['raspberry*7', 'pumpkin-seed*10'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'edamame-lime-chili',
@@ -993,7 +997,7 @@ const INTERNATIONAL = [
       'Toss with lime juice, salt and chili flakes. Serve warm.',
     ],
     art: { vessel: 'bowl', base: 'none', items: ['edamame*24', 'lime*1', 'chili*8'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'cinnamon-popcorn',
@@ -1012,7 +1016,7 @@ const INTERNATIONAL = [
     ],
     steps: ['Air-pop the corn.', 'Drizzle with olive oil, toss, and dust with cinnamon.'],
     art: { vessel: 'bowl', base: 'none', items: ['popcorn*26', 'cinnamon*8'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'mango-chia-pudding',
@@ -1037,7 +1041,7 @@ const INTERNATIONAL = [
       'Layer with diced mango to serve.',
     ],
     art: { vessel: 'jar', base: 'chia', items: ['mango*7', 'mint*2'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
   {
     id: 'laban-dates',
@@ -1056,11 +1060,12 @@ const INTERNATIONAL = [
     ],
     steps: ['Pour the laban into a glass, dusting with cardamom if you like.', 'Serve with the dates.'],
     art: { vessel: 'glass', base: 'laban', items: ['mint*2'] },
-    nutrition: { source: 'none' },
+    nutrition: { source: 'ingredients' },
   },
 ];
 
-// Simple sides used in complete meals. No SFCT entry exists for them.
+// Simple sides used in complete meals. No SFCT entry exists for them, so their
+// values are calculated from USDA ingredient values.
 const SIDES = [
   {
     id: 'garden-salad', name: 'Fresh Garden Salad', kind: 'salad', category: 'lunch', cuisine: 'Middle Eastern',
@@ -1068,7 +1073,7 @@ const SIDES = [
     portionG: 120, servingSize: '1 side bowl (120 g)', batchPortions: 1,
     ingredients: [{ ing: 'cucumber', g: 45 }, { ing: 'tomato', g: 40 }, { ing: 'romaine', g: 25 }, { ing: 'lemon-juice', g: 6 }, { ing: 'olive-oil', g: 4 }],
     steps: ['Wash and chop the vegetables.', 'Dress with lemon juice and olive oil just before serving.'],
-    art: { vessel: 'bowl', base: 'none', items: ['cucumber*5', 'tomato-dice*6'] }, nutrition: { source: 'none' },
+    art: { vessel: 'bowl', base: 'none', items: ['cucumber*5', 'tomato-dice*6'] }, nutrition: { source: 'ingredients' },
   },
 ];
 

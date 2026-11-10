@@ -61,9 +61,12 @@ await noura.goto(`${base}/my-meals`);
 await noura.waitForLoadState('networkidle');
 ok(/^(Choose your|Your )/.test((await noura.locator('main').textContent()).match(/(Choose your \w+\.|Your [^.]+\.)/)?.[0] ?? ''), 'patient sees a plain next-meal message');
 ok(!(await noura.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1)), 'My Meals has no horizontal scroll at 390 px');
+// Which meal period is open first depends on the time of day: open each closed period until one offers a choice.
 let choose = noura.locator('.t-acc[data-open=true] button:visible', { hasText: /^Choose this meal$/ }).first();
-if (!(await choose.count())) {
-  await noura.locator('section[id^=mp-] button[aria-expanded=false]').first().click();
+for (const head of await noura.locator('section[id^=mp-] button[aria-expanded=false]').all()) {
+  if (await choose.count()) break;
+  await head.click();
+  await noura.waitForTimeout(300);
   choose = noura.locator('.t-acc[data-open=true] button:visible', { hasText: /^Choose this meal$/ }).first();
 }
 const chosenPeriod = (await choose.evaluate((b) => b.closest('section[id^=mp-]')?.id ?? '')).replace('mp-', '');
@@ -83,7 +86,15 @@ ok(after.periods.find((p) => p.period === sel.period)?.entry?.status === 'confir
 
 // ---------------------------------------------------------------- 3. alternative request → response
 await noura.goto(`${base}/my-meals`);
-await noura.getByRole('button', { name: /Ask for a different meal/ }).first().click();
+await noura.waitForLoadState('networkidle');
+// The button is inside the meal periods; open them until one shows it (which is open first depends on the time of day).
+const askBtn = () => noura.locator('.t-acc[data-open=true] button:visible', { hasText: /Ask for a different meal/ }).first();
+for (const head of await noura.locator('section[id^=mp-] button[aria-expanded=false]').all()) {
+  if (await askBtn().count()) break;
+  await head.click();
+  await noura.waitForTimeout(300);
+}
+await askBtn().click();
 await dialog(noura).locator('textarea').fill('Could I have something with more vegetables? (e2e)');
 await dialog(noura).getByRole('button', { name: /Send to the nutrition team/ }).click();
 await dialog(noura).getByText(/Pending/).first().waitFor({ timeout: 6000 }).catch(() => {});
@@ -192,7 +203,13 @@ const home = await anon.request.get(`${base}/`);
 const csp = home.headers()['content-security-policy'] ?? '';
 ok(/script-src 'self' 'nonce-[^']+' 'strict-dynamic'/.test(csp) && /frame-ancestors 'none'/.test(csp), 'strict CSP with a per-request nonce');
 ok(home.headers()['x-frame-options'] === 'DENY' && home.headers()['x-content-type-options'] === 'nosniff', 'security headers present');
-const login = await anon.request.post(`${base}/api/auth/sign-in/username`, { data: { username: 'khalid.1004', password: PASSWORD }, headers: { Origin: base } });
+// Sign-in is limited to 5 a minute per address: wait and retry like session() does.
+let login;
+for (let i = 0; i < 6; i++) {
+  login = await anon.request.post(`${base}/api/auth/sign-in/username`, { data: { username: 'khalid.1004', password: PASSWORD }, headers: { Origin: base } });
+  if (login.status() !== 429) break;
+  await sleep(15000);
+}
 const loginBody = await login.text();
 ok(login.ok() && !/"token"/.test(loginBody), 'sign-in response carries no session token (HttpOnly cookie only)');
 const cookie = login.headers()['set-cookie'] ?? '';
@@ -204,8 +221,44 @@ ok(esc.status() >= 400 && /not allowed/i.test(await esc.text()), 'sign-up cannot
 const weak = await anon.request.post(`${base}/api/auth/sign-up/email`, { data: { accountType: 'staff', email: `w${Date.now()}@test.local`, password: 'short', name: 'W', username: `w${Date.now() % 100000}`, requestedRole: 'staff', requestNote: 'x' }, headers: { Origin: base } });
 ok(weak.status() === 422 && /at least 8/.test(await weak.text()), 'passwords shorter than 8 characters are refused');
 
+// ---------------------------------------------------------------- 11. member space and health
+const sara = await session('sara.member');
+await sara.goto(`${base}/login`);
+ok(new URL(sara.url()).pathname === '/home', 'a signed-in member goes to their Home');
+const ov = await json(sara, '/api/health/me');
+ok(ov.kind === 'member' && ov.body.bmi > 25 && ov.body.energy?.kcal > 1500, 'member sees BMI and the MOH daily-needs estimate');
+const rice = (await json(sara, '/api/foods?q=rice'))[0];
+ok(rice?.sourceId === 'MOH-GUIDE', 'food search ranks the MOH portion first');
+const tomato = (await json(sara, '/api/foods?q=tomato&kinds=ingredient'))[0];
+const logged = await api(sara, 'POST', '/api/health/me/diary', { meal: 'dinner', foodId: tomato.id, grams: 120 });
+ok(logged.ok() && (await logged.json()).amountLabel === '120 g', 'member logs a food by grams');
+const diary = await json(sara, '/api/health/me/diary');
+ok(diary.totals.kcal > 0 && diary.targets?.kcal, 'Today shows totals against the member’s targets');
+ok((await api(sara, 'GET', '/api/patients')).status() === 403 && (await api(sara, 'GET', '/api/health/1')).status() === 403, 'members reach no hospital data');
+ok(await statusOf(sara, '/patients') === 403 && await statusOf(sara, '/dashboard') === 403, 'member: hospital pages are 403');
+const adminView = await json(admin, '/api/health-worklist');
+ok(Array.isArray(adminView.waiting) && !JSON.stringify(adminView).includes('"m:'), 'the care team worklist never includes member records');
+await admin.goto(`${base}/patients/2?tab=health`);
+const pending = (await json(admin, '/api/health/2')).assessment;
+if (pending?.status === 'awaiting-review') {
+  await admin.locator('#rv-kcal').fill('1800');
+  await admin.getByRole('button', { name: /^Approve plan$/ }).click();
+  ok(await seeToast(admin, /Plan approved/), 'admin approves a patient assessment from the Health tab');
+  ok((await json(admin, '/api/health/2')).targets?.kcal === 1800, 'approved targets reach the patient’s health space');
+} else ok(false, 'a demo assessment awaits review');
+// A fresh visitor: `anon` may hold a session from the sign-up checks above.
+const visitor = await browser.newContext();
+const forgot = await visitor.newPage();
+await forgot.goto(`${base}/login?space=member`);
+ok(await forgot.getByRole('link', { name: /Forgot password\?/ }).count() > 0, 'log-in page links to "Forgot password?"');
+await visitor.close();
+const calc = await anon.newPage();
+await calc.goto(`${base}/tools/calculator`);
+ok((await calc.locator('h1').count()) === 1, 'public calculator page loads');
+await calc.close();
+
 // ---------------------------------------------------------------- 10. pages at phone width: no overflow, no errors
-const sweep = { 'noura.1001': ['/my-meals', '/my-meals?view=week', '/my-requests', '/my-profile', '/settings'], 'staff.demo': ['/patients', '/patients/1', '/patients/1?tab=profile', '/patients/1?tab=intake', '/dashboard', '/requests', '/schedule', '/kitchen', '/menu/manage'], 'admin.demo': ['/patients/new', '/staff-access', '/menu/manage?tab=sfct'] };
+const sweep = { 'sara.member': ['/home', '/today', '/my-foods', '/my-health', '/my-health/assessment', '/eat-well', '/eat-well?tab=plan', '/eat-well?tab=shopping', '/eat-well?tab=habits'], 'noura.1001': ['/my-meals', '/my-meals?view=week', '/today', '/my-health', '/my-requests', '/my-profile', '/settings'], 'staff.demo': ['/patients', '/patients/1', '/patients/1?tab=health', '/patients/1?tab=profile', '/patients/1?tab=intake', '/dashboard', '/requests', '/schedule', '/kitchen', '/menu/manage'], 'admin.demo': ['/patients/new', '/staff-access', '/menu/manage?tab=sfct'] };
 for (const [user, paths] of Object.entries(sweep)) {
   const pg = await session(user, 390);
   for (const p of paths) {
@@ -216,7 +269,7 @@ for (const [user, paths] of Object.entries(sweep)) {
 }
 const pub = await anon.newPage();
 waitForContent(pub);
-for (const p of ['/', '/how-it-works', '/menu', '/meal/kabsa-lunch-tray', '/about', '/diets', '/sources', '/contact', '/privacy', '/disclaimer', '/login', '/register']) {
+for (const p of ['/', '/forgot-password', '/reset-password', '/email-verified', '/how-it-works', '/tools/calculator', '/menu', '/meal/kabsa-lunch-tray', '/about', '/diets', '/sources', '/contact', '/privacy', '/disclaimer', '/login', '/register']) {
   await pub.goto(`${base}${p}`);
   ok((await pub.locator('h1').count()) === 1, `one h1: ${p}`);
 }

@@ -1,8 +1,10 @@
 import { LoadingBlock } from '@/components/ui/skeleton';
+import { containerClass } from '@/components/site/page-head';
+import { cn } from '@/lib/utils';
 
 export default function Loading() {
   return (
-    <div className="container-page flex flex-col gap-6 pb-16 pt-8 sm:pt-12">
+    <div className={cn(containerClass({ space: 'staff' }), 'flex flex-col gap-6 pb-16 pt-8 sm:pt-12')}>
       <LoadingBlock label="Loading the profile form…" rows={5} />
     </div>
   );

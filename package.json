@@ -2,7 +2,7 @@
   "name": "carebite",
   "version": "2.0.0",
   "private": true,
-  "description": "CareBite: personalized hospital meal recommendations (Next.js).",
+  "description": "CareBite: nutrition support for obesity and chronic diseases, with a member food diary and hospital meal care (Next.js).",
   "type": "module",
   "engines": {
     "node": ">=22.9"
@@ -24,6 +24,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^1.59.0",
     "next": "^16.4.2",
+    "nodemailer": "^10.4.1",
     "pg": "^8.23.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
@@ -34,6 +35,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^22.20.5",
+    "@types/nodemailer": "^8.0.2",
     "@types/pg": "^8.23.1",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",

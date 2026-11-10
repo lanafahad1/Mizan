@@ -1,26 +1,25 @@
 'use client';
 import * as React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { HeartPulse, MessageSquare, ChevronRight, Plus, ShieldAlert, Users, CalendarCheck } from 'lucide-react';
+import { HeartPulse, MessageSquare, ChevronRight, Plus, ShieldAlert } from 'lucide-react';
 import { useApi } from '@/lib/api-client';
 import { PageHead, PageBody } from '@/components/site/page-head';
 import { RequestStatusChip } from '@/components/cb/status';
 import { EmptyState } from '@/components/cb/misc';
 import { periodLabel } from '@/components/cb/labels';
-import { buttonVariants } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Notice } from '@/components/ui/notice';
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/lib/format';
 import { RequestDialog, type RequestTarget, type RequestVocab } from '@/components/patient/request-dialog';
 import { Time } from '@/components/patient/helpers';
+import { useT } from '@/components/site/lang';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Data = { requests: any[]; discharged: boolean };
 
 export function MyRequestsView({ pid, demoId, initial, focusId, vocab, today, maxDate }: { pid: string; demoId: string; initial: Data; focusId: string | null; vocab: RequestVocab; today: string; maxDate: string }) {
-  const router = useRouter();
+  const { t, lang } = useT();
   const key = `/api/patients/${pid}/requests`;
   const { data, error } = useApi<Data>(key, initial);
   const [highlight, setHighlight] = React.useState<string | null>(focusId);
@@ -38,63 +37,53 @@ export function MyRequestsView({ pid, demoId, initial, focusId, vocab, today, ma
     el.focus({ preventScroll: true });
   }, [focusId]);
 
-  const newRequest = (type: string) => {
-    if (vocab.requestTypes.find((t) => t.id === type)?.clinical) { router.push('/my-profile?report=1'); return; }
-    setRequest({ type });
-  };
+  // One "New request" button: the dialog asks what it is about (meal, schedule, support, or a diet/allergy report).
+  const newRequest = () => setRequest({ type: '' });
 
   return (
     <>
-      <PageHead eyebrow={`${demoId} · My requests`} title="My Requests" narrow
-        actions={d.discharged ? null : (
-          <DropdownMenu>
-            <DropdownMenuTrigger className={buttonVariants({ className: 'w-full sm:w-auto' })}><Plus aria-hidden />New request</DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {vocab.requestTypes.map((t) => {
-                const Icon = t.clinical ? HeartPulse : t.id === 'assistance' ? Users : t.id === 'schedule-change' ? CalendarCheck : MessageSquare;
-                return <DropdownMenuItem key={t.id} className="min-h-11" onClick={() => newRequest(t.id)}><Icon aria-hidden />{t.label}</DropdownMenuItem>;
-              })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}>
-        <p>Everything you have asked the nutrition team, with its status and their reply. The team sees the same status.</p>
+      <PageHead eyebrow={`${demoId} · ${t('My requests')}`} title={t('My Requests')} space="member"
+        actions={d.discharged ? null : <Button className="w-full sm:w-auto" onClick={newRequest}><Plus aria-hidden />{t('New request')}</Button>}>
+        <p>{t('Everything you’ve asked the nutrition team, with their replies. You and the team see the same status.')}</p>
       </PageHead>
-      <PageBody narrow className="gap-4">
-        {error ? <Notice tone="danger" title="We couldn’t refresh your requests.">{error.message} Check your connection and try again.</Notice> : null}
+      <PageBody space="member" className="gap-4">
+        {error ? <Notice tone="danger" title={t('We couldn’t refresh your requests.')}>{t(error.message)} {t('Check your connection and try again.')}</Notice> : null}
         <p className="text-sm">
-          <b>{pending.length}</b> pending · <b>{rs.length - pending.length}</b> answered.{' '}
-          {d.discharged ? 'You have been discharged, so new requests cannot be sent here.' : <>To send a new request, use <Link href="/my-meals">My Meals</Link> (meal requests) or <Link href="/my-profile?report=1">My Food Profile</Link> (diet or allergy changes).</>}
+          {lang === 'ar'
+            ? <>{t('Pending:')} <b>{pending.length}</b> · {t('Answered:')} <b>{rs.length - pending.length}</b>.{' '}</>
+            : <><b>{pending.length}</b> pending · <b>{rs.length - pending.length}</b> answered.{' '}</>}
+          {d.discharged ? t('You have been discharged, so you can’t send new requests here.') : null}
         </p>
         {rs.length ? (
           <ul className="flex flex-col gap-3">
             {rs.map((r) => (
               <li key={r.id} id={`rq-${r.id}`} tabIndex={-1} aria-current={r.id === highlight ? 'true' : undefined}
-                className={cn('flex scroll-mt-24 flex-col gap-3 rounded-xl border bg-card p-4 shadow-soft outline-none sm:p-5', r.clinical && 'border-l-[5px] border-l-pink-deep',
+                className={cn('flex scroll-mt-24 flex-col gap-3 rounded-xl border bg-card p-4 shadow-soft outline-none sm:p-5', r.clinical && 'border-s-[5px] border-s-pink-deep',
                   r.id === highlight ? 'border-2 border-heading ring-3 ring-sage' : 'border-border')}>
                 <div className="flex flex-wrap items-start justify-between gap-2">
-                  <h2 className="flex items-center gap-2 text-lg">{r.clinical ? <HeartPulse className="size-5" aria-hidden /> : <MessageSquare className="size-5" aria-hidden />}{r.typeLabel}</h2>
+                  <h2 className="flex items-center gap-2 text-lg">{r.clinical ? <HeartPulse className="size-5" aria-hidden /> : <MessageSquare className="size-5" aria-hidden />}{t(r.typeLabel)}</h2>
                   <RequestStatusChip status={r.status} />
                 </div>
                 <dl className="grid gap-x-6 gap-y-2 text-[.95rem] sm:grid-cols-[8rem_1fr]">
-                  <dt className="text-sm font-semibold text-muted-foreground">Sent</dt>
-                  <dd><Time iso={r.createdAt} />{r.createdByRole !== 'patient' ? ` by ${r.createdBy} (nutrition team)` : ''}</dd>
-                  {r.date ? <><dt className="text-sm font-semibold text-muted-foreground">About</dt><dd>{periodLabel(r.period)} on {formatDate(r.date, { weekday: 'long', month: 'short', day: 'numeric' })}{r.mealName ? ` · ${r.mealName}` : ''}</dd></> : null}
-                  {r.reportLabel ? <><dt className="text-sm font-semibold text-muted-foreground">What changed</dt><dd>{r.reportLabel}{r.allergenLabel ? ` · ${r.allergenLabel}` : ''}</dd></> : null}
-                  <dt className="text-sm font-semibold text-muted-foreground">Your message</dt><dd className="min-w-0 break-words">“{r.message}”</dd>
-                  <dt className="text-sm font-semibold text-muted-foreground">Response</dt>
+                  <dt className="text-sm font-semibold text-muted-foreground">{t('Sent')}</dt>
+                  <dd><Time iso={r.createdAt} lang={lang} />{r.createdByRole !== 'patient' ? ` ${t('by {name} from the nutrition team', { name: r.createdBy })}` : ''}</dd>
+                  {r.date ? <><dt className="text-sm font-semibold text-muted-foreground">{lang === 'ar' ? t('About this meal') : 'About'}</dt><dd>{t('{period} on {date}', { period: t(periodLabel(r.period)), date: formatDate(r.date, { weekday: 'long', month: 'short', day: 'numeric' }, lang) })}{r.mealName ? ` · ${t(r.mealName)}` : ''}</dd></> : null}
+                  {r.reportLabel ? <><dt className="text-sm font-semibold text-muted-foreground">{t('What changed')}</dt><dd>{t(r.reportLabel)}{r.allergenLabel ? ` · ${t(r.allergenLabel)}` : ''}</dd></> : null}
+                  <dt className="text-sm font-semibold text-muted-foreground">{t('Your message')}</dt><dd className="min-w-0 break-words">“{r.message}”</dd>
+                  <dt className="text-sm font-semibold text-muted-foreground">{t('Reply')}</dt>
                   <dd>{r.response
-                    ? <><b>{r.response}</b><br /><span className="text-sm text-muted-foreground">{r.resolvedBy}, <Time iso={r.resolvedAt} /></span></>
-                    : <span className="text-muted-foreground">No response yet. {r.clinical ? 'An admin will review it before your record changes.' : 'The nutrition team will reply here.'}</span>}</dd>
+                    ? <><b>{t(r.response)}</b><br /><span className="text-sm text-muted-foreground">{r.resolvedBy}{lang === 'ar' ? '،' : ','} <Time iso={r.resolvedAt} lang={lang} /></span></>
+                    : <span className="text-muted-foreground">{t('No reply yet.')} {r.clinical ? t('An admin will check it before your record is changed.') : t('The nutrition team will reply here.')}</span>}</dd>
                 </dl>
                 {r.clinical && r.status === 'open' && r.allergenLabel && r.reportLabel?.includes('new')
-                  ? <p className="flex items-start gap-1.5 text-sm"><ShieldAlert className="mt-0.5 size-4 shrink-0 text-heading" aria-hidden />Until an admin reviews this, meals that contain {r.allergenLabel.toLowerCase()} are held back for review.</p> : null}
-                {r.date ? <Link href={`/my-meals?date=${r.date}&period=${r.period}`} className="inline-flex min-h-10 w-fit items-center gap-1 text-sm">Go to this meal <ChevronRight className="size-4" aria-hidden /></Link> : null}
+                  ? <p className="flex items-start gap-1.5 text-sm"><ShieldAlert className="mt-0.5 size-4 shrink-0 text-heading" aria-hidden />{t('Until an admin reviews this, we’re holding back meals that contain {allergen}, to keep you safe.', { allergen: t(r.allergenLabel).toLowerCase() })}</p> : null}
+                {r.date ? <Link href={`/my-meals?date=${r.date}&period=${r.period}`} className="inline-flex min-h-10 w-fit items-center gap-1 text-sm">{t('See this meal')} <ChevronRight className="size-4 rtl:-scale-x-100" aria-hidden /></Link> : null}
               </li>
             ))}
           </ul>
         ) : (
-          <EmptyState title="No requests yet" action={<Link href="/my-meals" className={buttonVariants()}>Go to My Meals</Link>}>
-            When you ask for a different meal, a schedule change or support, it appears here with its status.
+          <EmptyState title={t('No requests yet')} action={<Link href="/my-meals" className={buttonVariants({ variant: 'outline' })}>{t('Go to My Meals')}</Link>}>
+            {t('When you ask for a different meal, a change to your meal times or some help, you’ll see it here.')}
           </EmptyState>
         )}
       </PageBody>

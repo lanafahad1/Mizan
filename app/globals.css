@@ -95,6 +95,7 @@
   --font-sans: var(--font-nunito), "Segoe UI", system-ui, -apple-system, sans-serif;
   --font-display: var(--font-poppins), "Segoe UI", system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-arabic: var(--font-plex-arabic), "Geeza Pro", "Segoe UI", system-ui, sans-serif;
 
   --radius-sm: 10px;
   --radius-md: 12px;
@@ -140,6 +141,10 @@
     padding-right: max(16px, env(safe-area-inset-right, 0px));
   }
   .container-narrow { max-width: 760px; }
+  /* One width per signed-in space (after .container-narrow so it wins when both are set):
+     member and patient pages 880px, staff pages 1200px. Public pages keep 1180px / 760px. */
+  .container-member { max-width: 880px; }
+  .container-staff { max-width: 1200px; }
   .eyebrow {
     font-family: var(--font-display);
     font-size: .78rem;
@@ -169,3 +174,16 @@
 .t-tab { height: 40px; padding: 6px 14px; }
 .t-tabs-pill { height: 40px; }
 .t-tt { white-space: normal; width: max-content; max-width: 16rem; text-align: center; }
+
+/* ---- Arabic (right-to-left) ------------------------------------------------
+   IBM Plex Sans Arabic replaces Poppins/Nunito only in Arabic; directional icons point the
+   other way; charts and numbers stay left-to-right. */
+@layer base {
+  html[lang="ar"] { --font-sans: var(--font-arabic); --font-display: var(--font-arabic); }
+  html[lang="ar"] body { line-height: 1.75; letter-spacing: 0; }
+  html[lang="ar"] .eyebrow, html[lang="ar"] [class*="tracking-"] { letter-spacing: 0; }
+  [dir="rtl"] .lucide-arrow-right, [dir="rtl"] .lucide-arrow-left, [dir="rtl"] .lucide-chevron-right, [dir="rtl"] .lucide-chevron-left,
+  [dir="rtl"] .lucide-chevrons-right, [dir="rtl"] .lucide-chevrons-left, [dir="rtl"] .lucide-log-out, [dir="rtl"] .rtl-flip { transform: scaleX(-1); }
+  [dir="rtl"] svg[role="img"], [dir="rtl"] .ltr { direction: ltr; }
+}
+.font-arabic { font-family: var(--font-arabic); }

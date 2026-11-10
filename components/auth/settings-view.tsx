@@ -15,6 +15,7 @@ import { Notice } from '@/components/ui/notice';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogBody, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/toast';
 import { PageHead } from '@/components/site/page-head';
+import { useT } from '@/components/site/lang';
 import { ShowPassword, FormError, SubmitButton, focusFirstInvalid, type AuthError } from './form-bits';
 import { SessionsCard } from './sessions-card';
 
@@ -38,6 +39,7 @@ function Kv({ items }: { items: [string, React.ReactNode][] }) {
 /* ---------------------------------------------------------------- details */
 
 function AccountDetails({ viewer, memberSince }: { viewer: Viewer; memberSince: string }) {
+  const { t, lang } = useT();
   const router = useRouter();
   const formRef = React.useRef<HTMLFormElement>(null);
   const [name, setName] = React.useState(viewer.name);
@@ -67,7 +69,7 @@ function AccountDetails({ viewer, memberSince }: { viewer: Viewer; memberSince: 
     if (n !== viewer.name) update.name = n;
     if (!viewer.isDemo && u.toLowerCase() !== viewer.username.toLowerCase()) update.username = u;
     const emailChanged = !viewer.isDemo && m !== viewer.email.toLowerCase();
-    if (!Object.keys(update).length && !emailChanged) { toast('There are no changes to save.', { tone: 'info' }); return; }
+    if (!Object.keys(update).length && !emailChanged) { toast(t('Nothing to save yet. Change a detail first.'), { tone: 'info' }); return; }
 
     setPending(true);
     try {
@@ -91,7 +93,7 @@ function AccountDetails({ viewer, memberSince }: { viewer: Viewer; memberSince: 
           return;
         }
       }
-      toast('Account details saved.');
+      toast(t('Account details saved.'));
       router.refresh();
     } finally {
       setPending(false);
@@ -100,24 +102,24 @@ function AccountDetails({ viewer, memberSince }: { viewer: Viewer; memberSince: 
 
   return (
     <Card aria-labelledby="acc-h">
-      <SectionTitle id="acc-h" icon={User}>Account details</SectionTitle>
+      <SectionTitle id="acc-h" icon={User}>{t('Account details')}</SectionTitle>
       {viewer.isDemo ? (
-        <Notice tone="warn">This is a <b>shared demo account</b>. Its username, email and password cannot be changed.</Notice>
+        <Notice tone="warn">{t('This is a')} <b>{t('shared demo account')}</b>. {t('Its username, email and password cannot be changed.')}</Notice>
       ) : null}
       <form ref={formRef} onSubmit={submit} noValidate className="flex flex-col gap-4">
-        <Field id="s-name" label="Display name" error={errors.name}>
+        <Field id="s-name" label={t('Display name')} error={errors.name && t(errors.name)}>
           <Input value={name} onChange={(e) => setName(e.target.value)} maxLength={40} autoComplete="name" />
         </Field>
-        <Field id="s-user" label="Username" error={errors.username} hint={`${USERNAME_RULE} You can log in with your username or your email.`}>
+        <Field id="s-user" label={t('Username')} error={errors.username && t(errors.username)} hint={`${t(USERNAME_RULE)} ${t('You can log in with your username or your email.')}`}>
           <Input value={username} onChange={(e) => setUsername(e.target.value)} maxLength={20} autoCapitalize="none" autoCorrect="off" spellCheck={false} autoComplete="username" readOnly={viewer.isDemo} aria-readonly={viewer.isDemo || undefined} className="read-only:bg-muted/60" />
         </Field>
-        <Field id="s-email" label="Email" error={errors.email}>
+        <Field id="s-email" label={t('Email')} error={errors.email && t(errors.email)}>
           <Input type="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} maxLength={120} autoCapitalize="none" spellCheck={false} autoComplete="email" readOnly={viewer.isDemo} aria-readonly={viewer.isDemo || undefined} className="read-only:bg-muted/60" />
         </Field>
         <FormError message={formError} />
-        <SubmitButton pending={pending} pendingLabel="Saving…" className="w-full sm:w-auto sm:self-start">Save details</SubmitButton>
+        <SubmitButton pending={pending} pendingLabel={t('Saving…')} className="w-full sm:w-auto sm:self-start">{t('Save details')}</SubmitButton>
       </form>
-      <Kv items={[['Role', viewer.roleLabel], ['Status', viewer.statusLabel], ['Member since', new Date(memberSince).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })]]} />
+      <Kv items={[[t('Role'), t(viewer.roleLabel)], [t('Status'), t(viewer.statusLabel)], [t('Member since'), new Date(memberSince).toLocaleDateString(lang === 'ar' ? 'ar-SA-u-ca-gregory-nu-latn' : 'en-US', { month: 'long', year: 'numeric' })]]} />
     </Card>
   );
 }
@@ -125,6 +127,7 @@ function AccountDetails({ viewer, memberSince }: { viewer: Viewer; memberSince: 
 /* --------------------------------------------------------------- password */
 
 function PasswordCard({ viewer }: { viewer: Viewer }) {
+  const { t } = useT();
   const formRef = React.useRef<HTMLFormElement>(null);
   const [cur, setCur] = React.useState('');
   const [n1, setN1] = React.useState('');
@@ -152,7 +155,7 @@ function PasswordCard({ viewer }: { viewer: Viewer }) {
     if (error) {
       const err = error as AuthError;
       if (err?.errors && Object.keys(err.errors).length) setErrors(err.errors as typeof errors);
-      else if (err?.code === 'INVALID_PASSWORD') setErrors({ currentPassword: 'Your current password is incorrect.' });
+      else if (err?.code === 'INVALID_PASSWORD') setErrors({ currentPassword: 'That isn’t your current password. Try again.' });
       else if (err?.code === 'PASSWORD_TOO_SHORT') setErrors({ newPassword: 'Use at least 8 characters.' });
       else setFormError(authErrorMessage(err));
       setCur('');
@@ -160,30 +163,30 @@ function PasswordCard({ viewer }: { viewer: Viewer }) {
       return;
     }
     setCur(''); setN1(''); setN2('');
-    toast('Password updated. Other devices have been signed out.');
+    toast(t('Password updated. We’ve signed you out on your other devices.'));
     window.dispatchEvent(new Event('carebite:sessions-changed'));
   };
 
   return (
     <Card aria-labelledby="pw-h">
-      <SectionTitle id="pw-h" icon={Lock}>Password</SectionTitle>
+      <SectionTitle id="pw-h" icon={Lock}>{t('Password')}</SectionTitle>
       {viewer.isDemo ? (
-        <p className="text-muted-foreground">Demo accounts share a published password, so it cannot be changed.</p>
+        <p className="text-muted-foreground">{t('Demo accounts share a public password, so it can’t be changed.')}</p>
       ) : (
         <form ref={formRef} onSubmit={submit} noValidate className="flex flex-col gap-4">
-          <Field id="s-cur" label="Current password" error={errors.currentPassword}>
+          <Field id="s-cur" label={t('Current password')} error={errors.currentPassword && t(errors.currentPassword)}>
             <Input type={show ? 'text' : 'password'} value={cur} onChange={(e) => setCur(e.target.value)} autoComplete="current-password" maxLength={128} />
           </Field>
-          <Field id="s-new" label="New password" error={errors.newPassword} hint={PASSWORD_RULE}>
+          <Field id="s-new" label={t('New password')} error={errors.newPassword && t(errors.newPassword)} hint={t(PASSWORD_RULE)}>
             <Input type={show ? 'text' : 'password'} value={n1} onChange={(e) => setN1(e.target.value)} autoComplete="new-password" maxLength={128} />
           </Field>
-          <Field id="s-new2" label="Confirm new password" error={errors.confirmPassword}>
+          <Field id="s-new2" label={t('Confirm new password')} error={errors.confirmPassword && t(errors.confirmPassword)}>
             <Input type={show ? 'text' : 'password'} value={n2} onChange={(e) => setN2(e.target.value)} autoComplete="new-password" maxLength={128} />
           </Field>
           <ShowPassword id="s-show" checked={show} onChange={setShow} />
-          <p className="text-sm text-muted-foreground">Changing your password signs you out on every other device.</p>
+          <p className="text-sm text-muted-foreground">{t('Changing your password signs you out on every other device.')}</p>
           <FormError message={formError} />
-          <SubmitButton pending={pending} pendingLabel="Updating…" className="w-full sm:w-auto sm:self-start">Update password</SubmitButton>
+          <SubmitButton pending={pending} pendingLabel={t('Updating…')} className="w-full sm:w-auto sm:self-start">{t('Update password')}</SubmitButton>
         </form>
       )}
     </Card>
@@ -193,6 +196,7 @@ function PasswordCard({ viewer }: { viewer: Viewer }) {
 /* ----------------------------------------------------------- patient link */
 
 function LinkCard({ viewer }: { viewer: Viewer }) {
+  const { t } = useT();
   const router = useRouter();
   const [code, setCode] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
@@ -208,7 +212,7 @@ function LinkCard({ viewer }: { viewer: Viewer }) {
     try {
       await apiSend('POST', '/api/account/link', { linkCode: c });
       setCode('');
-      toast('Linked to your hospital meal profile.');
+      toast(t('Linked to your hospital meal profile.'));
       router.refresh();
     } catch (ex) {
       setError(ex instanceof ApiError ? (Object.values(ex.errors ?? {})[0] ?? ex.message) : 'Something went wrong. Please try again.');
@@ -219,23 +223,23 @@ function LinkCard({ viewer }: { viewer: Viewer }) {
 
   return (
     <Card tone="mint" aria-labelledby="lk-h">
-      <SectionTitle id="lk-h" icon={HeartPulse}>Hospital meal profile</SectionTitle>
+      <SectionTitle id="lk-h" icon={HeartPulse}>{t('Hospital meal profile')}</SectionTitle>
       {viewer.patientId ? (
         <>
-          <p>Linked to <b>{viewer.patientDemoId}</b>. Your nutrition record is managed by the hospital nutrition team. You can update your preferences and appetite, and report changes for an admin to review.</p>
+          <p>{t('Linked to')} <b>{viewer.patientDemoId}</b>. {t('The hospital nutrition team looks after your nutrition record. You can update your food preferences and appetite, and tell us about changes for an admin to review.')}</p>
           <div className="flex flex-col gap-2 sm:flex-row">
-            <Link href="/my-profile" className={buttonVariants({ variant: 'outline' })}><Pencil aria-hidden />My food profile</Link>
-            <Link href="/my-meals" className={buttonVariants({ variant: 'ghost' })}>My meals</Link>
+            <Link href="/my-profile" className={buttonVariants({ variant: 'outline' })}><Pencil aria-hidden />{t('My food profile')}</Link>
+            <Link href="/my-meals" className={buttonVariants({ variant: 'ghost' })}>{t('My meals')}</Link>
           </div>
         </>
       ) : (
         <>
-          <p>Not linked yet. Enter the one-time code from the nutrition team.</p>
+          <p>{t('Not linked yet. Enter the one-time code from your nutrition team.')}</p>
           <form onSubmit={submit} noValidate className="flex flex-col gap-3">
-            <Field id="s-link" label="Link code" error={error} hint="A one-time code from the nutrition team (valid for 72 hours).">
+            <Field id="s-link" label={t('Link code')} error={error && t(error)} hint={t('The one-time code from your nutrition team (it works for 72 hours).')}>
               <Input value={code} onChange={(e) => setCode(e.target.value)} placeholder="ABCD-2345" autoComplete="one-time-code" autoCapitalize="characters" autoCorrect="off" spellCheck={false} maxLength={12} className="uppercase tracking-wider placeholder:normal-case" />
             </Field>
-            <SubmitButton pending={pending} pendingLabel="Linking…" className="w-full sm:w-auto sm:self-start">Link</SubmitButton>
+            <SubmitButton pending={pending} pendingLabel={t('Linking…')} className="w-full sm:w-auto sm:self-start">{t('Link')}</SubmitButton>
           </form>
         </>
       )}
@@ -246,18 +250,21 @@ function LinkCard({ viewer }: { viewer: Viewer }) {
 /* ------------------------------------------------------------------- data */
 
 function DataCard({ viewer }: { viewer: Viewer }) {
+  const { t } = useT();
   return (
     <Card aria-labelledby="data-h">
-      <SectionTitle id="data-h" icon={Database}>Your data</SectionTitle>
+      <SectionTitle id="data-h" icon={Database}>{t('Your data')}</SectionTitle>
       <p className="text-sm">
-        Export the information linked to your account as a JSON file{viewer.role === 'patient' ? ': account details, your nutrition profile, meal schedule, intake and feedback, and requests' : ': your account details'}.
+        {viewer.role === 'patient'
+          ? t('Download a copy of everything linked to your account as a JSON file: account details, your nutrition profile, meal schedule, what you ate, feedback and requests.')
+          : t('Download a copy of your account details as a JSON file.')}
       </p>
       <div className="flex flex-col gap-2 sm:flex-row">
         {/* A plain link: the server answers with an attachment, so the browser downloads it. */}
-        <a href="/api/account/export" download="carebite-my-data.json" className={buttonVariants({ variant: 'outline' })}><Download aria-hidden />Export my data</a>
-        <Link href="/privacy" className={buttonVariants({ variant: 'ghost' })}>Privacy Policy</Link>
+        <a href="/api/account/export" download="carebite-my-data.json" className={buttonVariants({ variant: 'outline' })}><Download aria-hidden />{t('Download my data')}</a>
+        <Link href="/privacy" className={buttonVariants({ variant: 'ghost' })}>{t('Privacy Policy')}</Link>
       </div>
-      <Kv items={[['Running mode', 'CareBite server with Postgres database'], ['Storage', 'server database']]} />
+      <Kv items={[[t('Where it’s kept'), t('On the CareBite server, in a Postgres database')]]} />
     </Card>
   );
 }
@@ -265,6 +272,7 @@ function DataCard({ viewer }: { viewer: Viewer }) {
 /* ------------------------------------------------------------- demo reset */
 
 function DemoResetCard() {
+  const { t } = useT();
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [pending, setPending] = React.useState(false);
@@ -273,30 +281,30 @@ function DemoResetCard() {
     try {
       await apiSend('POST', '/api/account/reset-demo');
       setOpen(false);
-      toast('The demonstration hospital was reset.');
+      toast(t('The demonstration hospital was reset.'));
       router.push('/patients');
       router.refresh();
     } catch (ex) {
-      toast(ex instanceof Error ? ex.message : 'Something went wrong. Please try again.', { tone: 'error' });
+      toast(t(ex instanceof Error ? ex.message : 'Something went wrong. Please try again.'), { tone: 'error' });
     } finally {
       setPending(false);
     }
   };
   return (
     <Card tone="blush" aria-labelledby="demo-h">
-      <SectionTitle id="demo-h" icon={RotateCcw}>Reset the demonstration hospital</SectionTitle>
-      <p className="text-sm">Restore every fictional patient, schedule, intake record and request to the starting state for today. Accounts are kept; links between new patient accounts and deleted records are removed.</p>
+      <SectionTitle id="demo-h" icon={RotateCcw}>{t('Reset the demonstration hospital')}</SectionTitle>
+      <p className="text-sm">{t('Put every fictional patient, schedule, intake record and request back to how it started today. Accounts stay. A new patient account loses its link if its record is removed.')}</p>
       <Dialog open={open} onOpenChange={setOpen}>
-        <Button variant="soft" className="w-full sm:w-auto sm:self-start" onClick={() => setOpen(true)}>Reset demonstration data</Button>
+        <Button variant="soft" className="w-full sm:w-auto sm:self-start" onClick={() => setOpen(true)}>{t('Reset demonstration data')}</Button>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Reset the demonstration hospital?</DialogTitle>
-            <DialogDescription>All fictional patients, schedules, intake records and requests will be restored to their starting state for today.</DialogDescription>
+            <DialogTitle>{t('Reset the demonstration hospital?')}</DialogTitle>
+            <DialogDescription>{t('All fictional patients, schedules, intake records and requests will be restored to their starting state for today.')}</DialogDescription>
           </DialogHeader>
-          <DialogBody><p className="text-sm">Everyone using the demo accounts will see the reset data. This cannot be undone.</p></DialogBody>
+          <DialogBody><p className="text-sm">{t('Everyone using the demo accounts will see the reset data. You can’t undo this.')}</p></DialogBody>
           <DialogFooter>
-            <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
-            <Button variant="destructive-solid" onClick={reset} disabled={pending}>{pending ? <Loader2 aria-hidden className="animate-spin" /> : null}Reset</Button>
+            <DialogClose render={<Button variant="outline" />}>{t('Cancel')}</DialogClose>
+            <Button variant="destructive-solid" onClick={reset} disabled={pending}>{pending ? <Loader2 aria-hidden className="animate-spin" /> : null}{t('Reset')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -307,6 +315,7 @@ function DemoResetCard() {
 /* ----------------------------------------------------------------- delete */
 
 function DeleteCard({ viewer }: { viewer: Viewer }) {
+  const { t } = useT();
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [password, setPassword] = React.useState('');
@@ -326,38 +335,38 @@ function DeleteCard({ viewer }: { viewer: Viewer }) {
       setPending(false);
       setPassword('');
       const ae = err as AuthError;
-      setError(ae?.code === 'INVALID_PASSWORD' ? 'The password is incorrect.' : authErrorMessage(ae));
+      setError(ae?.code === 'INVALID_PASSWORD' ? 'That password isn’t right. Try again.' : authErrorMessage(ae));
       return;
     }
     await authClient.signOut().catch(() => undefined);
     setOpen(false);
-    toast('Your account was deleted.');
+    toast(t('Your account was deleted.'));
     router.push('/');
     router.refresh();
   };
 
   return (
     <Card className="border-[#F2C9D2]" aria-labelledby="del-h">
-      <SectionTitle id="del-h" icon={Trash2} className="flex items-center gap-2 text-destructive">Delete account</SectionTitle>
+      <SectionTitle id="del-h" icon={Trash2} className="flex items-center gap-2 text-destructive">{t('Delete account')}</SectionTitle>
       <p className="text-sm">
-        Permanently delete your personal account. {viewer.role === 'patient' ? 'Your hospital nutrition record is kept by the hospital nutrition team.' : 'Changes you made remain in patients’ audit logs under your display name.'}
+        {t('Permanently delete your personal account.')} {viewer.role === 'patient' ? t('Your hospital nutrition record is kept by the hospital nutrition team.') : t('Changes you made stay in patients’ audit logs under your display name.')}
       </p>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <Button variant="destructive" className="w-full sm:w-auto sm:self-start" onClick={() => setOpen(true)}><Trash2 aria-hidden />Delete my account</Button>
+        <Button variant="destructive" className="w-full sm:w-auto sm:self-start" onClick={() => setOpen(true)}><Trash2 aria-hidden />{t('Delete my account')}</Button>
         <DialogContent>
           <form onSubmit={confirm} noValidate className="flex min-h-0 flex-col">
             <DialogHeader>
-              <DialogTitle>Delete your account?</DialogTitle>
-              <DialogDescription>This permanently deletes your personal account.</DialogDescription>
+              <DialogTitle>{t('Delete your account?')}</DialogTitle>
+              <DialogDescription>{t('This deletes your personal account for good. You can’t undo it.')}</DialogDescription>
             </DialogHeader>
             <DialogBody>
-              <Field id="del-pw" label="Enter your password to confirm" error={error}>
+              <Field id="del-pw" label={t('Enter your password to confirm')} error={error && t(error)}>
                 <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" maxLength={128} autoFocus />
               </Field>
             </DialogBody>
             <DialogFooter>
-              <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
-              <SubmitButton pending={pending} pendingLabel="Deleting…" variant="destructive-solid">Delete account</SubmitButton>
+              <DialogClose render={<Button variant="outline" />}>{t('Cancel')}</DialogClose>
+              <SubmitButton pending={pending} pendingLabel={t('Deleting…')} variant="destructive-solid">{t('Delete account')}</SubmitButton>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -369,11 +378,12 @@ function DeleteCard({ viewer }: { viewer: Viewer }) {
 /* ------------------------------------------------------------------- page */
 
 export function SettingsView({ viewer, memberSince }: { viewer: Viewer; memberSince: string }) {
+  const { t } = useT();
   const canReset = viewer.isDemo && viewer.permissions.includes('demo:reset');
   return (
     <>
-      <PageHead eyebrow="Account Settings" title="Account, privacy and your data">
-        <p>Manage your account details and the information linked to it.</p>
+      <PageHead eyebrow={t('Account Settings')} title={t('Account, privacy and your data')}>
+        <p>{t('Update your details, keep your account safe and download your data.')}</p>
       </PageHead>
       <div className="container-page grid items-start gap-5 pb-16 lg:grid-cols-2 lg:gap-6">
         {/* Phones read top to bottom: details, password, meal profile, devices, data, then the destructive actions. */}
@@ -387,7 +397,7 @@ export function SettingsView({ viewer, memberSince }: { viewer: Viewer; memberSi
           <DataCard viewer={viewer} />
           {canReset ? <DemoResetCard /> : null}
           {viewer.isDemo
-            ? <p className="text-sm text-muted-foreground">Shared demo accounts cannot be deleted.</p>
+            ? <p className="text-sm text-muted-foreground">{t('Shared demo accounts cannot be deleted.')}</p>
             : <DeleteCard viewer={viewer} />}
         </div>
       </div>

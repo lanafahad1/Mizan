@@ -4,6 +4,7 @@ import { Dialog as D } from '@base-ui/react/dialog';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motionClass } from './motion';
+import { useT } from '@/components/site/lang';
 
 /** Modal dialog (Base UI) with the transitions.dev "Modal open / close" transition. Focus is trapped and returns to the opener. */
 export const Dialog = D.Root;
@@ -11,6 +12,7 @@ export const DialogTrigger = D.Trigger;
 export const DialogClose = D.Close;
 
 export function DialogContent({ className, children, wide = false, showClose = true, ...props }: React.ComponentProps<typeof D.Popup> & { wide?: boolean; showClose?: boolean }) {
+  const { t } = useT();
   return (
     <D.Portal>
       <D.Backdrop className={(s) => cn('t-backdrop fixed inset-0 z-50 bg-[rgba(81,81,81,.28)] backdrop-blur-[2px]', motionClass(s))} />
@@ -25,7 +27,7 @@ export function DialogContent({ className, children, wide = false, showClose = t
         >
           {children}
           {showClose ? (
-            <D.Close aria-label="Close dialog" className="absolute right-3 top-3 grid size-10 place-items-center rounded-full text-heading hover:bg-mint">
+            <D.Close aria-label={t('Close dialog')} className="absolute end-3 top-3 grid size-10 place-items-center rounded-full text-heading hover:bg-mint">
               <X className="size-5" />
             </D.Close>
           ) : null}
@@ -36,7 +38,7 @@ export function DialogContent({ className, children, wide = false, showClose = t
 }
 
 export function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div className={cn('flex flex-col gap-1 border-b border-border px-5 pb-4 pr-14 pt-5 sm:px-6', className)} {...props} />;
+  return <div className={cn('flex flex-col gap-1 border-b border-border px-5 pb-4 pe-14 pt-5 sm:px-6', className)} {...props} />;
 }
 export function DialogTitle({ className, ...props }: React.ComponentProps<typeof D.Title>) {
   return <D.Title className={cn('font-display text-xl font-semibold text-heading', className as string)} {...props} />;

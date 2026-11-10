@@ -3,9 +3,10 @@
 // reliable; free text that cannot be coded is flagged for review.
 
 export const ROLES = [
-  { id: 'admin', label: 'Admin', staff: true, hint: 'Controls the whole platform: staff access and roles, diet orders, allergies and restrictions, approving meals that need review, verifying menu information and deleting records, plus every staff task. In a hospital this role belongs to the clinical dietitian or nutrition lead.' },
-  { id: 'staff', label: 'Staff', staff: true, hint: 'Runs daily meal service: offers and confirms eligible meals, records choices, intake and admission status, prepares and delivers trays, maintains the menu and answers patient requests. Cannot change clinical information or approve meals that need review.' },
-  { id: 'patient', label: 'Patient', staff: false, hint: 'Sees their own meals and profile; chooses meals, updates preferences, appetite and feedback, and sends requests.' },
+  { id: 'admin', label: 'Admin', staff: true, hint: 'Oversees the whole platform: staff access and roles, diet orders, allergies and restrictions, approving meals that need review, checking menu information and deleting records, plus every staff task. In a hospital, this is the clinical dietitian or nutrition lead.' },
+  { id: 'staff', label: 'Staff', staff: true, hint: 'Runs the daily meal service: offers and confirms meals that pass screening, records choices, intake and admissions, prepares and delivers trays, keeps the menu up to date and answers patient requests. Cannot change clinical information or approve meals that need review.' },
+  { id: 'patient', label: 'Patient', staff: false, hint: 'Sees their own meals and profile, picks meals, shares preferences, appetite and feedback, and sends requests.' },
+  { id: 'member', label: 'Member', staff: false, space: 'member', hint: 'Uses CareBite for everyday healthy living: a food diary, health readings, personal goals and meal ideas. Not linked to a hospital, and their data stays private.' },
 ];
 /** Roles an administrator can assign to an approved staff account. */
 export const ASSIGNABLE_STAFF_ROLES = ['staff', 'admin'];
@@ -38,7 +39,9 @@ export const WARDS = [
 export const CONDITIONS = [
   { id: 't1d', label: 'Type 1 Diabetes' },
   { id: 't2d', label: 'Type 2 Diabetes' },
+  { id: 'obesity', label: 'Obesity' },
   { id: 'hypertension', label: 'Hypertension' },
+  { id: 'cvd', label: 'Heart disease (cardiovascular)' },
   { id: 'cholesterol', label: 'High Cholesterol' },
   { id: 'kidney', label: 'Kidney Disease' },
   { id: 'coeliac', label: 'Coeliac Disease' },
@@ -92,7 +95,7 @@ export const PERIOD_IDS = PERIODS.map((p) => p.id);
 export const SERVICE_TIMES = { breakfast: '07:30', lunch: '12:30', dinner: '18:30', snack: '20:30' };
 
 export const ADMISSION_STATUS = [
-  { id: 'admitted', label: 'Admitted', hint: 'Active inpatient: meals are planned and prepared.' },
+  { id: 'admitted', label: 'Admitted', hint: 'In hospital now: meals are planned and prepared.' },
   { id: 'discharged', label: 'Discharged', hint: 'No longer on meal lists. Past meals, intake and requests are kept.' },
 ];
 
@@ -103,10 +106,10 @@ export const ADMISSION_STATUS = [
 export const ENTRY_STATUS = [
   { id: 'offered', label: 'Options offered', short: 'Offered', by: ['admin', 'staff'], patient: 'Choose your {period}.', hint: 'Approved options are waiting for the patient’s choice.' },
   { id: 'selected', label: 'Patient choice submitted', short: 'Choice submitted', by: ['patient', 'admin', 'staff'], patient: 'Your choice has been sent to the nutrition team.', hint: 'A meal was chosen; the nutrition team has not confirmed it yet.' },
-  { id: 'confirmed', label: 'Confirmed by nutrition team', short: 'Confirmed', by: ['admin', 'staff'], patient: 'Your meal is confirmed.', hint: 'Confirmed and sent to the kitchen.' },
+  { id: 'confirmed', label: 'Confirmed by nutrition team', short: 'Confirmed', by: ['admin', 'staff'], patient: 'Your meal is confirmed. The kitchen will prepare it for you.', hint: 'Confirmed and sent to the kitchen.' },
   { id: 'prepared', label: 'Prepared', short: 'Prepared', by: ['admin', 'staff'], patient: 'Your meal is being prepared.', hint: 'The kitchen has prepared the tray.' },
-  { id: 'delivered', label: 'Delivered', short: 'Delivered', by: ['admin', 'staff'], patient: 'Your meal has been delivered.', hint: 'The tray reached the patient. Delivery does not mean the meal was eaten.' },
-  { id: 'on-hold', label: 'On hold: needs review', short: 'On hold', by: [], patient: 'Your nutrition team is checking this meal because some information changed.', hint: 'A change made this meal unsafe or uncertain. It cannot move forward until the nutrition team reviews it.' },
+  { id: 'delivered', label: 'Delivered', short: 'Delivered', by: ['admin', 'staff'], patient: 'Your meal has been delivered. We hope you enjoy it.', hint: 'The tray reached the patient. Delivery does not mean the meal was eaten.' },
+  { id: 'on-hold', label: 'On hold: needs review', short: 'On hold', by: [], patient: 'Your nutrition team is checking this meal because something changed. There is nothing you need to do.', hint: 'A change made this meal unsafe or uncertain. It cannot move forward until the nutrition team reviews it.' },
   { id: 'cancelled', label: 'Cancelled', short: 'Cancelled', by: ['admin', 'staff'], patient: 'This meal was cancelled.', hint: 'No meal will be prepared for this period.' },
 ];
 export const WORKFLOW_STEPS = ['offered', 'selected', 'confirmed', 'prepared', 'delivered'];
@@ -177,28 +180,28 @@ export const INTAKE_AMOUNTS = [
 ];
 
 export const REFUSAL_REASONS = [
-  { id: 'taste', label: 'Did not like the taste' },
-  { id: 'portion-too-large', label: 'Portion too large' },
-  { id: 'portion-too-small', label: 'Portion too small' },
+  { id: 'taste', label: 'Didn’t like the taste' },
+  { id: 'portion-too-large', label: 'Portion was too big' },
+  { id: 'portion-too-small', label: 'Portion was too small' },
   { id: 'low-appetite', label: 'Low appetite' },
   { id: 'nausea', label: 'Nausea or feeling unwell' },
-  { id: 'temperature', label: 'Temperature (too cold or too hot)' },
+  { id: 'temperature', label: 'Too cold or too hot' },
   { id: 'not-preferred', label: 'Not what I wanted to eat' },
-  { id: 'other', label: 'Other reason' },
+  { id: 'other', label: 'Something else' },
 ];
 
 export const REQUEST_TYPES = [
-  { id: 'alternative', label: 'Request a different meal', patient: true },
-  { id: 'schedule-change', label: 'Request a change to my meal schedule', patient: true },
-  { id: 'assistance', label: 'Ask the nutrition team for support', patient: true },
-  { id: 'clinical-change', label: 'Report a change to allergies or diet', patient: true, clinical: true },
+  { id: 'alternative', label: 'Ask for a different meal', patient: true },
+  { id: 'schedule-change', label: 'Ask to change my meal schedule', patient: true },
+  { id: 'assistance', label: 'Ask the nutrition team for help', patient: true },
+  { id: 'clinical-change', label: 'Report a change to my allergies or diet', patient: true, clinical: true },
 ];
 
 /** Request statuses, shared by the patient's and the staff views. */
 export const REQUEST_STATUS = [
-  { id: 'open', label: 'Pending', hint: 'Waiting for the nutrition team.' },
-  { id: 'resolved', label: 'Resolved', hint: 'The nutrition team has dealt with it.' },
-  { id: 'declined', label: 'Declined', hint: 'The nutrition team could not do this; their response explains why.' },
+  { id: 'open', label: 'Pending', hint: 'Waiting for the nutrition team to reply.' },
+  { id: 'resolved', label: 'Resolved', hint: 'The nutrition team has taken care of it.' },
+  { id: 'declined', label: 'Declined', hint: 'The nutrition team couldn’t do this. Their reply explains why.' },
 ];
 
 /** What a patient can report about allergies or diet. Reports never change the record by themselves. */

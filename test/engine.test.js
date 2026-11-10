@@ -39,28 +39,31 @@ test('the SFCT library holds the transcribed SFDA dish tables', () => {
   assert.ok(k.nameAr.includes('كبسة'));
 });
 
-test('dish nutrition = SFCT per 100 g × portion weight; nothing estimated for dishes without an SFCT link', () => {
+test('dish nutrition = SFCT per 100 g × portion weight; other recipes are calculated from USDA ingredient values and labelled', () => {
   const kabsa = catalog.byId['chicken-kabsa'];
   assert.equal(kabsa.type, 'single');
   assert.equal(kabsa.nutrition.perServing.kcal, Math.round(187 * 3.5));
   assert.equal(kabsa.nutrition.perServing.sodium, Math.round(666 * 3.5));
   assert.equal(kabsa.nutrition.source, 'SFDA-SFCT');
   const soup = catalog.byId['red-lentil-soup'];
-  assert.equal(soup.nutrition.available, false);
-  assert.equal(soup.nutrition.perServing.kcal, null);
+  assert.equal(soup.nutrition.available, true);
+  assert.equal(soup.nutrition.source, 'USDA-FDC');
+  assert.ok(soup.nutrition.perServing.kcal > 0);
 });
 
-test('a complete meal sums its components; a component without SFCT values makes totals partial, never estimated', () => {
+test('a complete meal sums its components; a missing value makes totals partial, never estimated', () => {
   const tray = catalog.byId['kabsa-lunch-tray'];
   assert.equal(tray.type, 'complete');
   assert.deepEqual(tray.components.map((c) => c.dishId), ['chicken-kabsa', 'purslane-stew']);
   const expected = catalog.dishes['chicken-kabsa'].nutrition.perPortion.kcal + catalog.dishes['purslane-stew'].nutrition.perPortion.kcal;
   assert.equal(tray.nutrition.perServing.kcal, expected);
   assert.equal(tray.nutrition.allAvailable, true);
-  const partial = catalog.byId['bukhari-lunch-tray'];
-  assert.equal(partial.nutrition.perServing.kcal, null, 'no complete total');
-  assert.equal(partial.nutrition.partial.kcal, catalog.dishes['bukhari-chicken'].nutrition.perPortion.kcal);
-  assert.ok(partial.nutrition.missing.sodium.some((m) => m.startsWith('Fresh Garden Salad')));
+  const bukhari = catalog.byId['bukhari-lunch-tray'];
+  assert.equal(bukhari.nutrition.perServing.kcal, catalog.dishes['bukhari-chicken'].nutrition.perPortion.kcal + catalog.dishes['garden-salad'].nutrition.perPortion.kcal);
+  // Za'atar has no USDA value, so the bowl's sodium is a partial total and is not filled in.
+  const partial = catalog.byId['yogurt-cucumber-zaatar-bowl'];
+  assert.equal(partial.nutrition.perServing.sodium, null, 'no complete total');
+  assert.ok(partial.nutrition.partial.sodium > 0);
 });
 
 test('real SFCT sodium excludes kabsa for a sodium-restricted diet; partial totals send meals to review', () => {
@@ -68,9 +71,9 @@ test('real SFCT sodium excludes kabsa for a sodium-restricted diet; partial tota
   const kabsa = ev('chicken-kabsa', p);
   assert.equal(kabsa.status, 'excluded');
   assert.ok(kabsa.exclusions.some((x) => x.ruleId === 'DIET-NA'));
-  const bukhari = ev('bukhari-lunch-tray', p);
-  assert.equal(bukhari.status, 'review');
-  assert.ok(bukhari.reviewReasons.some((r) => r.ruleId === 'DATA-REQUIRED' && /Fresh Garden Salad/.test(r.message)));
+  const bowl = ev('yogurt-cucumber-zaatar-bowl', p);
+  assert.equal(bowl.status, 'review');
+  assert.ok(bowl.reviewReasons.some((r) => r.ruleId === 'DATA-REQUIRED'));
 });
 
 test('allergies are screened across every component and name the dish', () => {

@@ -1,10 +1,14 @@
 import { requirePermission } from '@/lib/server/session';
 import { serviceCall, param } from '@/lib/server/data';
 import { privateMetadata } from '@/lib/seo';
+import { getT } from '@/lib/i18n/server';
 import { isoDate } from '@/lib/format';
 import { ScheduleView } from './schedule-view';
 
-export const metadata = privateMetadata('Meal Schedule');
+export async function generateMetadata() {
+  const t = await getT();
+  return privateMetadata(t('Meal Schedule'));
+}
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 

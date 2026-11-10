@@ -1,11 +1,15 @@
 import { requirePermission, getViewer } from '@/lib/server/session';
 import { serviceCall, param } from '@/lib/server/data';
 import { privateMetadata } from '@/lib/seo';
+import { getT } from '@/lib/i18n/server';
 import { isoDate } from '@/lib/format';
 import { PERIODS } from '@/domain/constants.js';
 import { KitchenView } from './kitchen-view';
 
-export const metadata = privateMetadata('Kitchen Summary');
+export async function generateMetadata() {
+  const t = await getT();
+  return privateMetadata(t('Kitchen Summary'));
+}
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 

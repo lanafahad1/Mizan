@@ -1,8 +1,12 @@
 // CareBite ingredient reference table.
 //
-// Ingredients carry allergen, diet and local-production data. They carry no
-// nutrient values: nutrition comes only from laboratory dish values in the SFDA
-// Saudi Food Composition Tables (data/sfct-dishes.js), never from estimates.
+// Ingredients carry allergen, diet and local-production data. Their nutrient
+// values per 100 g are kept separately in data/ingredient-nutrients.js, taken
+// from USDA FoodData Central (SR Legacy, public domain) and matched by hand;
+// ingredients USDA does not cover have no values and are never estimated.
+// Dishes prepared to an SFDA Saudi Food Composition Tables standard recipe use
+// the SFCT laboratory dish values instead (data/sfct-dishes.js); other recipes
+// are calculated from their ingredient grams × these USDA values.
 //
 // Allergen fields
 //   allergens   – allergen groups the ingredient itself contains (strict).

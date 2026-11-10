@@ -1,161 +1,126 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ChevronRight, Sparkles, Shield, HeartPulse, Leaf, User, Users, Lock, Scale } from 'lucide-react';
+import {
+  ChevronRight, User, Hospital, Lock, Shield, HeartPulse, Calculator, Recycle, BookOpen, type LucideIcon,
+} from 'lucide-react';
 import { publicMetadata } from '@/components/public/seo';
 import { SITE_NAME, SITE_DESCRIPTION } from '@/lib/site';
-import { heroArt, botanical } from '@/lib/art.js';
+import { botanical } from '@/lib/art.js';
+import { Illustration } from '@/components/illustrations/illustration';
+import type { IllustrationName } from '@/lib/illustrations';
 import { getActor, homeFor } from '@/lib/server/session';
-import { publicCall } from '@/lib/server/data';
 import { buttonVariants } from '@/components/ui/button';
-import { Band, SectionHead, CheckList, CheckItem, Benefit, Journey, CtaBand, Panel } from '@/components/public/blocks';
-import { MEDICAL_RULES, SAFETY_RULES, ACTIVE_DIET_CATEGORIES } from '@/domain/rules.js';
-import { LOCAL_PRODUCTION } from '@/data/local-production.js';
+import { Card } from '@/components/ui/card';
+import { Band, CtaBand } from '@/components/public/blocks';
+import { getT } from '@/lib/i18n/server';
 
-const HOME_TITLE = `${SITE_NAME}: Personalized Hospital Meals`;
-const base = publicMetadata({ description: SITE_DESCRIPTION, path: '/' });
-export const metadata: Metadata = { ...base, title: { absolute: HOME_TITLE }, openGraph: { ...base.openGraph, title: HOME_TITLE }, twitter: { ...base.twitter, title: HOME_TITLE } };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT();
+  const HOME_TITLE = t('{site}: Care in every bite', { site: SITE_NAME });
+  const base = publicMetadata({ description: t(SITE_DESCRIPTION), path: '/' });
+  return { ...base, title: { absolute: HOME_TITLE }, openGraph: { ...base.openGraph, title: HOME_TITLE }, twitter: { ...base.twitter, title: HOME_TITLE } };
+}
 
-type Diet = { id: string; code: string; label: string; description: string };
+const FEATURES: [IllustrationName, string, string][] = [
+  ['log-food', 'Log what you eat', 'Find Saudi dishes, ingredients and supermarket products, or just scan a barcode.'],
+  ['calculator', 'Know your numbers', 'See your daily calorie goal, worked out the Ministry of Health way, and your protein, carb and fat goals. Track your weight, blood pressure and blood sugar too.'],
+  ['plan', 'Plan meals & shop', 'Get meal ideas and a ready-made shopping list that fit your goals.'],
+  ['hospital', 'Hospital care', 'Every meal is checked against the patient’s diet order, allergies and conditions, and patients leave with a plan for eating at home.'],
+];
+
+/** Saudi government bodies behind CareBite's health and food rules. */
+const SOURCE_BADGES = ['MOH', 'SFDA', 'Saudi National Diabetes Center', 'GFSA'];
+
+function Space({ icon: Icon, tone, title, who, children, action }: { icon: LucideIcon; tone: 'mint' | 'blush'; title: string; who: string; children: React.ReactNode; action: React.ReactNode }) {
+  return (
+    <Card tone={tone} className="h-full gap-3">
+      <div className="flex items-center gap-3">
+        <span className={`grid size-11 shrink-0 place-items-center rounded-full ${tone === 'mint' ? 'bg-sage text-heading' : 'bg-rose text-rose-ink'}`}><Icon className="size-5" aria-hidden /></span>
+        <div className="flex min-w-0 flex-col">
+          <h2 className="text-[1.2rem]">{title}</h2>
+          <span className="text-sm text-muted-foreground">{who}</span>
+        </div>
+      </div>
+      <div className="flex-1 text-[.97rem]">{children}</div>
+      {action}
+    </Card>
+  );
+}
 
 export default async function Home() {
   const actor = await getActor();
-  const start = actor ? homeFor(actor) : '/login';
-  const startLabel = actor ? 'Go to my start page' : 'Try the demonstration hospital';
-  const mealCount = await publicCall((s) => s.catalog().list.length as number);
-  const counts = { meals: mealCount, diets: ACTIVE_DIET_CATEGORIES.length, rules: MEDICAL_RULES.length + SAFETY_RULES.length };
+  const t = await getT();
+  // One sentence with the highlighted word marked, so Arabic word order can differ.
+  const hero = t('Care in <em>every bite</em>.').split(/<\/?em>/);
 
   return (
     <>
       <section className="overflow-hidden bg-[radial-gradient(1200px_500px_at_85%_10%,var(--cb-rose),transparent_60%),radial-gradient(900px_500px_at_0%_100%,var(--cb-mint),transparent_60%)] py-10 sm:py-16">
-        <div className="container-page grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14">
+        <div className="container-page grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-12">
           <div className="flex flex-col gap-5">
-            <span className="eyebrow">Personalized Hospital Meal Recommendation Platform</span>
-            <h1 className="text-display">Hospital meals that <em className="not-italic text-rose-ink">fit</em> every patient.</h1>
-            <p className="text-[1.15rem]">CareBite helps hospital nutrition teams recommend meals that match each patient’s prescribed diet, medical restrictions, food allergies, personal preferences and appetite.</p>
-            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Link href={start} className={buttonVariants({ size: 'lg' })}>{actor ? <ChevronRight aria-hidden /> : <Sparkles aria-hidden />}{startLabel}</Link>
-              <Link href="/how-it-works" className={buttonVariants({ variant: 'outline', size: 'lg' })}>How It Works</Link>
-            </div>
+            <h1 className="text-display">{hero[0]}<em className="not-italic text-rose-ink">{hero[1]}</em>{hero[2]}</h1>
+            <p className="text-[1.1rem]">{t('Track, plan and enjoy food that fits you, at home or in hospital.')}</p>
+            {actor ? (
+              <Link href={homeFor(actor)} className={buttonVariants({ size: 'lg', className: 'w-full sm:w-fit' })}><ChevronRight aria-hidden className="rtl:-scale-x-100" />{t('Go to my start page')}</Link>
+            ) : null}
             <ul className="flex flex-wrap gap-x-5 gap-y-2 text-[.9rem] text-muted-foreground">
-              <li className="inline-flex items-center gap-1.5"><Shield className="size-4 text-heading" aria-hidden />Allergies and diet orders screened first</li>
-              <li className="inline-flex items-center gap-1.5"><HeartPulse className="size-4 text-heading" aria-hidden />Admins decide; CareBite supports</li>
-              <li className="inline-flex items-center gap-1.5"><Leaf className="size-4 text-heading" aria-hidden />SFDA and MEWA guidance</li>
+              <li className="inline-flex items-center gap-1.5"><HeartPulse className="size-4 text-heading" aria-hidden />{t('Guided by the Ministry of Health and SFDA')}</li>
+              <li className="inline-flex items-center gap-1.5"><Lock className="size-4 text-heading" aria-hidden />{t('Your diary stays private')}</li>
+              <li className="inline-flex items-center gap-1.5"><Shield className="size-4 text-heading" aria-hidden />{t('Not clinically validated')}</li>
             </ul>
           </div>
-          <div className="relative aspect-[5/4] w-full overflow-hidden rounded-[28px] bg-rose shadow-lift">
-            <div className="h-full w-full [&>img]:h-full [&>img]:w-full [&>img]:object-cover [&>svg]:block [&>svg]:h-full [&>svg]:w-full" dangerouslySetInnerHTML={{ __html: heroArt() }} />
-            <p className="absolute bottom-3 left-3 right-3 flex items-center gap-2.5 rounded-[16px] bg-card/95 px-3.5 py-2.5 text-[.85rem] shadow-soft sm:bottom-4 sm:left-4 sm:right-auto sm:max-w-[calc(100%-2rem)]">
-              <Leaf className="size-6 shrink-0 text-heading" aria-hidden />
-              <span><b>{counts.meals} menu items</b> screened against <b>{counts.diets} hospital diet categories</b> and <b>{counts.rules} documented rules</b></span>
-            </p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Space icon={User} tone="mint" title={t('Member')} who={t('For anyone who wants to eat well, healthcare workers included')}
+              action={<Link href="/register?space=member" className={buttonVariants({ className: 'w-full' })}>{t('Start as a member')} <ChevronRight aria-hidden className="rtl:-scale-x-100" /></Link>}>
+              <p>{t('Keep a food diary, see your daily calorie goal and track your health readings. It’s private: hospital staff never see it.')}</p>
+            </Space>
+            <Space icon={Hospital} tone="blush" title={t('Hospital care')} who={t('For patients, staff and admins')}
+              action={<Link href="/login?space=hospital" className={buttonVariants({ variant: 'outline', className: 'w-full' })}>{t('Hospital sign-in')} <ChevronRight aria-hidden className="rtl:-scale-x-100" /></Link>}>
+              <p>{t('Every meal is checked against each patient’s diet and health conditions. A demonstration hospital with fictional data.')}</p>
+            </Space>
           </div>
         </div>
       </section>
 
-      <Band tone="white" aria-labelledby="ov">
-        <div className="container-page grid gap-8 lg:grid-cols-2 lg:items-center">
-          <div className="flex flex-col gap-4">
-            <span className="eyebrow">Project overview</span>
-            <h2 id="ov" className="text-[1.6rem] leading-tight sm:text-[2rem]">Connecting patient information with the hospital’s meals</h2>
-            <p className="text-[1.1rem]">The platform connects structured patient health information with the hospital’s available meals and nutritional data. It screens meals against recorded dietary requirements, then ranks eligible options according to the patient’s preferences and appetite.</p>
-            <p className="text-muted-foreground">The goal is to support appropriate nutritional intake, reduce meal rejection and food waste, and improve patient satisfaction during hospitalization. Admins define and review dietary requirements; the platform supports their decisions.</p>
-          </div>
-          <Panel tone="mint">
-            <CheckList>
-              <CheckItem title="Preferences never override restrictions.">A favourite food that conflicts with an allergy or the diet order is still excluded.</CheckItem>
-              <CheckItem title="No suitable meal? Flag it.">CareBite never relaxes requirements; it flags the case for the nutrition team.</CheckItem>
-              <CheckItem title="Incomplete information goes to an admin.">Unassessed allergies, uncoded entries, texture-modified diets and missing nutrient data are marked for review.</CheckItem>
-              <CheckItem title="Every suggestion explains itself.">“Why This Meal?” lists the checks passed, the preferences matched and the suggested portion.</CheckItem>
-            </CheckList>
-          </Panel>
-        </div>
-      </Band>
-
-      <Band aria-labelledby="jr">
-        <div className="container-page">
-          <SectionHead center eyebrow="Core user journey" title="From the diet order to the next meal decision" id="jr" />
-          <Journey />
-          <div className="mt-8 flex justify-center">
-            <Link href="/how-it-works" className={buttonVariants({ variant: 'outline' })}>See the screening rules in detail <ChevronRight aria-hidden /></Link>
-          </div>
-        </div>
-      </Band>
-
-      <Band tone="white" aria-labelledby="rl">
-        <div className="container-page">
-          <SectionHead eyebrow="Hospital management and patient participation" title="Managed by the hospital, with patients involved in their meals" id="rl">
-            <p>Each person sees only what their role needs. The nutrition team stays responsible for dietary oversight; patients have a voice in their daily meals.</p>
-          </SectionHead>
-          <div className="grid gap-4 md:grid-cols-3">
-            <Benefit icon={User} title="Patient">Views their meals, chooses from approved options, updates preferences and appetite, gives feedback and sends requests.</Benefit>
-            <Benefit icon={Users} title="Staff">Run daily meal service: offer approved options, confirm choices, prepare and deliver trays, record intake, keep the menu up to date and answer requests.</Benefit>
-            <Benefit icon={Lock} title="Admin">Controls the whole platform: diet orders, allergies and restrictions, meals that need review, menu verification, staff access, and every staff task.</Benefit>
-          </div>
-          <p className="mt-5 flex items-start gap-2 text-sm text-muted-foreground"><Lock className="mt-0.5 size-4 shrink-0 text-heading" aria-hidden />Changes to clinical dietary restrictions always require review by authorised healthcare staff.</p>
-        </div>
-      </Band>
-
-      <Band tone="blush" aria-labelledby="sa">
-        <div className="container-page grid gap-8 lg:grid-cols-2">
-          <div className="flex flex-col gap-4">
-            <span className="eyebrow">Saudi food and agriculture guidance</span>
-            <h2 id="sa" className="text-[1.6rem] leading-tight sm:text-[2rem]">Built on Saudi government guidance</h2>
-            <p>Every food and health rule in CareBite comes from Saudi government sources: the Ministry of Health and the Saudi National Diabetes Center for diets, the Saudi Food &amp; Drug Authority for food safety and nutrition, the Ministry of Environment, Water and Agriculture for local produce, and the General Food Security Authority for food security and food-waste reduction. Where no Saudi source sets a number, the admin sets it.</p>
-            <Link href="/sources" className={buttonVariants({ variant: 'outline', className: 'w-full sm:w-fit' })}>All sources and limitations <ChevronRight aria-hidden /></Link>
-          </div>
-          <div className="flex flex-col gap-3">
-            <Panel>
-              <h3 className="flex items-center gap-2 text-lg"><HeartPulse className="size-5" aria-hidden />Ministry of Health</h3>
-              <ul className="flex list-disc flex-col gap-1.5 pl-5 text-[.95rem]">
-                <li>Salt: no more than 5 g a day (2,000 mg sodium) sets the default limit for sodium-restricted, cardiac and renal diets.</li>
-                <li>Diabetes: no added sugar, regular meals and complex carbohydrates; the carbohydrate amount is set by the admin (Saudi Diabetes Clinical Practice Guidelines).</li>
-                <li>Kidney disease: reduced salt, with potassium and phosphorus limits set for the stage of disease. Gluten-free diets for coeliac patients, as MOH provides in hospitals.</li>
-              </ul>
-            </Panel>
-            <Panel>
-              <h3 className="flex items-center gap-2 text-lg"><Shield className="size-5" aria-hidden />SFDA</h3>
-              <ul className="flex list-disc flex-col gap-1.5 pl-5 text-[.95rem]">
-                <li>The 14 allergens food services must declare (SFDA.FD 56) are used for every allergy record and meal label.</li>
-                <li>Salt guidance (5 g a day) ranks lower-salt meals for everyone; SFDA’s “high in fibre” definition ranks meals for diabetes; meat and poultry are halal-certified (Saudi Halal Center).</li>
-                <li>Nutrition comes only from SFDA Saudi Food Composition Tables laboratory values, for the Saudi dishes the kitchen prepares to SFCT standard recipes. Nothing is estimated.</li>
-              </ul>
-            </Panel>
-            <Panel>
-              <h3 className="flex items-center gap-2 text-lg"><Leaf className="size-5" aria-hidden />MEWA</h3>
-              <p className="text-[.95rem]">Ingredients the Kingdom produces widely are highlighted on menus and the kitchen summary, supporting MEWA’s local-produce campaigns: dates {LOCAL_PRODUCTION.dates.selfSufficiency}%, dairy {LOCAL_PRODUCTION.dairy.selfSufficiency}%, table eggs {LOCAL_PRODUCTION.eggs.selfSufficiency}% self-sufficiency (2024).</p>
-            </Panel>
-            <Panel>
-              <h3 className="flex items-center gap-2 text-lg"><Scale className="size-5" aria-hidden />GFSA</h3>
-              <p className="text-[.95rem]">The General Food Security Authority (formerly the Saudi Grains Organization) leads the national programme to reduce food loss and waste; its field study estimated that a third (33.1%) of targeted food commodities are wasted each year. CareBite records reported leftovers and weighed plate waste for every meal so the hospital can act on avoidable waste.</p>
-            </Panel>
-          </div>
-        </div>
-      </Band>
-
-      <Band tone="white" aria-labelledby="dc">
-        <div className="container-page">
-          <SectionHead eyebrow="Documented hospital diet categories" title="Every meal is checked against the diet order" id="dc" />
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {(ACTIVE_DIET_CATEGORIES as Diet[]).map((d, i) => (
-              <li key={d.id}>
-                <Link href={`/diets#${d.id}`} className="flex h-full flex-col gap-2 rounded-xl border border-border bg-card p-5 text-foreground no-underline transition-shadow hover:shadow-lift">
-                  <span aria-hidden className={`grid size-11 place-items-center rounded-[14px] font-mono text-[.8rem] font-bold ${i % 2 ? 'bg-mint text-heading' : 'bg-rose text-rose-ink'}`}>{d.code}</span>
-                  <b className="font-display text-[1.05rem] font-medium text-heading">{d.label} <span className="sr-only">(code {d.code})</span></b>
-                  <small className="text-[.9rem] text-muted-foreground">{d.description}</small>
-                </Link>
+      <Band tone="white" aria-labelledby="do-h" className="py-10 sm:py-12 lg:py-14">
+        <div className="container-page flex flex-col gap-6">
+          <h2 id="do-h" className="text-[1.5rem] leading-tight sm:text-[1.8rem]">{t('What you can do')}</h2>
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {FEATURES.map(([art, title, text]) => (
+              <li key={title} className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 shadow-soft lg:flex-col">
+                <Illustration name={art} className="h-[57px] w-16 lg:h-[85px] lg:w-24" />
+                <div className="flex min-w-0 flex-col gap-0.5">
+                  <h3 className="text-[1.02rem]">{t(title)}</h3>
+                  <p className="text-[.93rem] text-muted-foreground">{t(text)}</p>
+                </div>
               </li>
             ))}
           </ul>
+          <Link href="/how-it-works" className={buttonVariants({ variant: 'outline', className: 'w-full sm:w-fit' })}>{t('How it works')} <ChevronRight aria-hidden className="rtl:-scale-x-100" /></Link>
         </div>
       </Band>
 
-      <Band className="pt-8 sm:pt-12">
+      <section aria-labelledby="sa-h" className="border-y border-rose bg-blush py-5">
+        <div className="container-page flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+            <h2 id="sa-h" className="text-[1rem]">{t('Built on Saudi government guidance')}</h2>
+            <ul aria-label={t('Saudi sources')} className="flex flex-wrap gap-2">
+              {SOURCE_BADGES.map((b) => (
+                <li key={b}><Link href="/sources" className="inline-flex min-h-9 items-center rounded-full border border-rose bg-card px-3 py-1 text-sm font-semibold text-rose-ink no-underline hover:bg-rose">{t(b)}</Link></li>
+              ))}
+            </ul>
+          </div>
+          <p className="flex items-center gap-2 text-sm"><Recycle className="size-4 shrink-0 text-heading" aria-hidden />{t('A bonus: less food wasted in hospitals.')} <Link href="/sources" className="inline-flex items-center gap-1 whitespace-nowrap font-semibold"><BookOpen className="size-4" aria-hidden />{t('All sources')}</Link></p>
+        </div>
+      </section>
+
+      <Band className="py-10 sm:py-12 lg:py-14">
         <div className="container-page">
-          <CtaBand title="Explore the demonstration hospital"
-            action={<Link href={start} className={buttonVariants({ size: 'lg' })}><Sparkles aria-hidden />{actor ? 'Go to my start page' : 'Choose a demo account'}</Link>}>
-            <p>Log in as a patient, a staff member or an admin. Every patient and record is fictional.</p>
+          <CtaBand title={t('Start with your numbers')}
+            action={<Link href="/tools/calculator" className={buttonVariants({ size: 'lg' })}><Calculator aria-hidden />{t('Open the calculator')}</Link>}>
+            <p>{t('Find your BMI and how many calories you need each day, using the Ministry of Health method. No account needed.')}</p>
           </CtaBand>
-          <div className="mt-8 flex justify-center"><span className="w-40" dangerouslySetInnerHTML={{ __html: botanical('w-full h-auto') }} /></div>
+          <div className="mt-6 flex justify-center"><span className="w-28" dangerouslySetInnerHTML={{ __html: botanical('w-full h-auto') }} /></div>
         </div>
       </Band>
     </>

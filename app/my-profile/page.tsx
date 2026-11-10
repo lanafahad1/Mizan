@@ -2,11 +2,15 @@ import { forbidden } from 'next/navigation';
 import { requirePermission, getViewer } from '@/lib/server/session';
 import { serviceCall, getReference, param } from '@/lib/server/data';
 import { privateMetadata } from '@/lib/seo';
+import { getT } from '@/lib/i18n/server';
 import { todayIso } from '@/domain/dates.js';
 import { LinkFirst } from '@/components/patient/link-account';
 import { MyProfileView } from './my-profile-view';
 
-export const metadata = privateMetadata('My Food Profile');
+export async function generateMetadata() {
+  const t = await getT();
+  return privateMetadata(t('My Food Profile'));
+}
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 

@@ -8,6 +8,8 @@ import * as React from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Table, Th, Td } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import { useT } from '@/components/site/lang';
+import { formatDate } from '@/lib/format';
 
 /** Validated dataviz palette from the old stylesheet (sage single series, rose second series, sage ordinal ramp). */
 export const VIZ = {
@@ -53,6 +55,7 @@ function Plot({ label, tips, anchors, width, children, indexAt, svgHeight }: {
   label: string; tips: Tip[]; anchors: Anchor[]; width: number; svgHeight: number; children: (active: number | null) => React.ReactNode;
   indexAt: (x: number, y: number) => number;
 }) {
+  const { t } = useT();
   const [active, setActive] = React.useState<number | null>(null);
   const [kbd, setKbd] = React.useState(false);
   const boxRef = React.useRef<HTMLDivElement>(null);
@@ -80,10 +83,11 @@ function Plot({ label, tips, anchors, width, children, indexAt, svgHeight }: {
     <div className="relative">
       <div
         ref={boxRef}
+        dir="ltr"
         tabIndex={0}
         role="group"
-        aria-roledescription="chart"
-        aria-label={`${label}. Use the arrow keys to read each value, or open the table below.`}
+        aria-roledescription={t('chart')}
+        aria-label={t('{label}. Use the arrow keys to read each value, or open the table below.', { label })}
         onKeyDown={onKey}
         onBlur={() => setActive(null)}
         onPointerMove={onMove}
@@ -116,22 +120,23 @@ export function Figure({ title, caption, legend, headers, rows, children, classN
   title: string; caption?: string; legend?: React.ReactNode; headers: string[]; rows: (string | number)[][]; children: React.ReactNode; className?: string;
 }) {
   const id = React.useId();
+  const { t } = useT();
   return (
     <figure className={cn('m-0 flex min-w-0 flex-col gap-2', className)} aria-labelledby={`${id}-t`}>
       <figcaption className="flex flex-col gap-0.5">
-        <b id={`${id}-t`} className="font-display font-medium text-heading">{title}</b>
-        {caption ? <span className="text-[.84rem] text-muted-foreground">{caption}</span> : null}
+        <b id={`${id}-t`} className="font-display font-medium text-heading">{t(title)}</b>
+        {caption ? <span className="text-[.84rem] text-muted-foreground">{t(caption)}</span> : null}
       </figcaption>
       {legend}
       {children}
       <details className="group rounded-[12px] border border-border bg-background/60 [&_summary::-webkit-details-marker]:hidden">
         <summary className="flex min-h-10 cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 font-display text-sm font-medium text-heading">
-          Show as table <ChevronDown className="size-4 transition-transform group-open:rotate-180" aria-hidden />
+          {t('Show as table')} <ChevronDown className="size-4 transition-transform group-open:rotate-180" aria-hidden />
         </summary>
         <div className="p-2 pt-0">
-          <Table caption={title} className="text-[.84rem]">
-            <thead><tr>{headers.map((h, i) => <Th key={h} scope="col" className={i ? 'text-right' : ''}>{h}</Th>)}</tr></thead>
-            <tbody>{rows.map((r, i) => <tr key={i}>{r.map((c, j) => (j === 0 ? <Th key={j} scope="row" className="bg-transparent font-sans text-[.84rem] font-semibold normal-case tracking-normal text-foreground">{c}</Th> : <Td key={j} className="text-right tabular">{c}</Td>))}</tr>)}</tbody>
+          <Table caption={t(title)} className="text-[.84rem]">
+            <thead><tr>{headers.map((h, i) => <Th key={h} scope="col" className={i ? 'text-end' : ''}>{t(h)}</Th>)}</tr></thead>
+            <tbody>{rows.map((r, i) => <tr key={i}>{r.map((c, j) => (j === 0 ? <Th key={j} scope="row" className="bg-transparent font-sans text-[.84rem] font-semibold normal-case tracking-normal text-foreground">{typeof c === 'string' ? t(c) : c}</Th> : <Td key={j} className="text-end tabular">{typeof c === 'string' ? t(c) : c}</Td>))}</tr>)}</tbody>
           </Table>
         </div>
       </details>
@@ -140,20 +145,21 @@ export function Figure({ title, caption, legend, headers, rows, children, classN
 }
 
 export function Legend({ series }: { series: { label: string; color: string }[] }) {
+  const { t } = useT();
   return (
-    <ul className="m-0 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-[.84rem]" aria-label="Legend">
-      {series.map((s) => <li key={s.label} className="inline-flex items-center gap-1.5"><span aria-hidden className="size-3 rounded-[3px]" style={{ background: s.color }} />{s.label}</li>)}
+    <ul className="m-0 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-[.84rem]" aria-label={t('Legend')}>
+      {series.map((s) => <li key={s.label} className="inline-flex items-center gap-1.5"><span aria-hidden className="size-3 rounded-[3px]" style={{ background: s.color }} />{t(s.label)}</li>)}
     </ul>
   );
 }
 
-function Frame({ w, h, m, yMax, ticks, fmt }: { w: number; h: number; m: { t: number; r: number; b: number; l: number }; yMax: number; ticks: number; fmt: (v: number) => string }) {
+function Frame({ w, h, m, yMax, yMin = 0, ticks, fmt }: { w: number; h: number; m: { t: number; r: number; b: number; l: number }; yMax: number; yMin?: number; ticks: number; fmt: (v: number) => string }) {
   const ih = h - m.t - m.b;
   return (
     <>
       {Array.from({ length: ticks + 1 }, (_, i) => {
-        const v = (yMax / ticks) * i;
-        const y = ns(m.t + ih - (v / yMax) * ih);
+        const v = yMin + ((yMax - yMin) / ticks) * i;
+        const y = ns(m.t + ih - ((v - yMin) / (yMax - yMin)) * ih);
         return (
           <g key={i}>
             <line x1={m.l} x2={w - m.r} y1={y} y2={y} stroke={VIZ.grid} strokeWidth={1} />
@@ -166,10 +172,30 @@ function Frame({ w, h, m, yMax, ticks, fmt }: { w: number; h: number; m: { t: nu
   );
 }
 
-export type DayPoint = { label: string; short: string; value: number | null; detail?: string };
+/** `date` (YYYY-MM-DD), when given, makes the axis label a short date in the page language ("15 Sep" / "15 سبتمبر"). */
+export type DayPoint = { label: string; short: string; value: number | null; detail?: string; date?: string };
 
-/** Single-series line over days. A null value leaves a gap ("no records"). */
-export function LineChart({ points, yMax, fmt, unit, color = VIZ.c1, ticks = 4, missing = 'no records' }: { points: DayPoint[]; yMax: number; fmt: (v: number) => string; unit: string; color?: string; ticks?: number; missing?: string }) {
+/**
+ * Which x labels to draw so they never overlap: all when they fit, otherwise
+ * evenly spaced ones (at most `max`), always the first and the last.
+ */
+export function axisLabelIndexes(n: number, width: number, minGap = 64, max = 5): number[] {
+  if (n <= 0) return [];
+  const fit = Math.max(2, Math.min(max, Math.floor(width / minGap) + 1));
+  if (n <= fit) return Array.from({ length: n }, (_, i) => i);
+  const step = Math.ceil((n - 1) / (fit - 1));
+  const out: number[] = [];
+  for (let i = 0; i < n - 1; i += step) out.push(i);
+  // Keep the last label; drop the one before it when the two would touch.
+  if (out.length > 1 && n - 1 - out[out.length - 1] < step / 2) out.pop();
+  out.push(n - 1);
+  return out;
+}
+
+/** Single-series line over days. A null value leaves a gap ("no records"); x labels are thinned so they never overlap. */
+/** `yMin` (default 0) lets measurements such as body weight use a scale that starts near their values. */
+export function LineChart({ points, yMax, yMin = 0, fmt, unit, color = VIZ.c1, ticks = 4, missing = 'no records' }: { points: DayPoint[]; yMax: number; yMin?: number; fmt: (v: number) => string; unit: string; color?: string; ticks?: number; missing?: string }) {
+  const { t, lang } = useT();
   const { ref, width: w } = useWidth();
   const m = { t: 18, r: 46, b: 30, l: 44 };
   const h = 220;
@@ -177,22 +203,24 @@ export function LineChart({ points, yMax, fmt, unit, color = VIZ.c1, ticks = 4, 
   const ih = h - m.t - m.b;
   const step = iw / Math.max(1, points.length - 1);
   const xs = points.map((_, i) => ns(m.l + i * step));
-  const y = (v: number) => ns(m.t + ih - (v / yMax) * ih);
+  const y = (v: number) => ns(m.t + ih - ((v - yMin) / (yMax - yMin)) * ih);
   let path = '';
   let pen = false;
   points.forEach((p, i) => { if (p.value == null) { pen = false; return; } path += `${pen ? 'L' : 'M'}${xs[i]},${y(p.value)}`; pen = true; });
   const lastI = points.map((p) => p.value != null).lastIndexOf(true);
-  const tips = points.map((p) => ({ title: p.label, lines: [{ label: unit, value: p.value == null ? missing : fmt(p.value), color }, ...(p.detail ? [{ label: p.detail, value: '' }] : [])] }));
+  const tips = points.map((p) => ({ title: t(p.label), lines: [{ label: t(unit), value: p.value == null ? t(missing) : fmt(p.value), color }, ...(p.detail ? [{ label: t(p.detail), value: '' }] : [])] }));
   const anchors = points.map((p, i) => ({ x: xs[i], y: p.value == null ? m.t + ih / 2 : y(p.value) }));
   const indexAt = (x: number) => { let best = 0; xs.forEach((gx, i) => { if (Math.abs(gx - x) < Math.abs(xs[best] - x)) best = i; }); return best; };
+  const axisText = (p: DayPoint) => (p.date ? formatDate(p.date, { day: 'numeric', month: 'short' }, lang) : t(p.short));
+  const shownLabels = axisLabelIndexes(points.length, iw, points.some((p) => p.date) ? 64 : 44, points.some((p) => p.date) ? 5 : 14);
   return (
     <div ref={ref} className="w-full min-w-0">
-      <Plot label={`${unit} by day`} tips={tips} anchors={anchors} width={w} svgHeight={h} indexAt={indexAt}>
+      <Plot label={t('{unit} by day', { unit: t(unit) })} tips={tips} anchors={anchors} width={w} svgHeight={h} indexAt={indexAt}>
         {(active) => (
           <>
-            <Frame w={w} h={h} m={m} yMax={yMax} ticks={ticks} fmt={fmt} />
+            <Frame w={w} h={h} m={m} yMax={yMax} yMin={yMin} ticks={ticks} fmt={fmt} />
             {active != null ? <line x1={xs[active]} x2={xs[active]} y1={m.t} y2={m.t + ih} stroke={VIZ.cross} strokeWidth={1} /> : null}
-            {points.map((p, i) => <text key={i} x={xs[i]} y={h - 10} textAnchor="middle" fontSize={12} fill={VIZ.muted}>{p.short}</text>)}
+            {shownLabels.map((i) => <text key={i} x={xs[i]} y={h - 10} textAnchor="middle" fontSize={12} fill={VIZ.muted}>{axisText(points[i])}</text>)}
             <path d={path} fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
             {points.map((p, i) => (p.value != null ? <circle key={i} cx={xs[i]} cy={y(p.value)} r={active === i ? 5.5 : 4} fill={color} stroke={VIZ.surface} strokeWidth={2} /> : <text key={i} x={xs[i]} y={m.t + ih - 6} textAnchor="middle" fontSize={12} fill={VIZ.muted}>–</text>))}
             {lastI >= 0 ? <text x={xs[lastI] + 8} y={y(points[lastI].value as number) + 4} fontSize={12} fontWeight={700} fill={VIZ.ink}>{fmt(points[lastI].value as number)}</text> : null}
@@ -210,6 +238,7 @@ const roundTop = (x: number, y0: number, bw: number, bh: number) => {
 
 /** Single-series columns over days. A null value shows "–" (no data, not zero). */
 export function ColumnChart({ points, yMax, fmt, unit, color = VIZ.c1, missing = 'not measured' }: { points: DayPoint[]; yMax: number; fmt: (v: number) => string; unit: string; color?: string; missing?: string }) {
+  const { t } = useT();
   const { ref, width: w } = useWidth();
   const m = { t: 22, r: 12, b: 30, l: 48 };
   const h = 220;
@@ -220,12 +249,12 @@ export function ColumnChart({ points, yMax, fmt, unit, color = VIZ.c1, missing =
   const max = Math.max(0, ...points.map((p) => p.value ?? 0));
   const y0 = m.t + ih;
   const cx = (i: number) => m.l + band * i + band / 2;
-  const tips = points.map((p) => ({ title: p.label, lines: [{ label: unit, value: p.value == null ? missing : fmt(p.value), color }, ...(p.detail ? [{ label: p.detail, value: '' }] : [])] }));
+  const tips = points.map((p) => ({ title: t(p.label), lines: [{ label: t(unit), value: p.value == null ? t(missing) : fmt(p.value), color }, ...(p.detail ? [{ label: t(p.detail), value: '' }] : [])] }));
   const anchors = points.map((p, i) => ({ x: cx(i), y: y0 - ((p.value ?? 0) / yMax) * ih }));
   const indexAt = (x: number) => Math.min(points.length - 1, Math.max(0, Math.floor((x - m.l) / band)));
   return (
     <div ref={ref} className="w-full min-w-0">
-      <Plot label={`${unit} by day`} tips={tips} anchors={anchors} width={w} svgHeight={h} indexAt={indexAt}>
+      <Plot label={t('{unit} by day', { unit: t(unit) })} tips={tips} anchors={anchors} width={w} svgHeight={h} indexAt={indexAt}>
         {(active) => (
           <>
             <Frame w={w} h={h} m={m} yMax={yMax} ticks={4} fmt={fmt} />
@@ -234,7 +263,7 @@ export function ColumnChart({ points, yMax, fmt, unit, color = VIZ.c1, missing =
               return (
                 <g key={i}>
                   {active === i ? <rect x={ns(cx(i) - band / 2)} y={m.t} width={ns(band)} height={ih} fill={VIZ.grid} opacity={0.6} /> : null}
-                  <text x={ns(cx(i))} y={h - 10} textAnchor="middle" fontSize={12} fill={VIZ.muted}>{p.short}</text>
+                  <text x={ns(cx(i))} y={h - 10} textAnchor="middle" fontSize={12} fill={VIZ.muted}>{t(p.short)}</text>
                   {bh > 0 ? <path d={roundTop(cx(i) - bw / 2, y0, bw, bh)} fill={color} /> : <text x={ns(cx(i))} y={y0 - 6} textAnchor="middle" fontSize={12} fill={VIZ.muted}>–</text>}
                   {p.value != null && p.value === max && max > 0 ? <text x={ns(cx(i))} y={ns(y0 - bh - 6)} textAnchor="middle" fontSize={12} fontWeight={700} fill={VIZ.ink}>{fmt(p.value)}</text> : null}
                 </g>
@@ -248,7 +277,9 @@ export function ColumnChart({ points, yMax, fmt, unit, color = VIZ.c1, missing =
 }
 
 /** Horizontal bars for categories. */
-export function HBarChart({ items, fmt, unit, color = VIZ.c1 }: { items: { label: string; value: number }[]; fmt: (v: number) => string; unit: string; color?: string }) {
+export function HBarChart({ items: raw, fmt, unit, color = VIZ.c1 }: { items: { label: string; value: number }[]; fmt: (v: number) => string; unit: string; color?: string }) {
+  const { t } = useT();
+  const items = raw.map((it) => ({ ...it, label: t(it.label) }));
   const { ref, width: w } = useWidth();
   // Narrow screens: each label sits above its bar so long reasons are never cut.
   const above = w < 480;
@@ -259,12 +290,12 @@ export function HBarChart({ items, fmt, unit, color = VIZ.c1 }: { items: { label
   const iw = w - m.l - m.r;
   const max = niceMax(Math.max(1, ...items.map((i) => i.value)));
   const maxChars = above ? 80 : Math.max(12, Math.floor((labelW - 14) / 6.6));
-  const tips = items.map((it) => ({ title: it.label, lines: [{ label: unit, value: fmt(it.value), color }] }));
+  const tips = items.map((it) => ({ title: it.label, lines: [{ label: t(unit), value: fmt(it.value), color }] }));
   const anchors = items.map((it, i) => ({ x: m.l + (it.value / max) * iw, y: m.t + i * row + row / 2 }));
   const indexAt = (_x: number, yy: number) => Math.min(items.length - 1, Math.max(0, Math.floor((yy - m.t) / row)));
   return (
     <div ref={ref} className="w-full min-w-0">
-      <Plot label={unit} tips={tips} anchors={anchors} width={w} svgHeight={h} indexAt={indexAt}>
+      <Plot label={t(unit)} tips={tips} anchors={anchors} width={w} svgHeight={h} indexAt={indexAt}>
         {(active) => (
           <>
             <line x1={m.l} x2={m.l} y1={m.t} y2={h - m.b} stroke={VIZ.axis} strokeWidth={1} />
@@ -306,6 +337,7 @@ export type Series = { key: string; label: string; color: string; ink?: 'light' 
 
 /** Horizontal stacked bars, 2px surface gaps between segments. */
 export function StackedChart({ rows, series, unit }: { rows: { label: string; segments: Record<string, number> }[]; series: Series[]; unit: string }) {
+  const { t } = useT();
   const { ref, width: w } = useWidth();
   const row = 34;
   const m = { t: 6, r: 44, b: 6, l: 86 };
@@ -313,12 +345,12 @@ export function StackedChart({ rows, series, unit }: { rows: { label: string; se
   const iw = w - m.l - m.r;
   const total = (r: { segments: Record<string, number> }) => series.reduce((s, x) => s + (r.segments[x.key] ?? 0), 0);
   const max = Math.max(1, ...rows.map(total));
-  const tips = rows.map((r) => ({ title: r.label, lines: series.map((s) => ({ label: s.label, value: String(r.segments[s.key] ?? 0), color: s.color })) }));
+  const tips = rows.map((r) => ({ title: t(r.label), lines: series.map((s) => ({ label: t(s.label), value: String(r.segments[s.key] ?? 0), color: s.color })) }));
   const anchors = rows.map((r, i) => ({ x: m.l + (total(r) / max) * iw, y: m.t + i * row + row / 2 }));
   const indexAt = (_x: number, yy: number) => Math.min(rows.length - 1, Math.max(0, Math.floor((yy - m.t) / row)));
   return (
     <div ref={ref} className="w-full min-w-0">
-      <Plot label={unit} tips={tips} anchors={anchors} width={w} svgHeight={h} indexAt={indexAt}>
+      <Plot label={t(unit)} tips={tips} anchors={anchors} width={w} svgHeight={h} indexAt={indexAt}>
         {(active) => rows.map((r, i) => {
           const yy = m.t + i * row + (row - 18) / 2;
           let x = m.l;
@@ -326,7 +358,7 @@ export function StackedChart({ rows, series, unit }: { rows: { label: string; se
           return (
             <g key={r.label}>
               {active === i ? <rect x={0} y={m.t + i * row} width={w} height={row} fill={VIZ.grid} opacity={0.6} /> : null}
-              <text x={m.l - 10} y={ns(yy + 13)} textAnchor="end" fontSize={12.5} fontWeight={600} fill={VIZ.ink}>{r.label}</text>
+              <text x={m.l - 10} y={ns(yy + 13)} textAnchor="end" fontSize={12.5} fontWeight={600} fill={VIZ.ink}>{t(r.label)}</text>
               {segs.map((s, k) => {
                 const full = (s.value / max) * iw;
                 const gap = k < segs.length - 1 ? 2 : 0;

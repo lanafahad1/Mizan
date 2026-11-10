@@ -23,8 +23,8 @@ export const authClient = createAuthClient({
 /** Friendly text for a better-auth error (never reveals which credential was wrong). */
 export function authErrorMessage(error: { message?: string; status?: number; code?: string } | null | undefined): string {
   if (!error) return 'Something went wrong. Please try again.';
-  if (error.status === 429) return 'Too many attempts. Wait a minute and try again.';
-  if (error.code === 'INVALID_EMAIL_OR_PASSWORD' || error.code === 'INVALID_USERNAME_OR_PASSWORD' || error.status === 401) return 'The username, email or password is incorrect.';
-  if (error.code === 'USER_ALREADY_EXISTS' || error.code === 'USERNAME_IS_ALREADY_TAKEN' || error.code === 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL') return 'An account with this username or email already exists. Log in instead, or choose a different username and email.';
+  if (error.status === 429) return 'Too many tries in a row. Wait a minute, then try again.';
+  if (error.code === 'INVALID_EMAIL_OR_PASSWORD' || error.code === 'INVALID_USERNAME_OR_PASSWORD' || error.status === 401) return 'That username, email or password doesn’t match. Check them and try again.';
+  if (error.code === 'USER_ALREADY_EXISTS' || error.code === 'USERNAME_IS_ALREADY_TAKEN' || error.code === 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL') return 'This username or email already has an account. Log in instead, or pick a different username and email.';
   return error.message || 'Something went wrong. Please try again.';
 }

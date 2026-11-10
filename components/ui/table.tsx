@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 export function Table({ className, caption, ...props }: React.ComponentProps<'table'> & { caption?: React.ReactNode }) {
   return (
     <div className="w-full overflow-x-auto rounded-[16px] border border-border bg-card">
-      <table className={cn('w-full border-collapse text-left text-sm', className)} {...props}>
+      <table className={cn('w-full border-collapse text-start text-sm', className)} {...props}>
         {caption ? <caption className="sr-only">{caption}</caption> : null}
         {props.children}
       </table>

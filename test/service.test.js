@@ -51,7 +51,7 @@ test('1. a patient updates preferences, chooses an offered meal and sees the nut
   assert.equal(conf.entry.confirmMode, 'patient-choice');
   assert.equal(conf.entry.confirmedBy, 'Test Staff');
   day = service.getMyMeals(me, p.id, { date });
-  assert.equal(day.periods.find((x) => x.period === 'lunch').message, 'Your meal is confirmed.');
+  assert.equal(day.periods.find((x) => x.period === 'lunch').message, 'Your meal is confirmed. The kitchen will prepare it for you.');
 });
 
 test('staff can confirm directly, and who confirmed is recorded', () => {
@@ -73,7 +73,7 @@ test('2. kitchen staff mark the meal prepared and delivered; delivered is not ea
   assert.equal(service.getMyMeals(asPatient('CB-2001'), p.id, {}).periods.find((x) => x.period === 'lunch').message, 'Your meal is being prepared.');
   service.progressEntry(staff, entry.id, { to: 'delivered' });
   const view = service.getMyMeals(asPatient('CB-2001'), p.id, {});
-  assert.equal(view.periods.find((x) => x.period === 'lunch').message, 'Your meal has been delivered.');
+  assert.equal(view.periods.find((x) => x.period === 'lunch').message, 'Your meal has been delivered. We hope you enjoy it.');
   assert.ok(view.todo.some((t) => t.kind === 'feedback' && t.period === 'lunch'), 'patient is asked how it was');
   assert.equal(service.getPatient(staff, p.id).intake.length, 0, 'delivery records no intake');
   const k = service.getKitchenSummary(staff, { date: today, period: 'lunch' });

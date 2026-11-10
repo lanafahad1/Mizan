@@ -167,7 +167,7 @@ function normalizePreferences(input, patient, errors, warnings, table = INGREDIE
     preferredPortion: SETS.portions.has(p.preferredPortion) ? p.preferredPortion : 'regular',
   };
   if (prefs.favorites.some((f) => prefs.dislikes.includes(f))) {
-    warnings.push('Some foods were marked as both favourite and disliked; they are treated as disliked.');
+    warnings.push('Some foods are marked as both favourite and disliked, so they are treated as disliked.');
     prefs.favorites = prefs.favorites.filter((f) => !prefs.dislikes.includes(f));
   }
   const permitted = patient?.dietOrder?.portionsPermitted ?? ['small', 'regular', 'large'];

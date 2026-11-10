@@ -324,10 +324,10 @@ export function createWorkflow(ctx) {
     assertDate(date, { ...scheduleWindow(), what: 'Meal choices' });
     assertAdmitted(p);
     const e0 = repo.getEntry(p.id, date, period);
-    if (e0?.status === 'on-hold') conflict('on_hold', 'This meal is on hold while the nutrition team checks it. Please wait for new options.');
+    if (e0?.status === 'on-hold') conflict('on_hold', 'This meal is on hold while your nutrition team checks it. New options will appear here when they are ready.');
     if (e0 && !['offered', 'selected'].includes(e0.status)) conflict('not_choosable', `This ${periodName(period)} is already ${statusLabel(e0.status).toLowerCase()}. To change it, ask for a different meal.`);
     const offer = e0?.offers.find((o) => o.mealId === mealId);
-    if (!offer) conflict('not_offered', 'Choose one of the approved options offered by the nutrition team.');
+    if (!offer) conflict('not_offered', 'Choose one of the options your nutrition team approved.');
     const ev = screenOffer(p, offer, period);
     const chosen = validPortion(offer, ev, portion);
     const entry = { ...e0, selectedMealId: mealId, mealName: mealName(mealId), mealVersion: catalog().byId[mealId].version, portion: chosen, status: 'selected', selectedBy: actor.name, selectedByRole: actor.role, selectedAt: stamp() };
@@ -559,7 +559,7 @@ export function createWorkflow(ctx) {
   const toMinutes = (hhmm) => { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; };
   function patientMessage(entry, period, npo) {
     if (npo) return 'Your care team has asked that you have nothing to eat or drink for now. No meals will be brought.';
-    if (!entry) return 'The nutrition team has not offered options for this meal yet.';
+    if (!entry) return 'Options for this meal aren’t ready yet. Your nutrition team will add them here.';
     const s = ENTRY_STATUS.find((x) => x.id === entry.status);
     if (entry.status === 'offered' && !entry.offers.length) return 'Your nutrition team is preparing new options for you.';
     if (entry.status === 'cancelled') return `This meal was cancelled${entry.cancelledReason ? `: ${entry.cancelledReason}` : '.'}`;

@@ -1,126 +1,133 @@
+import type * as React from 'react';
 import Link from 'next/link';
-import { User, List, BookOpen, Target, ThumbsUp, Leaf, Lock, Shield, Database } from 'lucide-react';
+import { User, Hospital, List, BookOpen, Target, ShieldCheck, Leaf, Lock, Shield, Database } from 'lucide-react';
 import { publicMetadata } from '@/components/public/seo';
-import { TEAM, SITE_URL, SITE_NAME } from '@/lib/site';
+import { SITE_URL, SITE_NAME, DEVELOPER } from '@/lib/site';
 import { botanical, teamPortrait } from '@/lib/art.js';
 import { AboutNav } from '@/components/cb/misc';
 import { Notice } from '@/components/ui/notice';
+import { Accordion } from '@/components/ui/accordion';
 import { Band, SectionHead, CheckList, CheckItem, Benefit, Pipeline, Panel } from '@/components/public/blocks';
 import { Citation } from '@/components/public/citation';
 import { JsonLd } from '@/components/public/json-ld';
+import { getT } from '@/lib/i18n/server';
 
-const DESCRIPTION = 'About CareBite, a university Health Informatics project that connects structured patient information, hospital meal data and documented dietary rules to support meal decisions during a hospital stay. Meet the development team.';
-export const metadata = publicMetadata({ title: 'About the Project', description: DESCRIPTION, path: '/about' });
+const DESCRIPTION = 'Meet CareBite, a university Health Informatics project that supports healthier eating for people living with obesity or a chronic disease in Saudi Arabia. It has a private member space and a hospital care space, both built on Saudi government guidance. Meet the developer.';
+export async function generateMetadata() {
+  const t = await getT();
+  return publicMetadata({ title: t('About the Project'), description: t(DESCRIPTION), path: '/about' });
+}
+
+function Details({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <Accordion className="rounded-[16px] border border-border bg-card" headClassName="min-h-12 px-4 py-3 font-display text-[1rem] font-semibold text-heading sm:px-5" title={title}>
+      <div className="flex flex-col gap-4 px-4 pb-5 sm:px-5">{children}</div>
+    </Accordion>
+  );
+}
 
 const initials = (n: string) => { const parts = n.split(/\s+/); return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase(); };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const t = await getT();
   const ld = {
-    '@context': 'https://schema.org', '@type': 'AboutPage', name: `About ${SITE_NAME}`, url: `${SITE_URL}/about`, description: DESCRIPTION,
+    '@context': 'https://schema.org', '@type': 'AboutPage', name: t('About {site}', { site: SITE_NAME }), url: `${SITE_URL}/about`, description: t(DESCRIPTION),
     about: { '@id': `${SITE_URL}/#project` },
   };
   return (
     <>
       <JsonLd data={ld} />
       <AboutNav current="/about" />
-      <section className="overflow-hidden bg-[radial-gradient(900px_400px_at_90%_0%,var(--cb-rose),transparent_60%),radial-gradient(700px_400px_at_0%_100%,var(--cb-mint),transparent_60%)] py-10 sm:py-14">
-        <div className="container-page grid items-center gap-8 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+      <section className="overflow-hidden bg-[radial-gradient(900px_400px_at_90%_0%,var(--cb-rose),transparent_60%),radial-gradient(700px_400px_at_0%_100%,var(--cb-mint),transparent_60%)] py-8 sm:py-12">
+        <div className="container-page grid items-center gap-6 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
           <div className="flex flex-col gap-4">
-            <span className="eyebrow">Health Informatics and Project Information</span>
-            <h1 className="text-[2rem] leading-tight sm:text-[2.6rem]">Connecting patient information, hospital meals and dietary rules</h1>
-            <p className="text-[1.15rem]">CareBite shows how structured patient information, the hospital’s meal data and documented dietary rules can work together to support meal decisions during a hospital stay.</p>
+            <span className="eyebrow">{t('About the project')}</span>
+            <h1 className="text-[2rem] leading-tight sm:text-[2.6rem]">{t('Healthier eating for people living with obesity and chronic disease')}</h1>
+            <p className="text-[1.1rem]">{t('CareBite brings your health information, Saudi food data and documented dietary guidance together to help you eat better, at home and in hospital.')}</p>
           </div>
-          <span className="mx-auto w-44 sm:w-56" dangerouslySetInnerHTML={{ __html: botanical('w-full h-auto') }} />
+          <span className="mx-auto hidden w-40 sm:block md:w-48" dangerouslySetInnerHTML={{ __html: botanical('w-full h-auto') }} />
         </div>
       </section>
 
-      <Band tone="white" aria-label="Mission and project">
-        <div className="container-page grid gap-6 md:grid-cols-2">
+      <Band tone="white" aria-labelledby="mission-h" className="py-8 sm:py-10 lg:py-12">
+        <div className="container-page grid gap-4 md:grid-cols-3">
           <Panel tone="mint">
-            <h2 className="text-[1.5rem]">Our Mission</h2>
-            <p className="text-[1.1rem]">To demonstrate how Health Informatics can connect patient health information with nutritional data to support personalized, informed dietary decision-making.</p>
+            <h2 id="mission-h" className="text-[1.3rem]">{t('Our mission')}</h2>
+            <p>{t('To show how Health Informatics can link your health information with Saudi nutrition guidance and food data, so that people living with, or at risk of, obesity and chronic disease can eat more healthily.')}</p>
           </Panel>
-          <Panel tone="blush">
-            <h2 className="text-[1.5rem]">About CareBite</h2>
-            <p className="text-[1.1rem]">CareBite is a Health Informatics platform that helps hospital nutrition teams recommend meals that match each patient’s prescribed diet, medical restrictions, food allergies, personal preferences, and appetite. Admins define and review dietary requirements; the platform supports their decisions.</p>
-          </Panel>
+          <Benefit icon={User} as="h2" title={t('Member')}>{t('For anyone looking after their own health, healthcare workers included: a food diary, goals for calories, protein, carbs and fat, health readings, a personal health assessment, meal ideas and a shopping list. It’s private: hospital staff can never see it.')}</Benefit>
+          <Benefit icon={Hospital} as="h2" title={t('Hospital care')}>{t('For patients, staff and admins: a care-team assessment, daily nutrient targets, meals checked against several conditions at once, and a plan for eating at home after discharge. It uses a fictional hospital and made-up data.')}</Benefit>
         </div>
       </Band>
 
-      <Band aria-labelledby="flow-h">
-        <div className="container-page grid items-start gap-8 lg:grid-cols-2">
-          <div className="flex flex-col gap-4">
-            <span className="eyebrow">How the information connects</span>
-            <h2 id="flow-h" className="text-[1.6rem] leading-tight sm:text-[2rem]">From three sources to one decision</h2>
-            <p>Each source is stored in structured, coded form in a relational database, so that the screening can be automatic, repeatable and explained.</p>
+      <Band aria-labelledby="team-h" className="py-8 sm:py-10 lg:py-12">
+        <div className="container-page flex flex-col items-center gap-5 text-center">
+          <SectionHead center eyebrow={t('Meet the developer')} title={t('Designed with Care. Built for Better Nutrition.')} id="team-h" className="mb-1" />
+          <div className="relative flex w-full max-w-xs flex-col items-center gap-3 overflow-hidden rounded-xl border border-border bg-card px-5 pb-6 pt-7 after:pointer-events-none after:absolute after:inset-x-[-30%] after:bottom-[-55%] after:h-[70%] after:bg-[radial-gradient(closest-side,var(--cb-rose),transparent)] after:opacity-70 after:content-['']">
+            <span className="relative z-10 size-28 [&>svg]:h-full [&>svg]:w-full" dangerouslySetInnerHTML={{ __html: teamPortrait(initials(DEVELOPER.en), 0).replace('aria-label="Decorative monogram ', `aria-label="${t('Decorative monogram')} `) }} />
+            <h3 className="relative z-10 text-[1.15rem] font-medium">{DEVELOPER.en}</h3>
+            <p className="relative z-10 font-arabic text-[1.05rem] text-heading" lang="ar" dir="rtl">{DEVELOPER.ar}</p>
+            <p className="relative z-10 text-sm text-muted-foreground">{t('Website design and development')}</p>
+          </div>
+        </div>
+      </Band>
+
+      <Band tone="white" aria-labelledby="more-h" className="py-8 sm:py-10 lg:py-12">
+        <div className="container-page flex flex-col gap-3">
+          <h2 id="more-h" className="text-[1.4rem] leading-tight sm:text-[1.7rem]">{t('More about the project')}</h2>
+
+          <Details title={t('Why we focus on this')}>
+            <p>{t('The Ministry of Health’s dietary guidelines advise cutting back on sugary, salty and fatty foods to lower the risk of obesity, diabetes and high blood pressure. CareBite turns that advice into simple tools you can use every day.')}</p>
+          </Details>
+
+          <Details title={t('How the information connects: from three sources to one decision')}>
+            <div className="grid items-start gap-6 lg:grid-cols-2">
+              <CheckList>
+                <CheckItem icon={User} title={t('Personal information:')}>{t('targets, food diary and readings for members; conditions, diet order and allergies for hospital patients.')}</CheckItem>
+                <CheckItem icon={List} title={t('Food data:')}>{t('SFDA Saudi Food Composition Tables for Saudi dishes, plus documented sources for ingredients and packaged products.')}</CheckItem>
+                <CheckItem icon={BookOpen} title={t('Documented rules:')}>{t('based on Saudi government guidance, each with its logic, source and review status.')}</CheckItem>
+              </CheckList>
+              <Pipeline label={t('From capture to learning')} className="p-4 sm:p-5" steps={[
+                { title: t('Capture'), text: t('Coded records, food data and a rule knowledge base.') },
+                { title: t('Validate'), text: t('Server-side checks, role permissions and review flags.'), safety: true },
+                { title: t('Check'), text: t('Allergies and diet first, then nutrient limits and targets.'), safety: true },
+                { title: t('Support'), text: t('Suggestions come with reasons; people and their care team decide.') },
+                { title: t('Learn'), text: t('Intake and feedback improve future suggestions.') },
+              ]} />
+            </div>
+          </Details>
+
+          <Details title={t('Intended benefits: what CareBite is built to help with')}>
+            <div className="grid gap-3 md:grid-cols-3">
+              <Benefit icon={Target} title={t('Healthier daily choices')}>{t('Clear daily goals and a simple food diary make Saudi dietary guidance easier to follow.')}</Benefit>
+              <Benefit icon={ShieldCheck} title={t('Safer hospital meals')}>{t('Every offered meal is checked against the diet order, allergies and each recorded condition.')}</Benefit>
+              <Benefit icon={Leaf} title={t('Less food waste')}>{t('A bonus: meals people actually want, in portions that match their appetite, supporting GFSA’s national programme to reduce food loss and waste.')}</Benefit>
+            </div>
+            <Notice>{t('These are the benefits we hope for. This prototype uses made-up data, so it can’t measure them.')}</Notice>
+          </Details>
+
+          <Details title={t('Privacy and safety by design: minimum necessary information')}>
             <CheckList>
-              <CheckItem icon={User} title="Patient information:">conditions, the prescribed diet order, allergies and intolerances recorded separately, preferences and appetite, entered by the care team and the patient.</CheckItem>
-              <CheckItem icon={List} title="Hospital meal data:">the menu cycle by date and meal period, recipes with ingredient weights, available portions, SFDA’s 14 declarable allergens and Saudi Food Composition Table dish values, and MEWA local-produce data.</CheckItem>
-              <CheckItem icon={BookOpen} title="Documented dietary rules:">diet categories and screening rules based on Saudi government guidance (MOH, the Saudi National Diabetes Center, SFDA, MEWA and GFSA), each with its logic, threshold, source and review status.</CheckItem>
+              <CheckItem icon={Lock}>{t('The member space is private: hospital staff can never see it.')}</CheckItem>
+              <CheckItem icon={Shield}>{t('In hospital care, only an admin can change clinical dietary restrictions; patients send requests instead.')}</CheckItem>
+              <CheckItem icon={Database}>{t('Fictional demonstration identifiers (CB-####), never medical record numbers.')}</CheckItem>
+              <CheckItem icon={List}>{t('An audit log of every change to a patient’s record and meals.')}</CheckItem>
             </CheckList>
-            <p className="text-sm text-muted-foreground">Coded entries, such as choosing “Sesame” from the SFDA list instead of typing it, are what make automatic screening reliable. Text that cannot be coded is kept and sent to an admin.</p>
-          </div>
-          <Pipeline label="From capture to learning" steps={[
-            { title: 'Capture', text: 'Coded patient records, a menu catalogue and a rule knowledge base.' },
-            { title: 'Validate', text: 'Server-side validation, role permissions and review flags for incomplete information.', safety: true },
-            { title: 'Screen', text: 'Allergies and the diet order first, nutrient limits per portion second.', safety: true },
-            { title: 'Support', text: 'Ranked, explained suggestions; the team confirms and the kitchen prepares.' },
-            { title: 'Learn', text: 'Intake and feedback improve future ranking and flag patients for professional review.' },
-          ]} />
-        </div>
-      </Band>
+          </Details>
 
-      <Band tone="white" aria-labelledby="ben-h">
-        <div className="container-page">
-          <SectionHead eyebrow="Intended benefits" title="What CareBite is designed to support" id="ben-h" />
-          <div className="grid gap-4 md:grid-cols-3">
-            <Benefit icon={Target} title="Better alignment between meals and patient needs">Every offered meal has been checked against the patient’s prescribed diet, allergies and restrictions, and portions stay within the plan.</Benefit>
-            <Benefit icon={ThumbsUp} title="Improved meal acceptance">Patients choose from options ranked by their own preferences and appetite, and their feedback shapes future suggestions.</Benefit>
-            <Benefit icon={Leaf} title="Reduced avoidable waste">Meals patients are more likely to eat, portions matched to appetite, and leftovers tracked so the team can act on patterns, supporting the national programme to reduce food loss and waste led by the General Food Security Authority (GFSA).</Benefit>
-          </div>
-          <Notice className="mt-5">These are the project’s intended benefits. This prototype uses a fictional hospital and synthetic data, so it does not measure them. Its dashboard shows indicators for review and makes no claim that the platform alone causes any change.</Notice>
-        </div>
-      </Band>
+          <Details title={t('Data model: relational, coded and auditable')}>
+            <p>{t('Picking from a list, such as choosing “Sesame” from the SFDA list instead of typing it, keeps automatic checks reliable. Anything typed that can’t be matched goes to an admin.')}</p>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-[1rem]">{t('Main hospital-care database entities')}</h3>
+              <p dir="ltr" lang="en" className="break-words text-start text-sm text-muted-foreground">Users (with roles), Patients, PatientConditions, DietOrders and DietOrderCategories, PatientAllergies (allergies and intolerances kept apart), MedicalExclusions, FoodPreferences, Meals, Ingredients, SfctDishes (SFDA), Dishes, DishIngredients, MealComponents, MenuCycle and MenuDates, LocalProduction (MEWA / GASTAT), DietCategories, MedicalDietaryRules, MealSchedule, MealOffers, ScheduleChanges and ScheduleEvents, MealIntake, PatientRequests and AuditLog.</p>
+            </div>
+            <p className="text-sm text-muted-foreground">{t('The coded structure could later be mapped to standards such as HL7 FHIR; this prototype does not exchange data with other systems.')}</p>
+          </Details>
 
-      <Band aria-label="Data model and privacy by design">
-        <div className="container-page grid items-start gap-8 lg:grid-cols-2">
-          <div className="flex min-w-0 flex-col gap-3">
-            <span className="eyebrow">Data model</span>
-            <h2 className="text-[1.6rem] leading-tight sm:text-[2rem]">Relational, coded and auditable</h2>
-            <p className="break-words">Main entities in the Postgres database: Users (with roles), Patients, PatientConditions, DietOrders and DietOrderCategories, PatientAllergies (allergies and intolerances kept apart), MedicalExclusions, FoodPreferences, Meals, Ingredients, SfctDishes (SFDA), Dishes, DishIngredients, MealComponents, MenuCycle and MenuDates, LocalProduction (MEWA / GASTAT), DietCategories, MedicalDietaryRules, MealSchedule, MealOffers, ScheduleChanges and ScheduleEvents (the meal workflow and every change after an order), MealIntake (patient and staff records kept separately), PatientRequests and AuditLog.</p>
-            <p className="text-sm text-muted-foreground">The coded structure could later be mapped to interoperability standards such as HL7 FHIR resources for nutrition orders, allergies and intolerances; this prototype does not exchange data with other systems.</p>
-          </div>
-          <div className="flex flex-col gap-3">
-            <span className="eyebrow">Privacy and safety by design</span>
-            <h2 className="text-[1.6rem] leading-tight sm:text-[2rem]">Minimum necessary information</h2>
-            <CheckList>
-              <CheckItem icon={Lock}>Role-based access: staff cannot change clinical information or approve meals that need review, and patients see only their own.</CheckItem>
-              <CheckItem icon={Shield}>Only an admin can change clinical dietary restrictions; patients send requests instead.</CheckItem>
-              <CheckItem icon={Database}>Fictional demonstration identifiers (CB-####), never medical record numbers.</CheckItem>
-              <CheckItem icon={List}>An audit log of every change to a patient’s record and meals.</CheckItem>
-            </CheckList>
-          </div>
-        </div>
-      </Band>
-
-      <Band tone="white" aria-labelledby="team-h">
-        <div className="container-page">
-          <SectionHead center eyebrow="Meet Our Development Team" title="Designed with Care. Built for Better Nutrition." id="team-h">
-            <p>CareBite is a Health Informatics project developed to demonstrate how patient health information and nutritional data can support personalized meal recommendations and informed dietary decisions.</p>
-          </SectionHead>
-          <ul className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-            {TEAM.map((name, i) => (
-              <li key={name} className={`relative flex flex-col items-center gap-3 overflow-hidden rounded-xl border border-border bg-card px-3 pb-5 pt-6 text-center sm:px-5 sm:pb-6 sm:pt-7 after:pointer-events-none after:absolute after:inset-x-[-30%] after:bottom-[-55%] after:h-[70%] after:opacity-70 after:content-[''] ${i % 2 ? 'after:bg-[radial-gradient(closest-side,var(--cb-mint),transparent)]' : 'after:bg-[radial-gradient(closest-side,var(--cb-rose),transparent)]'}`}>
-                <span className="relative z-10 size-20 sm:size-28 [&>svg]:h-full [&>svg]:w-full" dangerouslySetInnerHTML={{ __html: teamPortrait(initials(name), i) }} />
-                <h3 className="relative z-10 text-[1rem] font-medium sm:text-[1.1rem]">{name}</h3>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-7 text-center text-muted-foreground">Developed as a university Health Informatics project focused on personalized nutrition and patient-centered decision support.</p>
-          <Panel className="mx-auto mt-6 max-w-3xl">
-            <h3 className="text-lg">Cite this project</h3>
+          <Panel className="mt-3">
+            <h3 className="text-lg">{t('Cite this project')}</h3>
             <Citation id="about-cite" />
-            <p className="text-sm"><Link href="/sources">All data sources and limitations</Link></p>
+            <p className="text-sm"><Link href="/sources">{t('All data sources and limitations')}</Link></p>
           </Panel>
         </div>
       </Band>

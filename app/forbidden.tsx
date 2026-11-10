@@ -1,17 +1,19 @@
 import Link from 'next/link';
-import { Lock } from 'lucide-react';
 import { buttonVariants } from '@/components/ui/button';
+import { Illustration } from '@/components/illustrations/illustration';
 import { getViewer, homeFor } from '@/lib/server/session';
+import { getT } from '@/lib/i18n/server';
 
 /** Rendered by forbidden(): the role lacks the RBAC permission for this page. */
 export default async function Forbidden() {
   const viewer = await getViewer();
+  const t = await getT();
   return (
-    <div className="container-page flex flex-col items-center gap-4 py-24 text-center">
-      <span className="grid size-14 place-items-center rounded-full bg-rose text-rose-ink"><Lock className="size-6" aria-hidden /></span>
-      <h1 className="text-3xl">This page is not available for your role</h1>
-      <p className="max-w-md text-muted-foreground">CareBite shows each person only the information they need.{viewer ? ` ${viewer.roleLabel} accounts cannot open this page.` : ''}</p>
-      <Link href={homeFor(viewer ? { role: viewer.role, status: viewer.status } : null)} className={buttonVariants()}>Go to my start page</Link>
+    <div className="container-page flex flex-col items-center gap-4 py-16 text-center sm:py-24">
+      <Illustration name="forbidden" className="h-[127px] w-36 sm:h-[159px] sm:w-[180px]" />
+      <h1 className="text-3xl">{t('This page isn’t available for your account')}</h1>
+      <p className="max-w-md text-muted-foreground">{t('To keep things private, CareBite shows each person only what they need.')}{viewer ? ` ${t('{role} accounts can’t open this page.', { role: t(viewer.roleLabel) })}` : ''}</p>
+      <Link href={homeFor(viewer ? { role: viewer.role, status: viewer.status } : null)} className={buttonVariants()}>{t('Go to my start page')}</Link>
     </div>
   );
 }

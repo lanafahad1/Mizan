@@ -3,7 +3,7 @@
 // object). It is NOT a secure store.
 
 const EMPTY = () => ({
-  seq: 1, users: {}, patients: {}, entries: [], intake: [], requests: [], audit: [],
+  seq: 1, users: {}, patients: {}, entries: [], intake: [], requests: [], audit: [], health: [],
   catalog: { ingredients: {}, dishes: {}, meals: {}, menu: { cycle: Array.from({ length: 7 }, () => ({})), dates: {} } },
 });
 
@@ -41,6 +41,7 @@ export function createMemoryRepo(storage = null, key = 'carebite-hospital-demo-v
       const pid = String(patientId);
       delete db.patients[pid];
       for (const bucket of ['entries', 'intake', 'requests']) db[bucket] = db[bucket].filter((x) => x.patientId !== pid);
+      db.health = db.health.filter((x) => x.owner !== `p:${pid}`);
       persist();
     },
     // ---- editable menu catalogue
@@ -98,6 +99,23 @@ export function createMemoryRepo(storage = null, key = 'carebite-hospital-demo-v
     getRequest(requestId) { return clone(db.requests.find((r) => r.id === String(requestId)) ?? null); },
     addRequest(rec) { const r = { ...clone(rec), patientId: String(rec.patientId), id: id() }; db.requests.push(r); persist(); return clone(r); },
     updateRequest(requestId, fields) { const r = db.requests.find((x) => x.id === String(requestId)); Object.assign(r, clone(fields)); persist(); return clone(r); },
+    // ---- personal health records (members and patients)
+    listHealth(q = {}) {
+      return clone(db.health.filter((r) => (!q.owner || r.owner === q.owner) && (!q.kind || r.kind === q.kind) && (!q.ownerPrefix || r.owner.startsWith(q.ownerPrefix)) && inRange(r.date, q))
+        .sort((a, b) => ((a.date ?? '') < (b.date ?? '') ? -1 : (a.date ?? '') > (b.date ?? '') ? 1 : Number(a.id) - Number(b.id))));
+    },
+    getHealth(recId) { return clone(db.health.find((r) => r.id === String(recId)) ?? null); },
+    addHealth(rec) { const r = { date: null, ...clone(rec), id: id() }; r.updatedAt ??= r.createdAt; db.health.push(r); persist(); return clone(r); },
+    updateHealth(recId, rec) {
+      const i = db.health.findIndex((r) => r.id === String(recId));
+      if (i < 0) return null;
+      const old = db.health[i];
+      db.health[i] = { date: null, ...clone(rec), id: old.id, owner: old.owner, kind: old.kind, createdAt: old.createdAt };
+      persist();
+      return clone(db.health[i]);
+    },
+    deleteHealth(recId) { db.health = db.health.filter((r) => r.id !== String(recId)); persist(); },
+    deleteHealthOwner(owner) { db.health = db.health.filter((r) => r.owner !== owner); persist(); },
     // ---- audit log
     addAudit(rec) { db.audit.push({ ...clone(rec), patientId: rec.patientId == null ? null : String(rec.patientId), id: id() }); if (db.audit.length > 3000) db.audit = db.audit.slice(-3000); persist(); },
     listAudit({ patientId = null, scope = null, limit = 50 } = {}) {
@@ -106,6 +124,7 @@ export function createMemoryRepo(storage = null, key = 'carebite-hospital-demo-v
     // ---- demo helpers
     clearHospitalData() {
       db.patients = {}; db.entries = []; db.intake = []; db.requests = []; db.audit = [];
+      db.health = db.health.filter((r) => !r.owner.startsWith('p:'));
       for (const u of Object.values(db.users)) u.patientId = null;
       persist();
     },

@@ -11,6 +11,8 @@
 //   password" whichever part was wrong, and hashes even when the user does not exist.
 // - Privilege: role, status and patient link are server-only fields (input: false);
 //   sign-up never grants a staff role. Patients need a one-time link code.
+//   Members (personal use, no hospital) are active at once with the "member" role,
+//   which holds no hospital permission.
 // - Sessions: 8-hour lifetime with sliding refresh, rotated on sign-in, revoked
 //   on password change, deactivation and account deletion.
 // - CSRF: better-auth checks Origin against trustedOrigins; cookies are SameSite=Lax.
@@ -20,12 +22,15 @@ import { username } from 'better-auth/plugins';
 import { nextCookies } from 'better-auth/next-js';
 import type { Pool } from 'pg';
 import { passwordProblem, USERNAME_RE } from '@/lib/password-policy';
+import { sendAccountEmail } from './email';
 
 type Domain = {
   claimLinkCode: (code: string) => Promise<{ id: string | number; demoId: string }>;
   recordAccountLink: (user: { id: string; username: string; name: string }, patientId: string) => Promise<void>;
   getUserById: (id: string) => Promise<{ isDemo?: boolean; role?: string | null; status?: string } | null>;
   countActiveAdmins: () => Promise<number>;
+  /** Remove a member's private health records when their account is deleted. */
+  deleteMemberData: (userId: string) => Promise<void>;
 };
 
 const SECURE = process.env.NODE_ENV === 'production' && process.env.BETTER_AUTH_URL?.startsWith('https://');
@@ -48,8 +53,26 @@ export function authOptions(db: Pool, domain: Domain) {
       minPasswordLength: 8,
       maxPasswordLength: 128,
       autoSignIn: true,
-      requireEmailVerification: false, // no email service in this prototype
+      // Email confirmation is a reminder only: people can use CareBite before confirming.
+      requireEmailVerification: false,
       revokeSessionsOnPasswordReset: true,
+      resetPasswordTokenExpiresIn: 60 * 60, // 1 hour, single use
+      // "Forgot password?": the link goes by email (Gmail, see lib/server/email.ts). Shared demo accounts are never reset.
+      sendResetPassword: async ({ user, url }, request) => {
+        if ((user as { isDemo?: boolean }).isDemo) return;
+        await sendAccountEmail('reset', user.email, url, { name: user.name, username: String((user as { displayUsername?: string; username?: string }).displayUsername ?? (user as { username?: string }).username ?? '') }, request);
+      },
+    },
+    emailVerification: {
+      sendOnSignUp: true, // every new account gets the "confirm your email" message
+      autoSignInAfterVerification: true,
+      expiresIn: 60 * 60,
+      sendVerificationEmail: async ({ user, url }, request) => {
+        if ((user as { isDemo?: boolean }).isDemo) return;
+        const link = new URL(url);
+        link.searchParams.set('callbackURL', '/email-verified');
+        await sendAccountEmail('verify', user.email, link.toString(), { name: user.name }, request);
+      },
     },
     session: {
       expiresIn: 60 * 60 * 8, // 8 hours
@@ -77,6 +100,9 @@ export function authOptions(db: Pool, domain: Domain) {
           if (u?.isDemo) throw new APIError('FORBIDDEN', { message: 'Shared demo accounts cannot be deleted.' });
           if (u?.role === 'admin' && (await domain.countActiveAdmins()) <= 1) throw new APIError('FORBIDDEN', { message: 'The last admin account cannot be deleted.' });
         },
+        afterDelete: async (user) => {
+          await domain.deleteMemberData(user.id);
+        },
       },
     },
     rateLimit: {
@@ -90,6 +116,9 @@ export function authOptions(db: Pool, domain: Domain) {
         '/sign-up/email': { window: 300, max: 5 },
         '/change-password': { window: 300, max: 5 },
         '/delete-user': { window: 300, max: 5 },
+        '/request-password-reset': { window: 300, max: 3 },
+        '/send-verification-email': { window: 300, max: 3 },
+        '/reset-password': { window: 300, max: 5 },
       },
     },
     advanced: {
@@ -118,9 +147,13 @@ export function authOptions(db: Pool, domain: Domain) {
             if (!String(body.requestNote ?? '').trim()) fieldError('requestNote', 'Tell the admin your department or job title.');
           } else if (body.accountType === 'patient') {
             if (!String(body.linkCode ?? '').trim()) fieldError('linkCode', 'Enter the link code the nutrition team gave you.');
-          } else {
-            fieldError('accountType', 'Choose a patient or staff account.');
+          } else if (body.accountType !== 'member') {
+            fieldError('accountType', 'Choose a member, patient or staff account.');
           }
+        }
+        if (ctx.path === '/reset-password') {
+          const pw = passwordProblem(String(body.newPassword ?? ''), {});
+          if (pw) fieldError('newPassword', pw);
         }
         if (ctx.path === '/change-password') {
           const session = await getSessionFromCtx(ctx);
@@ -175,6 +208,9 @@ export function authOptions(db: Pool, domain: Domain) {
               try { patient = await domain.claimLinkCode(String(body.linkCode ?? '')); }
               catch (e) { fieldError('linkCode', (e as Error).message); }
               return { data: { ...user, role: 'patient', status: 'active', patientId: String(patient.id), requestedRole: null, requestNote: null, isDemo: false } };
+            }
+            if (body.accountType === 'member') {
+              return { data: { ...user, role: 'member', status: 'active', patientId: null, requestedRole: null, requestNote: null, isDemo: false } };
             }
             return { data: { ...user, role: null, status: 'pending', patientId: null, isDemo: false } };
           },

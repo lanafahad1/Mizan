@@ -196,7 +196,7 @@ export function evaluateMeal(meal, patient, ctx) {
   for (const rule of activeRules(patient)) {
     if (rule.kind.startsWith('rank')) { rankRules.push(rule); continue; }
     const meta = NUTRIENT_META[rule.nutrient];
-    const missing = [...new Set([...(meal.nutrition.missing[rule.nutrient] ?? []), ...(rule.kind === 'energy-share' ? meal.nutrition.missing.kcal ?? [] : [])])].map((x) => x.replace(/ \((no SFCT values|not reported by the SFCT)\)$/, ''));
+    const missing = [...new Set([...(meal.nutrition.missing[rule.nutrient] ?? []), ...(rule.kind === 'energy-share' ? meal.nutrition.missing.kcal ?? [] : [])])].map((x) => x.replace(/ \((no SFCT values|not reported by the SFCT|no USDA value for [^)]*)\)$/, ''));
     if (missing.length) { unchecked.push({ title: lc(rule.title), missing }); continue; }
     if (rule.kind === 'limit') {
       const lim = limitFor(rule, period, params);
@@ -216,8 +216,8 @@ export function evaluateMeal(meal, patient, ctx) {
   if (unchecked.length) {
     const titles = unchecked.map((u) => u.title);
     const list = titles.length > 1 ? `${titles.slice(0, -1).join(', ')} and ${titles.at(-1)}` : titles[0];
-    if (!meal.nutrition.available) needsReview('DATA-REQUIRED', `The ${list} cannot be checked: ${multi ? 'none of this meal’s dishes has' : 'this dish has no'} SFDA Saudi Food Composition Table values. Values are never estimated.`);
-    else for (const u of unchecked) needsReview('DATA-REQUIRED', `The ${u.title} cannot be checked: no SFDA value for ${u.missing.join(', ')}. Values are never estimated.`);
+    if (!meal.nutrition.available) needsReview('DATA-REQUIRED', `The ${list} cannot be checked: ${multi ? 'none of this meal’s dishes has' : 'this dish has no'} nutrient values (SFDA Saudi Food Composition Tables or calculated from ingredients). Values are never estimated.`);
+    else for (const u of unchecked) needsReview('DATA-REQUIRED', `The ${u.title} cannot be checked: no value for ${u.missing.join(', ')}. Values are never estimated.`);
   }
   const eligiblePortions = permitted.filter((p) => portionFails[p].length === 0);
   if (permitted.length && !eligiblePortions.length) {
@@ -244,11 +244,11 @@ export function evaluateMeal(meal, patient, ctx) {
     else if (appetite === 'good' && recent.some((r) => r.reasons?.includes('portion-too-small')) && target < 2) { target += 1; why = 'the patient recently reported portions were too small'; }
     const chosen = [...candidates].sort((a, b) => Math.abs(ORDER.indexOf(a) - target) - Math.abs(ORDER.indexOf(b) - target) || ORDER.indexOf(a) - ORDER.indexOf(b))[0];
     const targetId = ORDER[target];
-    let explanation = `${PORTIONS.find((x) => x.id === chosen).label} portion suggested because ${why}`;
-    if (chosen !== targetId) {
-      explanation += `. A ${portionLabel(targetId)} portion ${!order.portionsPermitted.includes(targetId) ? 'is not permitted by the diet order' : !meal.portions.includes(targetId) ? 'is not offered for this meal' : 'does not meet the diet limits'}, so the nearest suitable portion is offered`;
-    }
-    explanation += '.';
+    // One clear reason: when the portion that fits the person is not possible, say that (not the preference).
+    const chosenLabel = PORTIONS.find((x) => x.id === chosen).label;
+    const explanation = chosen !== targetId
+      ? `${chosenLabel} portion suggested because a ${portionLabel(targetId)} portion ${!order.portionsPermitted.includes(targetId) ? 'is not permitted by the diet order' : !meal.portions.includes(targetId) ? 'is not offered for this meal' : 'does not meet the diet limits'}.`
+      : `${chosenLabel} portion suggested because ${why}.`;
     const unavailable = ORDER.filter((p) => !eligiblePortions.includes(p)).map((p) => ({
       portion: p,
       reason: !meal.portions.includes(p) ? 'Not offered for this meal.' : !order.portionsPermitted.includes(p) ? 'Not permitted by the diet order.' : portionFails[p]?.[0]?.message ?? 'Needs review.',
@@ -330,13 +330,13 @@ export function evaluateMeal(meal, patient, ctx) {
     if (disliked.length) kitchenInstructions.push(`Leave out the optional ${names(disliked).toLowerCase()}.`);
   }
   if (!meal.nutrition.available) {
-    warnings.push({ code: 'nutrition-unavailable', message: `No nutrition values are available: ${multi ? 'none of the dishes in this meal is' : 'this dish is not'} linked to an SFDA Saudi Food Composition Table entry. Values are not estimated.` });
+    warnings.push({ code: 'nutrition-unavailable', message: `No nutrition values are available: ${multi ? 'none of the dishes in this meal is' : 'this dish is not'} linked to an SFDA Saudi Food Composition Table entry or calculated from ingredients. Values are not estimated.` });
   } else if (!meal.nutrition.allAvailable) {
     const lacking = meal.components.filter((c) => !c.nutrition.available).map((c) => c.name);
-    warnings.push({ code: 'nutrition-partial', message: `Nutrition totals leave out ${lacking.join(', ')}, which ${lacking.length === 1 ? 'has' : 'have'} no SFDA Saudi Food Composition Table values. They are not estimated.` });
+    warnings.push({ code: 'nutrition-partial', message: `Nutrition totals leave out ${lacking.join(', ')}, which ${lacking.length === 1 ? 'has' : 'have'} no nutrient values. They are not estimated.` });
   } else if (!meal.nutrition.allComplete) {
     const missingKeys = Object.entries(meal.nutrition.missing).filter(([, v]) => v.length).map(([k]) => NUTRIENT_META[k].label.toLowerCase());
-    warnings.push({ code: 'nutrition-incomplete', message: `The SFDA values do not report ${missingKeys.join(', ')}; these are not estimated.` });
+    warnings.push({ code: 'nutrition-incomplete', message: `The source values do not report ${missingKeys.join(', ')}; these are not estimated.` });
   }
 
   return {

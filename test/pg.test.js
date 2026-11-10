@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import pg from 'pg';
 import { ensureSchema, createPgStore } from '../domain/pg-store.js';
 import { createService } from '../domain/service.js';
+import { seedHealthDemo } from '../domain/health-demo.js';
 import { seedCatalog, seedHospitalDemo, linkDemoAccounts, DEMO_ACCOUNTS } from '../domain/demo-data.js';
 import { addDays } from '../domain/dates.js';
 
@@ -30,7 +31,7 @@ function dump(repo) {
   return {
     users: repo.listUsers(), patients, entries: repo.listEntries(), intake: repo.listIntake(), requests: repo.listRequests(),
     audit: patients.map((p) => repo.listAudit({ patientId: p.id, limit: 40 })), menuAudit: repo.listAudit({ scope: 'menu.', limit: 15 }),
-    catalog: repo.getCatalogData(), menu: repo.getMenu(),
+    catalog: repo.getCatalogData(), menu: repo.getMenu(), health: repo.listHealth(),
   };
 }
 
@@ -63,10 +64,13 @@ test('the seeded hospital loads back exactly as it was written', { skip }, async
   const written = await store.write((repo) => {
     seedCatalog(repo, new Date().toISOString());
     const service = createService({ repo });
-    linkDemoAccounts(repo, seedHospitalDemo({ repo, service, today: service.today() }));
+    const patientIds = seedHospitalDemo({ repo, service, today: service.today() });
+    linkDemoAccounts(repo, patientIds);
+    seedHealthDemo({ repo, service, today: service.today(), patientIds });
     return dump(repo);
   });
   assert.ok(written.patients.length >= 10 && written.entries.length > 50 && written.intake.length > 50, 'demo hospital seeded');
+  assert.ok(written.health.some((r) => r.owner.startsWith('m:')) && written.health.some((r) => r.owner.startsWith('p:')), 'member and patient health records seeded');
   const loaded = dump(await store.read());
   assert.deepEqual(loaded, written);
   assert.ok(loaded.users.find((u) => u.username === 'noura.1001').patientId, 'demo patient account linked');
@@ -147,4 +151,19 @@ test('resetting the demonstration hospital empties and re-seeds it', { skip }, a
   assert.deepEqual(dump(await store.read()), written);
   const old = await pool.query('SELECT COUNT(*)::int AS n FROM AuditLog WHERE id = 999999');
   assert.equal(old.rows[0].n, 0, 'audit rows outside the snapshot window are removed too');
+});
+
+test('dishes calculated from ingredients are stored as such, and older databases are fixed on start-up', { skip }, async () => {
+  const { rows } = await pool.query(`SELECT nutrition_source FROM Dishes WHERE id = 'red-lentil-soup'`);
+  assert.equal(rows[0]?.nutrition_source, 'ingredients');
+  // Simulate a database written by the earlier version.
+  await pool.query(`UPDATE Dishes SET nutrition_source = 'none' WHERE id = 'red-lentil-soup'`);
+  await pool.query(`DELETE FROM Meta WHERE key IN ('migration_ingredient_nutrition', 'reference_hash')`);
+  const client = await pool.connect();
+  try { await ensureSchema(client); } finally { client.release(); }
+  const again = await pool.query(`SELECT nutrition_source FROM Dishes WHERE id = 'red-lentil-soup'`);
+  assert.equal(again.rows[0].nutrition_source, 'ingredients');
+  const repo = await createPgStore(pool).read();
+  const soup = createService({ repo }).catalog().byId['red-lentil-soup'];
+  assert.ok(soup.nutrition.perServing.kcal > 0, 'the soup has calories after loading from Postgres');
 });

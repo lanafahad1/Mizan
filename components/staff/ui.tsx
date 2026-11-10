@@ -5,18 +5,21 @@ import * as React from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { ApiError } from '@/lib/api-client';
-import { plural, timeAgo } from '@/lib/format';
+import { timeAgo } from '@/lib/format';
+import { useT } from '@/components/site/lang';
+import { makeT, type T } from '@/lib/i18n';
 
 /** A titled panel (section) with an icon, optional action and labelled heading. */
 export function Panel({ id, title, icon: Icon, action, children, className, tone = 'default' }: {
   id: string; title: React.ReactNode; icon?: React.ComponentType<{ className?: string; 'aria-hidden'?: boolean }>; action?: React.ReactNode; children: React.ReactNode; className?: string;
   tone?: 'default' | 'alert' | 'mint';
 }) {
+  const { t } = useT();
   return (
     <section aria-labelledby={id} className={cn('flex min-w-0 flex-col gap-4 rounded-[20px] border p-4 sm:p-5',
       tone === 'alert' ? 'border-[#F3C9D3] bg-destructive-soft/50' : tone === 'mint' ? 'border-sage bg-mint' : 'border-border bg-card shadow-soft', className)}>
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-        <h2 id={id} className="flex items-center gap-2 text-lg sm:text-xl">{Icon ? <Icon className="size-5 shrink-0" aria-hidden /> : null}<span>{title}</span></h2>
+        <h2 id={id} className="flex items-center gap-2 text-lg sm:text-xl">{Icon ? <Icon className="size-5 shrink-0" aria-hidden /> : null}<span>{typeof title === 'string' ? t(title) : title}</span></h2>
         {action}
       </div>
       {children}
@@ -33,11 +36,13 @@ const TONE = {
 
 /** KPI tile: label, big value, detail; optionally a link to the filtered list. */
 export function KpiTile({ label, value, of, sub, href, tone = 'default' }: { label: React.ReactNode; value: React.ReactNode; of?: React.ReactNode; sub?: React.ReactNode; href?: string; tone?: keyof typeof TONE }) {
+  const { t } = useT();
+  const tx = (x: React.ReactNode) => (typeof x === 'string' ? t(x) : x);
   const body = (
     <>
-      <small className="text-sm text-muted-foreground">{label}</small>
-      <b className="font-display text-[1.6rem] font-semibold leading-tight text-heading tabular">{value}{of ? <span className="text-base font-medium text-muted-foreground"> {of}</span> : null}</b>
-      {sub ? <span className="text-sm text-muted-foreground">{sub}</span> : null}
+      <small className="text-sm text-muted-foreground">{tx(label)}</small>
+      <b className="font-display text-[1.6rem] font-semibold leading-tight text-heading tabular">{value}{of ? <span className="text-base font-medium text-muted-foreground"> {tx(of)}</span> : null}</b>
+      {sub ? <span className="text-sm text-muted-foreground">{tx(sub)}</span> : null}
     </>
   );
   const cls = cn('flex min-w-0 flex-col gap-1 rounded-[16px] border px-4 py-3', TONE[tone]);
@@ -59,16 +64,20 @@ export const useMounted = () => React.useSyncExternalStore(noop, () => true, () 
  */
 export function When({ iso, format = 'datetime', withYear = false }: { iso?: string | null; format?: 'datetime' | 'time' | 'ago'; withYear?: boolean }) {
   const mounted = useMounted();
+  const { lang } = useT();
   if (!iso) return null;
   const tz = mounted ? undefined : 'UTC';
+  const loc = lang === 'ar' ? 'ar-SA-u-ca-gregory-nu-latn' : 'en-US';
   const text = format === 'time'
-    ? new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: tz })
-    : new Date(iso).toLocaleString('en-US', { month: 'short', day: 'numeric', ...(withYear ? { year: 'numeric' } : {}), hour: '2-digit', minute: '2-digit', timeZone: tz });
-  return <time dateTime={iso}>{text}{format === 'ago' && mounted ? ` (${timeAgo(iso)})` : ''}</time>;
+    ? new Date(iso).toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit', timeZone: tz })
+    : new Date(iso).toLocaleString(loc, { month: 'short', day: 'numeric', ...(withYear ? { year: 'numeric' } : {}), hour: '2-digit', minute: '2-digit', timeZone: tz });
+  return <time dateTime={iso}>{text}{format === 'ago' && mounted ? ` (${timeAgo(iso, Date.now(), lang)})` : ''}</time>;
 }
 
 /** " 3 upcoming orders re-screened, 1 put on hold." after a menu change. */
-export const recheckText = (r: { hold?: boolean }[] = []) => (r.length ? ` ${plural(r.length, 'upcoming order')} re-screened, ${r.filter((x) => x.hold).length} put on hold.` : '');
+export const recheckText = (r: { hold?: boolean }[] = [], t: T = makeT('en')) => (r.length
+  ? ' ' + t(r.length === 1 ? '{n} upcoming order re-screened, {hold} put on hold.' : '{n} upcoming orders re-screened, {hold} put on hold.', { n: r.length, hold: r.filter((x) => x.hold).length })
+  : '');
 
 /** Field errors and a form-level message from an ApiError. */
 export function useFormErrors() {
@@ -86,11 +95,13 @@ export function useFormErrors() {
 
 /** Form-level error under a dialog form. */
 export function FormMessage({ message }: { message: string | null }) {
-  return <p role={message ? 'alert' : undefined} className="text-sm font-semibold text-destructive empty:hidden">{message ?? ''}</p>;
+  const { t } = useT();
+  return <p role={message ? 'alert' : undefined} className="text-sm font-semibold text-destructive empty:hidden">{message ? t(message) : ''}</p>;
 }
 
 /** Inline field error for list rows (components.0, ingredients.2 …). */
 export function RowError({ message, id }: { message?: string; id?: string }) {
+  const { t } = useT();
   if (!message) return null;
-  return <p id={id} role="alert" data-field-error className="basis-full text-sm font-semibold text-destructive">{message}</p>;
+  return <p id={id} role="alert" data-field-error className="basis-full text-sm font-semibold text-destructive">{t(message)}</p>;
 }

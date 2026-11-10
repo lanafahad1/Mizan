@@ -8,6 +8,8 @@ var/
 .env
 .env.local
 .env*.local
+.env*
+!.env.example
 next-env.d.ts
 *.tsbuildinfo
 test-results/
@@ -16,3 +18,6 @@ playwright-report/
 # transitions.dev reference files written by `npx transitions-dev add --free`
 # (the library itself is not redistributed; the snippets used live in app/styles/transitions.css)
 transitions/
+
+# macOS
+.DS_Store

@@ -4,14 +4,21 @@
 // not have. Ownership ("a patient sees only their own record") is checked in
 // the service on top of the permission.
 //
-// Three roles:
+// Two spaces:
+// Hospital care has three roles:
 //   admin   — controls everything, including clinical information and staff access
 //   staff   — runs daily meal service; no clinical edits, review approvals or access management
 //   patient — their own meals, profile, feedback and requests
+// Member space has one role:
+//   member  — a person using CareBite for their own lifestyle, with no hospital link.
+//             A member holds only the personal health permissions; member data is
+//             private and no hospital role can read it.
 
-export const ROLE_IDS = ['admin', 'staff', 'patient'];
+export const HOSPITAL_ROLE_IDS = ['admin', 'staff', 'patient'];
+export const ROLE_IDS = [...HOSPITAL_ROLE_IDS, 'member'];
 
 const ALL = ['admin', 'staff', 'patient'];
+const OWN = ['patient', 'member'];
 const TEAM = ['admin', 'staff'];
 const ADMIN = ['admin'];
 
@@ -54,6 +61,12 @@ export const PERMISSIONS = Object.freeze({
   // platform
   'staff:manage': ADMIN,
   'demo:reset': ADMIN,
+  // personal health space (assessment, readings, food diary, targets)
+  'health:own': OWN, // a member's own space, or a patient's own record
+  'health:team-read': TEAM, // the care team reads a hospital patient's health space (never a member's)
+  'health:team-record': TEAM, // the care team adds readings and diary entries for a patient
+  'assessment:review': ADMIN, // approve an assessment and set a patient's nutrition targets
+  'homeplan:edit': TEAM,
 });
 
 /** Profile sections and the permission that edits each. */

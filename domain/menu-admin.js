@@ -25,22 +25,41 @@ export function createMenuAdmin(ctx, workflow) {
   const { repo, today, stamp, deny, invalid, conflict, requirePermission, catalog, menu, reloadCatalog, compatibilityFor, accessPatient, getMealOr404, assertPeriod, assertDate, audit, forScreening, outcomesOf, brief, sfct } = ctx;
 
   // ------------------------------------------------------------ public menu
-  function getMenu({ date = today(), period = null, q = '', diet = null, type = null } = {}) {
+  /**
+   * The public hospital menu. view 'date' (default): the meals planned for one date, by meal period.
+   * view 'all': every meal in the catalogue, grouped by its usual meal period, with the same filters.
+   */
+  function getMenu({ date = today(), period = null, q = '', diet = null, type = null, view = 'date', cuisine = null } = {}) {
     assertDate(date);
     if (period) assertPeriod(period);
     const day = menuDay(menu(), date);
     const term = clean(q, 60).toLowerCase();
     const cat = catalog();
     const matches = (meal) => !term || [meal.name, meal.description, meal.cuisine, ...meal.components.map((c) => c.name), ...meal.ingredients.map((l) => l.ingredient.name)].some((s) => s?.toLowerCase().includes(term));
-    const dietOk = (mealId) => !diet || ['eligible', 'depends'].includes(compatibilityFor(mealId).find((c) => c.id === diet)?.status ?? '');
+    // "Needs review" meals stay visible (marked on the card): e.g. every meal needs the admin's carbohydrate limit for a consistent-carb diet.
+    const dietOk = (mealId) => !diet || ['eligible', 'depends', 'review'].includes(compatibilityFor(mealId).find((c) => c.id === diet)?.status ?? '');
     const typeOk = (meal) => !type || meal.type === type;
+    const cuisineOk = (meal) => !cuisine || meal.cuisine === cuisine;
+    const nutritionNote = 'Nutrition comes from SFDA Saudi Food Composition Table laboratory values for dishes prepared to the SFCT standard recipe; other recipes are calculated from USDA ingredient values and labelled. Missing values are never estimated.';
+    if (view === 'all') {
+      const list = cat.list.filter((m) => m.available !== false && matches(m) && dietOk(m.id) && typeOk(m) && cuisineOk(m));
+      return {
+        view: 'all', date, total: list.length, cuisines: [...new Set(cat.list.map((m) => m.cuisine))].sort(),
+        periods: PERIOD_IDS.filter((p) => !period || p === period).map((p) => ({
+          id: p, label: label(PERIODS, p), dateSpecific: false,
+          meals: list.filter((m) => m.category === p).map((m) => ({ ...mealSummary(m), compatibility: compatibilityFor(m.id) })),
+        })),
+        nutritionNote,
+      };
+    }
     return {
+      view: 'date', cuisines: [...new Set(cat.list.map((m) => m.cuisine))].sort(),
       date, weekday: day.weekday, cycleDay: day.cycleDay,
       periods: day.periods.filter((p) => !period || p.id === period).map((p) => ({
         id: p.id, label: p.label, dateSpecific: p.dateSpecific,
         meals: p.mealIds.map((id) => cat.byId[id]).filter((m) => m && matches(m) && dietOk(m.id) && typeOk(m)).map((m) => ({ ...mealSummary(m), compatibility: compatibilityFor(m.id) })),
       })),
-      nutritionNote: 'Nutrition comes only from SFDA Saudi Food Composition Table laboratory values, for dishes the kitchen prepares to the SFCT standard recipe. Other dishes show no values: nothing is estimated.',
+      nutritionNote,
     };
   }
 
@@ -204,7 +223,7 @@ export function createMenuAdmin(ctx, workflow) {
       return { ing: l.ing, g: Math.round(g * 10) / 10, prep: clean(l.prep, 80) || undefined, optional: Boolean(l.optional) || undefined };
     });
     if (!lines.length) errors.ingredients = 'Add at least one ingredient. Allergens are worked out from the ingredients.';
-    const source = input.nutritionSource === 'sfct' ? 'sfct' : 'none';
+    const source = ['sfct', 'ingredients'].includes(input.nutritionSource) ? input.nutritionSource : 'none';
     const sfctId = source === 'sfct' ? String(input.sfctId ?? '') : undefined;
     if (source === 'sfct' && !sfct[sfctId]) errors.sfctId = 'Choose the SFDA Saudi Food Composition Table entry this dish is prepared to.';
     else if (source === 'sfct' && sfctConsistencyIssue(sfct[sfctId])) errors.sfctId = `${sfctConsistencyIssue(sfct[sfctId])} It cannot be linked until the project team confirms the values with SFDA.`;

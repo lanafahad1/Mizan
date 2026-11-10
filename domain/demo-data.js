@@ -23,6 +23,7 @@ export const DEMO_ACCOUNTS = [
   { username: 'staff.demo', email: 'staff@carebite.test', name: 'Demo Staff Member', role: 'staff', summary: 'Runs meal service: offers and confirms eligible meals, prepares and delivers trays, records intake, maintains the menu, answers requests.' },
   { username: 'noura.1001', email: 'noura@carebite.test', name: 'Noura', role: 'patient', patientDemoId: 'CB-1001', summary: 'Patient account linked to CB-1001: choose meals, give feedback, ask for help.' },
   { username: 'khalid.1004', email: 'khalid@carebite.test', name: 'Khalid', role: 'patient', patientDemoId: 'CB-1004', summary: 'Patient account linked to CB-1004 (peanut and tree nut allergies).' },
+  { username: 'sara.member', email: 'sara@carebite.test', name: 'Sara', role: 'member', summary: 'Member (personal use, no hospital): food diary, weight and blood pressure, personal targets.' },
 ];
 
 const ALL = ['small', 'regular', 'large'];
@@ -31,7 +32,7 @@ const SR = ['small', 'regular'];
 // [profile input, behaviour used to generate the synthetic intake history]
 const PATIENTS = [
   [{ demoId: 'CB-1001', preferredName: 'Noura', ageRange: '45-59', ward: '3C', bed: '12', admittedDaysAgo: 6,
-    conditions: { selected: ['t2d', 'hypertension'] },
+    conditions: { selected: ['obesity', 't2d', 'hypertension'] },
     dietOrder: { categories: ['consistent-carb', 'low-sodium'], carbsGPerMeal: 60, portionsPermitted: SR, notes: '' },
     allergies: { status: 'nka' },
     preferences: { cuisines: ['Saudi', 'Middle Eastern'], favorites: ['chicken-breast', 'dates'], dislikes: ['eggplant'], preferredPortion: 'regular' },
@@ -39,7 +40,7 @@ const PATIENTS = [
   { eat: ['all', 'most', 'all', 'most'], refuse: 0, sat: [4, 5] }],
 
   [{ demoId: 'CB-1002', preferredName: 'Fahad', ageRange: '60-74', ward: '4B', bed: '03', admittedDaysAgo: 6,
-    conditions: { selected: ['hypertension', 'cholesterol'] },
+    conditions: { selected: ['obesity', 'hypertension', 'cholesterol', 'cvd'] },
     dietOrder: { categories: ['heart-healthy'], portionsPermitted: ALL, notes: 'Prefers meals served hot.' },
     allergies: { status: 'recorded', confirmed: ['shellfish'] },
     preferences: { cuisines: ['Saudi'], favorites: ['white-rice', 'chicken-breast'], dislikes: ['tofu'], preferredPortion: 'regular' },
@@ -288,6 +289,12 @@ export function seedHospitalDemo({ repo, service, today }) {
   // Sara: breakfast confirmed, lunch chosen.
   safely(() => confirm('CB-1005', 'breakfast'));
   safely(() => choose('CB-1005', 'lunch'));
+  // Sara then reports a possible allergy to something in her confirmed breakfast: it is put on hold until reviewed.
+  safely(() => {
+    const e = repo.getEntry(ids['CB-1005'], today, 'breakfast');
+    const allergen = e ? service.catalog().byId[e.selectedMealId]?.allergenSummary?.contains?.[0] : null;
+    if (allergen) service.createRequest(asPatient('CB-1005'), ids['CB-1005'], { type: 'clinical-change', reportKind: 'new-allergy', allergen, message: 'I think I reacted to this at home last week. Could the team check before breakfast?' });
+  });
   // Abdullah: breakfast approved by the admin after review; the rest awaits review.
   safely(() => {
     const r = recommend({ ...P('CB-1006'), reportedAllergies: [] }, service.catalog(), { mealIds: menuFor(service.menu(), today).breakfast, period: 'breakfast' }).review[0];

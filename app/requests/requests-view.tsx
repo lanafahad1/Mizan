@@ -14,10 +14,12 @@ import { Notice } from '@/components/ui/notice';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogBody, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Fieldset } from '@/components/forms/fieldset';
 import { toast } from '@/components/ui/toast';
-import { formatDate, plural } from '@/lib/format';
+import { formatDate } from '@/lib/format';
+import { useT } from '@/components/site/lang';
 import { cn } from '@/lib/utils';
 import { When, useFormErrors, FormMessage } from '@/components/staff/ui';
 import { REQUEST_TYPES } from '@/domain/constants.js';
+import { staffRequestLabel } from '@/components/patients/common';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Req = any;
@@ -28,6 +30,7 @@ const KEY = apiPath('/api/requests', { status: 'all' });
 const STATUS_PILLS: [string, string][] = [['open', 'Pending'], ['resolved', 'Resolved'], ['declined', 'Declined'], ['all', 'All requests']];
 
 export function RequestsView({ initial, permissions, initialFilters }: { initial: Data; permissions: string[]; initialFilters: Filters }) {
+  const { t, lang } = useT();
   const { data, error, mutate } = useApi<Data>(KEY, initial);
   const [f, setF] = React.useState<Filters>(initialFilters);
   const [responding, setResponding] = React.useState<Req | null>(null);
@@ -50,74 +53,74 @@ export function RequestsView({ initial, permissions, initialFilters }: { initial
 
   return (
     <>
-      <PageHead eyebrow="Patient participation" title="Patient Requests">
-        <p>Requests for a different meal, a schedule change or support, and reports of changes to allergies or diet. Statuses are the same ones the patient sees: Pending, Resolved or Declined. Clinical reports are answered by an admin and never change the record automatically.</p>
+      <PageHead eyebrow={t('Patient participation')} title={t('Patient Requests')} space="staff">
+        <p>{t('Patients’ requests for a different meal, a schedule change or support, and their reports of changes to allergies or diet. Patients see the same statuses you do: Pending, Resolved or Declined. An admin answers clinical reports, and they never change the record automatically.')}</p>
       </PageHead>
-      <PageBody>
-        {error ? <Notice tone="danger" title="We couldn’t refresh the requests.">{error.message} Check your connection and try again.</Notice> : null}
+      <PageBody space="staff">
+        {error ? <Notice tone="danger" title={t('We couldn’t refresh the requests.')}>{t(error.message)} {t('Check your connection and try again.')}</Notice> : null}
         <div className="flex flex-col gap-4 rounded-[20px] border border-border bg-card p-4">
-          <div role="group" aria-label="Show requests by status" className="flex flex-wrap gap-2">
+          <div role="group" aria-label={t('Show requests by status')} className="flex flex-wrap gap-2">
             {STATUS_PILLS.map(([s, l]) => (
               <button key={s} type="button" aria-pressed={f.status === s} onClick={() => update({ status: s })}
                 className="min-h-10 rounded-full border border-border bg-card px-3.5 py-1.5 font-display text-sm font-medium text-heading hover:bg-mint aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground">
-                {l} ({count(s)})
+                {t(l)} ({count(s)})
               </button>
             ))}
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="rq-type">Type</Label>
+              <Label htmlFor="rq-type">{t('Type')}</Label>
               <NativeSelect id="rq-type" value={f.type} onChange={(e) => update({ type: e.target.value })}>
-                <option value="">All types</option>
-                {REQUEST_TYPES.map((t: { id: string; label: string }) => <option key={t.id} value={t.id}>{t.label}</option>)}
+                <option value="">{t('All types')}</option>
+                {REQUEST_TYPES.map((x: { id: string; label: string }) => <option key={x.id} value={x.id}>{t(staffRequestLabel(x.id, x.label))}</option>)}
               </NativeSelect>
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="rq-date">Meal date</Label>
+              <Label htmlFor="rq-date">{t('Meal date')}</Label>
               <Input id="rq-date" type="date" value={f.date} onChange={(e) => update({ date: /^\d{4}-\d{2}-\d{2}$/.test(e.target.value) ? e.target.value : '' })} aria-describedby="rq-date-hint" />
-              <span id="rq-date-hint" className="text-xs text-muted-foreground">Requests about a meal on this date. Leave empty for all.</span>
+              <span id="rq-date-hint" className="text-xs text-muted-foreground">{t('Requests about a meal on this date. Leave empty for all.')}</span>
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="rq-order">Order</Label>
+              <Label htmlFor="rq-order">{t('Order')}</Label>
               <NativeSelect id="rq-order" value={f.order} onChange={(e) => update({ order: e.target.value })}>
-                <option value="">Pending and clinical first, oldest first</option>
-                <option value="newest">Newest submitted first</option>
+                <option value="">{t('Pending and clinical first, oldest first')}</option>
+                <option value="newest">{t('Newest submitted first')}</option>
               </NativeSelect>
             </div>
           </div>
-          {filtered ? <Button variant="link" size="sm" className="w-fit" onClick={() => update({ type: '', date: '' })}>Clear type and date filters</Button> : null}
+          {filtered ? <Button variant="link" size="sm" className="w-fit" onClick={() => update({ type: '', date: '' })}>{t('Clear type and date filters')}</Button> : null}
         </div>
 
-        <h2 ref={resultsRef} tabIndex={-1} className="text-lg outline-none" aria-live="polite">{plural(rows.length, `${statusWord}request`)}{filtered ? ' matching the filters' : ''}</h2>
+        <h2 ref={resultsRef} tabIndex={-1} className="text-lg outline-none" aria-live="polite">{t(`{n} ${statusWord}request${rows.length === 1 ? '' : 's'}`, { n: rows.length })}{filtered ? t(' matching the filters') : ''}</h2>
 
         {rows.length ? (
           <ul className="m-0 flex list-none flex-col gap-3 p-0">
             {rows.map((r) => (
-              <li key={r.id} className={cn('flex flex-col gap-3 rounded-[20px] border bg-card p-4 shadow-soft sm:p-5', r.clinical ? 'border-[#F1DFB8] border-l-4 border-l-warning' : 'border-border')}>
+              <li key={r.id} className={cn('flex flex-col gap-3 rounded-[20px] border bg-card p-4 shadow-soft sm:p-5', r.clinical ? 'border-[#F1DFB8] border-s-4 border-s-warning' : 'border-border')}>
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <PatientHeader b={r.patient} />
                   <RequestStatusChip status={r.status} />
                 </div>
-                <h3 className="flex items-center gap-2 text-base">{r.clinical ? <HeartPulse className="size-4 shrink-0" aria-hidden /> : <MessageSquare className="size-4 shrink-0" aria-hidden />}{r.typeLabel}</h3>
-                {r.reportLabel ? <p className="text-sm"><b>{r.reportLabel}</b>{r.allergenLabel ? `: ${r.allergenLabel} (meals containing it are held for review until this is resolved)` : ''}</p> : null}
-                <blockquote className="m-0 border-l-2 border-sage pl-3">“{r.message}”</blockquote>
+                <h3 className="flex items-center gap-2 text-base">{r.clinical ? <HeartPulse className="size-4 shrink-0" aria-hidden /> : <MessageSquare className="size-4 shrink-0" aria-hidden />}{t(staffRequestLabel(r.type, r.typeLabel))}</h3>
+                {r.reportLabel ? <p className="text-sm"><b>{t(r.reportLabel)}</b>{r.allergenLabel ? `: ${t('{allergen} (meals containing it are held for review until this is resolved)', { allergen: t(r.allergenLabel) })}` : ''}</p> : null}
+                <blockquote className="m-0 border-s-2 border-sage ps-3">“{r.message}”</blockquote>
                 <p className="text-sm text-muted-foreground">
-                  {r.createdBy} ({roleLabel(r.createdByRole)}) · Submitted <When iso={r.createdAt} format="ago" />
-                  {r.date ? ` · ${periodLabel(r.period)} on ${formatDate(r.date)}` : ''}{r.mealName ? ` · ${r.mealName}` : ''}
+                  {r.createdBy} ({t(roleLabel(r.createdByRole))}) · {t('Submitted')} <When iso={r.createdAt} format="ago" />
+                  {r.date ? ` · ${t('{period} on {date}', { period: t(periodLabel(r.period)), date: formatDate(r.date, undefined, lang) })}` : ''}{r.mealName ? ` · ${t(r.mealName)}` : ''}
                 </p>
-                {r.response ? <p className="text-sm"><b>Response from {r.resolvedBy}:</b> {r.response}{r.resolvedAt ? <span className="text-muted-foreground"> (<When iso={r.resolvedAt} />)</span> : null}</p> : null}
+                {r.response ? <p className="text-sm"><b>{t('Response from {name}:', { name: r.resolvedBy })}</b> {r.response}{r.resolvedAt ? <span className="text-muted-foreground"> (<When iso={r.resolvedAt} />)</span> : null}</p> : null}
                 {r.status === 'open' ? (
                   <div className="flex flex-wrap items-center gap-2">
                     {r.clinical ? (
                       <>
-                        {canClinical ? <Button size="sm" onClick={() => setResponding(r)}>Respond</Button> : null}
-                        <Link href={`/patients/${r.patient.id}?tab=requests`} className={buttonVariants({ size: 'sm', variant: canClinical ? 'outline' : 'default' })}>{canClinical ? 'Review on the patient’s profile' : 'Open patient'}</Link>
-                        {canClinical ? null : <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground"><Lock className="size-4" aria-hidden />Waiting for an admin. Reports about allergies or the diet order must be reviewed by an admin.</span>}
+                        {canClinical ? <Button size="sm" onClick={() => setResponding(r)}>{t('Respond')}</Button> : null}
+                        <Link href={`/patients/${r.patient.id}?tab=requests`} className={buttonVariants({ size: 'sm', variant: canClinical ? 'outline' : 'default' })}>{t(canClinical ? 'Review on the patient’s profile' : 'Open patient')}</Link>
+                        {canClinical ? null : <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground"><Lock className="size-4" aria-hidden />{t('Waiting for an admin. Only an admin can review reports about allergies or the diet order.')}</span>}
                       </>
                     ) : (
                       <>
-                        {canResolve ? <Button size="sm" onClick={() => setResponding(r)}>Respond</Button> : null}
-                        <Link href={`/patients/${r.patient.id}${r.date ? `?date=${r.date}` : ''}`} className={buttonVariants({ size: 'sm', variant: 'outline' })}>{r.type === 'alternative' ? 'Offer new options' : 'Open patient'}</Link>
+                        {canResolve ? <Button size="sm" onClick={() => setResponding(r)}>{t('Respond')}</Button> : null}
+                        <Link href={`/patients/${r.patient.id}${r.date ? `?date=${r.date}` : ''}`} className={buttonVariants({ size: 'sm', variant: 'outline' })}>{t(r.type === 'alternative' ? 'Offer new options' : 'Open patient')}</Link>
                       </>
                     )}
                   </div>
@@ -127,7 +130,7 @@ export function RequestsView({ initial, permissions, initialFilters }: { initial
           </ul>
         ) : (
           <EmptyState title={`No ${f.status === 'open' ? 'open ' : statusWord}requests${filtered ? ' match these filters' : ''}`}>
-            {filtered ? 'Clear the type and date filters to see more.' : 'Patients can ask for alternatives, schedule changes or support from their own screen.'}
+            {t(filtered ? 'Clear the type and date filters to see more.' : 'New requests show up here. Patients can ask for a different meal, a schedule change or support from their own screen.')}
           </EmptyState>
         )}
       </PageBody>
@@ -137,6 +140,7 @@ export function RequestsView({ initial, permissions, initialFilters }: { initial
 }
 
 function RespondDialog({ request: r, onClose, onDone }: { request: Req | null; onClose: () => void; onDone: () => void }) {
+  const { t } = useT();
   const [status, setStatus] = React.useState('resolved');
   const [response, setResponse] = React.useState('');
   const [busy, setBusy] = React.useState(false);
@@ -150,7 +154,7 @@ function RespondDialog({ request: r, onClose, onDone }: { request: Req | null; o
     setBusy(true); reset();
     try {
       await apiSend('PATCH', `/api/requests/${shown.id}`, { status, response });
-      toast('Response saved. The patient sees it under My Requests.');
+      toast(t('Response saved. The patient sees it under My Requests.'));
       onDone();
     } catch (err) { fail(err); } finally { setBusy(false); }
   };
@@ -160,25 +164,25 @@ function RespondDialog({ request: r, onClose, onDone }: { request: Req | null; o
         <DialogContent>
           <form onSubmit={submit} noValidate className="flex min-h-0 flex-col">
             <DialogHeader>
-              <DialogTitle>Respond: {requestLabel(shown.type)} · {shown.patient.demoId}</DialogTitle>
+              <DialogTitle>{t('Respond: {type} · {id}', { type: t(staffRequestLabel(shown.type, requestLabel(shown.type))), id: shown.patient.demoId })}</DialogTitle>
               <DialogDescription>“{shown.message}”</DialogDescription>
             </DialogHeader>
             <DialogBody>
-              <Fieldset legend="Outcome">
+              <Fieldset legend={t('Outcome')}>
                 <div className="grid gap-2 sm:grid-cols-2">
-                  <OptionCard name="rs-status" value="resolved" checked={status === 'resolved'} onChange={() => setStatus('resolved')} title={<span className="inline-flex items-center gap-1.5"><Check className="size-4" aria-hidden />Resolved</span>} />
-                  <OptionCard name="rs-status" value="declined" checked={status === 'declined'} onChange={() => setStatus('declined')} title={<span className="inline-flex items-center gap-1.5"><XIcon className="size-4" aria-hidden />Declined</span>} description="Explain why to the patient." />
+                  <OptionCard name="rs-status" value="resolved" checked={status === 'resolved'} onChange={() => setStatus('resolved')} title={<span className="inline-flex items-center gap-1.5"><Check className="size-4" aria-hidden />{t('Resolved')}</span>} />
+                  <OptionCard name="rs-status" value="declined" checked={status === 'declined'} onChange={() => setStatus('declined')} title={<span className="inline-flex items-center gap-1.5"><XIcon className="size-4" aria-hidden />{t('Declined')}</span>} description={t('Explain why to the patient.')} />
                 </div>
               </Fieldset>
-              {shown.clinical ? <Notice tone="info">Responding does not change the record. Update the diet order or allergies on the patient’s profile if needed.</Notice> : null}
-              <Field id="rs-text" label="Response for the patient" error={errors.response} hint="Up to 400 characters. The patient sees this under My Requests.">
+              {shown.clinical ? <Notice tone="info">{t('Your response doesn’t change the patient’s record. If the diet order or allergies need updating, do it on their profile.')}</Notice> : null}
+              <Field id="rs-text" label={t('Response for the patient')} error={errors.response} hint={t('Up to 400 characters. The patient sees this under My Requests.')}>
                 <Textarea maxLength={400} value={response} onChange={(e) => setResponse(e.target.value)} />
               </Field>
               <FormMessage message={errors.response ? null : formError} />
             </DialogBody>
             <DialogFooter>
-              <DialogClose className={buttonVariants({ variant: 'outline' })}>Cancel</DialogClose>
-              <Button type="submit" disabled={busy}>{busy ? 'Sending…' : 'Send response'}</Button>
+              <DialogClose className={buttonVariants({ variant: 'outline' })}>{t('Cancel')}</DialogClose>
+              <Button type="submit" disabled={busy}>{t(busy ? 'Sending…' : 'Send response')}</Button>
             </DialogFooter>
           </form>
         </DialogContent>

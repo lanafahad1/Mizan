@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { Label } from './input';
+import { useT } from '@/components/site/lang';
 
 /**
  * A labelled form field with hint and error message. Errors use the
@@ -11,6 +12,7 @@ import { Label } from './input';
 export function Field({
   id, label, hint, error, children, className, optional,
 }: { id: string; label: React.ReactNode; hint?: React.ReactNode; error?: string | null; children: React.ReactElement<Record<string, unknown>>; className?: string; optional?: boolean }) {
+  const { t } = useT();
   const inputRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     const el = inputRef.current;
@@ -25,10 +27,10 @@ export function Field({
   });
   return (
     <div className={cn('t-input-wrap flex flex-col gap-1.5', error && 'is-error', className)}>
-      <Label htmlFor={id}>{label}{optional ? <span className="font-sans text-xs font-normal text-muted-foreground"> (optional)</span> : null}</Label>
+      <Label htmlFor={id}>{label}{optional ? <span className="font-sans text-xs font-normal text-muted-foreground"> {t('(optional)')}</span> : null}</Label>
       <div ref={inputRef} className={cn('t-input rounded-[12px]', error && 'is-error')}>{control}</div>
       {hint ? <span id={`${id}-hint`} className="text-sm text-muted-foreground">{hint}</span> : null}
-      <p id={`${id}-error`} role={error ? 'alert' : undefined} className="t-error-msg text-sm font-semibold text-destructive empty:hidden">{error ?? ''}</p>
+      <p id={`${id}-error`} role={error ? 'alert' : undefined} className="t-error-msg text-sm font-semibold text-destructive empty:hidden">{error ? t(error) : ''}</p>
     </div>
   );
 }

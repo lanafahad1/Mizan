@@ -1,14 +1,20 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { PERMISSIONS, ROLE_IDS, can, permissionsFor, SECTION_PERMISSION } from '../domain/rbac.js';
+import { PERMISSIONS, ROLE_IDS, HOSPITAL_ROLE_IDS, can, permissionsFor, SECTION_PERMISSION } from '../domain/rbac.js';
 
-test('three roles only', () => {
-  assert.deepEqual(ROLE_IDS, ['admin', 'staff', 'patient']);
+test('hospital care has exactly three roles; the member space has one', () => {
+  assert.deepEqual(HOSPITAL_ROLE_IDS, ['admin', 'staff', 'patient']);
+  assert.deepEqual(ROLE_IDS, ['admin', 'staff', 'patient', 'member']);
   for (const roles of Object.values(PERMISSIONS)) for (const r of roles) assert.ok(ROLE_IDS.includes(r));
 });
 
-test('admin holds every permission (controls everything)', () => {
-  assert.deepEqual(permissionsFor('admin').sort(), Object.keys(PERMISSIONS).sort());
+test('admin holds every hospital permission (controls everything except personal spaces)', () => {
+  assert.deepEqual(permissionsFor('admin').sort(), Object.keys(PERMISSIONS).filter((p) => p !== 'health:own').sort());
+});
+
+test('members hold only their own health space and no hospital permission', () => {
+  assert.deepEqual(permissionsFor('member'), ['health:own']);
+  for (const p of ['patient:read', 'patient:list', 'health:team-read', 'dashboard:view', 'meal:choose']) assert.ok(!can('member', p), p);
 });
 
 test('staff run meal service but cannot make clinical decisions or manage access', () => {
@@ -17,7 +23,7 @@ test('staff run meal service but cannot make clinical decisions or manage access
 });
 
 test('patients reach only patient-facing permissions', () => {
-  assert.deepEqual(permissionsFor('patient').sort(), ['intake:record', 'meal:choose', 'patient:edit-appetite', 'patient:edit-preferences', 'patient:read', 'request:create'].sort());
+  assert.deepEqual(permissionsFor('patient').sort(), ['health:own', 'intake:record', 'meal:choose', 'patient:edit-appetite', 'patient:edit-preferences', 'patient:read', 'request:create'].sort());
   assert.ok(!can('patient', SECTION_PERMISSION.clinical));
 });
 

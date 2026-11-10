@@ -1,9 +1,10 @@
 'use client';
 import * as React from 'react';
 import Link from 'next/link';
-import { ChevronLeft, Check, X, User, TriangleAlert, Calendar, Activity, MessageSquare, List } from 'lucide-react';
+import { ChevronLeft, Check, X, User, TriangleAlert, Calendar, Activity, MessageSquare, List, HeartPulse } from 'lucide-react';
 import { useApi, apiPath } from '@/lib/api-client';
-import { PageBody } from '@/components/site/page-head';
+import { PageBody, containerClass } from '@/components/site/page-head';
+import { cn } from '@/lib/utils';
 import { DietNames } from '@/components/cb/diet';
 import { AllergyChips, AppetiteChip } from '@/components/cb/status';
 import { Pid } from '@/components/cb/misc';
@@ -21,21 +22,24 @@ import { ProfileTab, SectionDialog, ReadmitDialog, LinkCodeDialog, UnlinkDialog,
 import { IntakeTab, IntakeDialog } from './intake-tab';
 import { RequestsTab, RequestDialog, RespondDialog } from './requests-tab';
 import { ChangesTab } from './changes-tab';
+import { HealthSpace, type HealthRef } from '@/components/health/health-space';
+import { useT } from '@/components/site/lang';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const TAB_META: Record<Tab, [string, React.ComponentType<{ 'aria-hidden'?: boolean }>]> = {
-  meals: ['Meals', Calendar], profile: ['Profile & admission', User], intake: ['Intake & feedback', Activity], requests: ['Requests', MessageSquare], changes: ['Changes & activity', List],
+  meals: ['Meals', Calendar], health: ['Health & targets', HeartPulse], profile: ['Profile & admission', User], intake: ['Intake & feedback', Activity], requests: ['Requests', MessageSquare], changes: ['Changes & activity', List],
 };
 
-type ViewProps = { id: string; initialRecord: any; initialDay: any; reference: any; permissions: string[]; initialTab: Tab };
+type ViewProps = { id: string; initialRecord: any; initialDay: any; reference: any; permissions: string[]; initialTab: Tab; initialHealth: any; healthRef: HealthRef };
 
 /** Patient Nutrition Profile. A page-scoped SWR cache means the server's data is always the starting point. */
 export function PatientView(props: ViewProps) {
   return <FreshCache><PatientProfile {...props} /></FreshCache>;
 }
 
-function PatientProfile({ id, initialRecord, initialDay, reference, permissions, initialTab }: ViewProps) {
+function PatientProfile({ id, initialRecord, initialDay, reference, permissions, initialTab, initialHealth, healthRef }: ViewProps) {
+  const { t: tr } = useT();
   const [tab, setTab] = React.useState<Tab>(initialTab);
   const [date, setDateState] = React.useState<string>(initialDay.date);
   const recordKey = P(id);
@@ -104,22 +108,23 @@ function PatientProfile({ id, initialRecord, initialDay, reference, permissions,
   return (
     <Ctx.Provider value={ctx}>
       <PatientBanner record={record} discharged={discharged} />
-      <PageBody>
-        {recordError ? <Notice tone="danger" title="We couldn’t refresh this patient.">{recordError.message} The information below may be out of date.</Notice> : null}
+      <PageBody space="staff">
+        {recordError ? <Notice tone="danger" title={tr('We couldn’t refresh this patient.')}>{tr(recordError.message)} {tr('The information below may be out of date.')}</Notice> : null}
         <Tabs value={tab} onValueChange={(v) => changeTab(v as Tab)}>
-          <TabsList aria-label="Patient sections">
+          <TabsList aria-label={tr('Patient sections')}>
             {TABS.map((t) => {
               const [labelText, Icon] = TAB_META[t];
               return (
                 <TabsTab key={t} value={t} id={`tab-${t}`}>
-                  <Icon aria-hidden />{labelText}
-                  {t === 'requests' && openReq ? <span className="ml-0.5 rounded-full bg-rose px-1.5 text-xs font-bold text-rose-ink" aria-label={`${openReq} pending`}>{openReq}</span> : null}
+                  <Icon aria-hidden />{tr(labelText)}
+                  {t === 'requests' && openReq ? <span className="ms-0.5 rounded-full bg-rose px-1.5 text-xs font-bold text-rose-ink" aria-label={tr('{n} pending', { n: openReq })}>{openReq}</span> : null}
                 </TabsTab>
               );
             })}
           </TabsList>
           <div className="pt-5">
-            <TabsPanel value="meals">{dayError && !dayData ? <Notice tone="danger" title="We couldn’t load the meals for this day.">{dayError.message} Choose another day or try again.</Notice> : <MealsTab />}</TabsPanel>
+            <TabsPanel value="meals">{dayError && !dayData ? <Notice tone="danger" title={tr('We couldn’t load the meals for this day.')}>{tr(dayError.message)} {tr('Choose another day or try again.')}</Notice> : <MealsTab />}</TabsPanel>
+            <TabsPanel value="health"><HealthSpace who={id} initial={initialHealth} reference={healthRef} canReview={permissions.includes('assessment:review')} assessmentHref="" /></TabsPanel>
             <TabsPanel value="profile"><ProfileTab /></TabsPanel>
             <TabsPanel value="intake"><IntakeTab /></TabsPanel>
             <TabsPanel value="requests"><RequestsTab /></TabsPanel>
@@ -133,39 +138,40 @@ function PatientProfile({ id, initialRecord, initialDay, reference, permissions,
 }
 
 function PatientBanner({ record, discharged }: { record: any; discharged: boolean }) {
+  const { t, lang } = useT();
   const p = record.patient;
   const b = p.brief;
   const team = p.reviewReasons.filter((r: any) => r.code !== 'discharged');
   return (
-    <div className="container-page flex flex-col gap-4 pb-4 pt-6 sm:pt-10">
-      <Link href={discharged ? '/patients?include=discharged' : '/patients'} className="inline-flex w-fit items-center gap-1 text-sm"><ChevronLeft className="size-4" aria-hidden /> Patient Overview</Link>
+    <div className={cn(containerClass({ space: 'staff' }), 'flex flex-col gap-4 pb-4 pt-6 sm:pt-10')}>
+      <Link href={discharged ? '/patients?include=discharged' : '/patients'} className="inline-flex w-fit items-center gap-1 text-sm"><ChevronLeft className="size-4 rtl:rotate-180" aria-hidden /> {t('Patient Overview')}</Link>
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div className="flex min-w-0 flex-col gap-2.5">
-          <span className="eyebrow">Patient nutrition profile · {b.wardLabel} · Bed {b.bed}</span>
+          <span className="eyebrow">{t('Patient nutrition profile')} · {t(b.wardLabel)} · {t('Bed {bed}', { bed: b.bed })}</span>
           <h1 id="patient-title" tabIndex={-1} className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[2rem] leading-tight outline-none sm:text-[2.4rem]">
             <span>{b.preferredName || b.demoId}</span> <span className="text-base"><Pid>{b.demoId}</Pid></span>
           </h1>
           <div className="flex flex-wrap items-center gap-2">
-            {discharged ? <Badge variant="outline"><X aria-hidden />Discharged {p.dischargedOn ?? ''}</Badge> : <Badge variant="ok"><Check aria-hidden />Admitted {p.admittedOn ?? ''}</Badge>}
+            {discharged ? <Badge variant="outline"><X aria-hidden />{t('Discharged {date}', { date: p.dischargedOn ?? '' })}</Badge> : <Badge variant="ok"><Check aria-hidden />{t('Admitted {date}', { date: p.admittedOn ?? '' })}</Badge>}
             <DietNames codes={b.dietCodes} labels={b.dietLabels} />
             <AllergyChips b={b} />
             <AppetiteChip level={b.appetite} />
-            {b.textureLevel ? <Badge variant="warn" className="whitespace-normal">{b.textureLevel}</Badge> : null}
+            {b.textureLevel ? <Badge variant="warn" className="whitespace-normal">{t(b.textureLevel)}</Badge> : null}
           </div>
         </div>
-        <div className="flex flex-col gap-0.5 text-sm text-muted-foreground md:shrink-0 md:text-right">
-          <span suppressHydrationWarning>Updated {timeAgo(p.updatedAt)}{p.updatedBy ? ` by ${p.updatedBy}` : ''}</span>
-          <span className="inline-flex items-center gap-1 md:justify-end">{p.linkedAccounts.length ? <><User className="size-4" aria-hidden /> Patient account @{p.linkedAccounts[0].username}</> : 'No patient account linked'}</span>
+        <div className="flex flex-col gap-0.5 text-sm text-muted-foreground md:shrink-0 md:text-end">
+          <span suppressHydrationWarning>{p.updatedBy ? t('Updated {when} by {name}', { when: timeAgo(p.updatedAt, Date.now(), lang), name: p.updatedBy }) : t('Updated {when}', { when: timeAgo(p.updatedAt, Date.now(), lang) })}</span>
+          <span className="inline-flex items-center gap-1 md:justify-end">{p.linkedAccounts.length ? <><User className="size-4" aria-hidden /> {t('Patient account @{username}', { username: p.linkedAccounts[0].username })}</> : t('No patient account linked')}</span>
         </div>
       </div>
       {discharged ? (
-        <Notice tone="info" title="Discharged: read-only">No meals are planned or sent to the kitchen. Past meals, intake and requests are kept. Use “Readmit” under Profile &amp; admission if the patient is back on a ward.</Notice>
+        <Notice tone="info" title={t('Discharged: read-only')}>{t('No meals are planned or sent to the kitchen. Past meals, intake and requests are kept. Use “Readmit” under Profile & admission if the patient is back on a ward.')}</Notice>
       ) : null}
       {team.length || record.intakeFlags.length ? (
-        <Notice tone="warn" role="note" title="For the nutrition team" icon={<TriangleAlert aria-hidden />}>
-          <ul className="list-disc pl-5">
-            {team.map((r: any, i: number) => <li key={`r${i}`}>{r.text}</li>)}
-            {record.intakeFlags.map((f: any, i: number) => <li key={`f${i}`}><b>{f.title}:</b> {f.text} Consider a professional review.</li>)}
+        <Notice tone="warn" role="note" title={t('For the nutrition team')} icon={<TriangleAlert aria-hidden />}>
+          <ul className="list-disc ps-5">
+            {team.map((r: any, i: number) => <li key={`r${i}`}>{t(r.text)}</li>)}
+            {record.intakeFlags.map((f: any, i: number) => <li key={`f${i}`}><b>{t(f.title)}:</b> {t(f.text)} {t('Consider a professional review.')}</li>)}
           </ul>
         </Notice>
       ) : null}

@@ -10,6 +10,7 @@ import { betterAuth } from 'better-auth';
 import { createPgStore, ensureSchema, withInitLock } from '@/domain/pg-store.js';
 import { createService } from '@/domain/service.js';
 import { seedCatalog, seedHospitalDemo, linkDemoAccounts, DEMO_ACCOUNTS, DEMO_PENDING_STAFF } from '@/domain/demo-data.js';
+import { seedHealthDemo } from '@/domain/health-demo.js';
 import { authOptions, type Auth } from './auth';
 import { passwordProblem, USERNAME_RE, USERNAME_RULE } from '@/lib/password-policy';
 
@@ -84,13 +85,16 @@ async function init(): Promise<Runtime> {
     recordAccountLink: (user, patientId) => write(({ service }) => service.recordAccountLink(user, patientId)),
     getUserById: getUser,
     countActiveAdmins,
+    deleteMemberData: (userId) => write(({ repo }) => repo.deleteHealthOwner(`m:${userId}`)),
   });
 
   const resetDemo = () => write(({ repo, service }) => {
     repo.clearHospitalData();
     seedCatalog(repo, new Date().toISOString());
     service.reloadCatalog();
-    linkDemoAccounts(repo, seedHospitalDemo({ repo, service, today: service.today() }));
+    const patientIds = seedHospitalDemo({ repo, service, today: service.today() });
+    linkDemoAccounts(repo, patientIds);
+    seedHealthDemo({ repo, service, today: service.today(), patientIds });
   });
 
   // Only one server instance at a time creates tables and seeds data.

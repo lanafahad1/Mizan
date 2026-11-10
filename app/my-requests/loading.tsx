@@ -1,5 +1,9 @@
 import { LoadingBlock } from '@/components/ui/skeleton';
+import { containerClass } from '@/components/site/page-head';
+import { cn } from '@/lib/utils';
+import { getT } from '@/lib/i18n/server';
 
-export default function Loading() {
-  return <div className="container-page container-narrow py-10"><LoadingBlock label="Loading your requests…" rows={3} /></div>;
+export default async function Loading() {
+  const t = await getT();
+  return <div className={cn(containerClass({ space: 'member' }), 'py-10')}><LoadingBlock label={t('Loading your requests…')} rows={3} /></div>;
 }

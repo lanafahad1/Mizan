@@ -3,6 +3,8 @@
 import * as React from 'react';
 import { FileText, Heart, Shield, Sparkles, CircleCheck, Activity, RefreshCw, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Card } from '@/components/ui/card';
+import { getT } from '@/lib/i18n/server';
 
 /** Full-width band with a palette background. */
 export function Band({ tone = 'plain', className, children, ...props }: React.ComponentProps<'section'> & { tone?: 'plain' | 'white' | 'blush' | 'mint' }) {
@@ -46,15 +48,16 @@ export function Benefit({ icon: Icon, title, children, as: As = 'h3' }: { icon: 
 }
 
 /** Numbered vertical pipeline; safety steps are drawn in sage. */
-export function Pipeline({ steps, className, label }: { steps: { title: string; text: React.ReactNode; safety?: boolean }[]; className?: string; label?: string }) {
+export async function Pipeline({ steps, className, label }: { steps: { title: string; text: React.ReactNode; safety?: boolean }[]; className?: string; label?: string }) {
+  const t = await getT();
   return (
     <ol aria-label={label} className={cn('flex flex-col rounded-xl border border-border bg-card p-5 sm:p-6', className)}>
       {steps.map((s, i) => (
         <li key={s.title} className="relative grid grid-cols-[44px_minmax(0,1fr)] gap-4 pb-6 last:pb-0">
-          {i < steps.length - 1 ? <span aria-hidden className="absolute bottom-0 left-[21px] top-11 w-0.5 bg-pink" /> : null}
+          {i < steps.length - 1 ? <span aria-hidden className="absolute bottom-0 start-[21px] top-11 w-0.5 bg-pink" /> : null}
           <span aria-hidden className={cn('grid size-11 place-items-center rounded-full border-2 font-display font-semibold', s.safety ? 'border-heading bg-mint text-heading' : 'border-pink bg-card text-rose-ink')}>{i + 1}</span>
           <div className="min-w-0 pt-1.5">
-            <h3 className="mb-1 text-[1.05rem]">{s.title}{s.safety ? <span className="sr-only"> (safety step)</span> : null}</h3>
+            <h3 className="mb-1 text-[1.05rem]">{s.title}{s.safety ? <span className="sr-only"> {t('(safety step)')}</span> : null}</h3>
             <p className="text-[.95rem] text-muted-foreground">{s.text}</p>
           </div>
         </li>
@@ -87,30 +90,31 @@ export const JOURNEY: [LucideIcon, string, string][] = [
   [RefreshCw, 'Support Future Meal Decisions', 'Feedback improves ranking, and repeated refusal or low intake is flagged for professional review.'],
 ];
 
-export function Journey({ label = 'Core user journey' }: { label?: string }) {
+export async function Journey({ label = 'Core user journey' }: { label?: string }) {
+  const t = await getT();
   return (
-    <ol aria-label={label} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <ol aria-label={t(label)} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {JOURNEY.map(([Icon, title, text], i) => (
         <li key={title} className="relative flex flex-col gap-2.5 rounded-xl border border-border bg-card p-5">
           <div className="flex items-center justify-between">
             <span className="grid size-11 place-items-center rounded-full bg-mint text-heading"><Icon className="size-5" aria-hidden /></span>
             <span aria-hidden className="font-display text-3xl font-semibold text-pink-deep tabular">{i + 1}</span>
           </div>
-          <h3 className="text-[1.05rem]"><span className="sr-only">Step {i + 1}: </span>{title}</h3>
-          <p className="text-[.95rem] text-muted-foreground">{text}</p>
+          <h3 className="text-[1.05rem]"><span className="sr-only">{t('Step {n}:', { n: i + 1 })} </span>{t(title)}</h3>
+          <p className="text-[.95rem] text-muted-foreground">{t(text)}</p>
         </li>
       ))}
     </ol>
   );
 }
 
-/** Small bordered panel (white). */
-export function Panel({ className, children, tone = 'white', ...props }: React.ComponentProps<'div'> & { tone?: 'white' | 'mint' | 'blush' }) {
-  const t = { white: 'border-border bg-card', mint: 'border-sage bg-mint', blush: 'border-rose bg-blush' }[tone];
-  return <div className={cn('flex flex-col gap-3 rounded-xl border p-5 sm:p-6', t, className)} {...props}>{children}</div>;
+/** Small bordered panel: the shared `Card` look (white, mint or blush). */
+export function Panel({ className, children, tone = 'white', ...props }: Omit<React.ComponentProps<typeof Card>, 'tone'> & { tone?: 'white' | 'mint' | 'blush' }) {
+  return <Card tone={tone === 'white' ? 'default' : tone} className={cn('gap-3', className)} {...props}>{children}</Card>;
 }
 
 /** External link that opens in a new tab and says so to screen readers. */
-export function ExtLink({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) {
-  return <a href={href} target="_blank" rel="noopener noreferrer" className={cn('break-words', className)}>{children}<span className="sr-only"> (opens in a new tab)</span></a>;
+export async function ExtLink({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) {
+  const t = await getT();
+  return <a href={href} target="_blank" rel="noopener noreferrer" className={cn('break-words', className)}>{children}<span className="sr-only"> {t('(opens in a new tab)')}</span></a>;
 }

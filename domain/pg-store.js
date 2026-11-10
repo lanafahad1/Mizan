@@ -20,6 +20,7 @@
 
 import { createHash } from 'node:crypto';
 import { SFCT_LIBRARY } from '../data/sfct-dishes.js';
+import { DISHES } from '../data/dishes.js';
 import { LOCAL_PRODUCTION } from '../data/local-production.js';
 import { MEDICAL_RULES, SAFETY_RULES, INTAKE_FLAG_RULES, DIET_CATEGORIES } from './rules.js';
 import { CONDITIONS } from './constants.js';
@@ -78,7 +79,7 @@ CREATE TABLE IF NOT EXISTS DietCategories (
   status TEXT NOT NULL DEFAULT 'active'
 );
 
--- SFDA Saudi Food Composition Tables: laboratory values per 100 g of each dish (the only nutrient source).
+-- SFDA Saudi Food Composition Tables: laboratory values per 100 g of each dish (first source for Saudi dishes).
 CREATE TABLE IF NOT EXISTS SfctDishes (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
@@ -149,7 +150,7 @@ CREATE TABLE IF NOT EXISTS Dishes (
   steps TEXT NOT NULL DEFAULT '[]',
   notes TEXT NOT NULL DEFAULT '[]',
   art TEXT NOT NULL DEFAULT '{}',
-  nutrition_source TEXT NOT NULL CHECK (nutrition_source IN ('sfct','none')),
+  nutrition_source TEXT NOT NULL CHECK (nutrition_source IN ('sfct','ingredients','none')),
   sfct_id TEXT REFERENCES SfctDishes(id),
   sfct_recipe TEXT,
   version INTEGER NOT NULL DEFAULT 1,
@@ -395,6 +396,20 @@ CREATE TABLE IF NOT EXISTS AuditLog (
   detail TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_audit_patient ON AuditLog(patient_id, id);
+
+-- Personal health data: one JSON document per record. The owner is a hospital
+-- patient ('p:<patient id>') or a member account ('m:<user id>'). Member records
+-- are private to the member: the domain never shows them to hospital staff.
+CREATE TABLE IF NOT EXISTS HealthRecords (
+  id INTEGER PRIMARY KEY,
+  owner TEXT NOT NULL CHECK (owner ~ '^(p|m):.+$'),
+  kind TEXT NOT NULL CHECK (kind IN ('profile','assessment','reading','food','custom-food','home-plan')),
+  date TEXT,
+  data TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_health_owner ON HealthRecords(owner, kind, date);
 `;
 
 const J = (v) => JSON.stringify(v ?? null);
@@ -547,6 +562,13 @@ const auditToRow = (a, id) => ({
   id: Number(id), at: a.at, actor_id: a.actorId == null ? null : String(a.actorId), actor_role: a.actorRole, actor_name: a.actorName,
   patient_id: a.patientId == null ? null : Number(a.patientId), action: a.action, detail: a.detail,
 });
+// Health records keep their fields in one JSON document; id, owner, kind, date and timestamps are columns.
+const healthToRow = (r, id) => {
+  const { id: _i, owner, kind, date, createdAt, updatedAt, ...data } = r;
+  return { id: Number(id), owner, kind, date: date ?? null, data: J(data), created_at: createdAt, updated_at: updatedAt ?? createdAt };
+};
+const healthFromRow = (r) => ({ ...P(r.data, {}), id: String(r.id), owner: r.owner, kind: r.kind, date: r.date ?? null, createdAt: r.created_at, updatedAt: r.updated_at });
+
 const auditFromRow = (r) => ({ id: String(r.id), at: r.at, actorId: S(r.actor_id), actorRole: r.actor_role, actorName: r.actor_name, patientId: S(r.patient_id), action: r.action, detail: r.detail });
 
 const ingredientToRow = (i, seq) => ({
@@ -561,7 +583,7 @@ const dishToRows = (d, seq) => ({
   row: {
     id: d.id, seq, name: d.name, name_ar: d.nameAr ?? null, kind: d.kind, category: d.category, cuisine: d.cuisine, description: d.description ?? '', portion_g: d.portionG, serving_size: d.servingSize,
     batch_portions: d.batchPortions ?? null, portions: d.portions ? J(d.portions) : null, steps: J(d.steps ?? []), notes: J(d.notes ?? []), art: J(d.art ?? {}),
-    nutrition_source: d.nutrition?.source === 'sfct' ? 'sfct' : 'none', sfct_id: d.nutrition?.source === 'sfct' ? d.nutrition.sfctId : null, sfct_recipe: d.sfctRecipe ? J(d.sfctRecipe) : null,
+    nutrition_source: ['sfct', 'ingredients'].includes(d.nutrition?.source) ? d.nutrition.source : 'none', sfct_id: d.nutrition?.source === 'sfct' ? d.nutrition.sfctId : null, sfct_recipe: d.sfctRecipe ? J(d.sfctRecipe) : null,
     version: d.version ?? 1, updated_at: d.updatedAt ?? null, updated_by: d.updatedBy ?? null,
   },
   lines: d.ingredients.map((l, i) => ({ position: i, ingredient_id: l.ing, grams: l.g, preparation: l.prep ?? null, optional: l.optional ? 1 : 0 })),
@@ -622,6 +644,7 @@ const REFERENCE_KEYS = { MedicalConditions: ['id'], DietCategories: ['id'], Loca
  */
 export async function ensureSchema(client) {
   await client.query(SCHEMA);
+  await migrate(client);
   await client.query(`INSERT INTO Meta (key, value) VALUES ('schema_version', $1), ('catalog_version', '1') ON CONFLICT (key) DO NOTHING`, [String(SCHEMA_VERSION)]);
   const ref = referenceRows();
   const hash = createHash('sha256').update(JSON.stringify(ref)).digest('hex');
@@ -629,6 +652,24 @@ export async function ensureSchema(client) {
   if (rows[0]?.value === hash) return;
   for (const [table, list] of Object.entries(ref)) await insertRows(client, table, Object.keys(list[0]), list, REFERENCE_KEYS[table]);
   await client.query(`INSERT INTO Meta (key, value) VALUES ('reference_hash', $1) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value`, [hash]);
+}
+
+/**
+ * Changes for databases created by an earlier version (CREATE TABLE IF NOT EXISTS
+ * does not alter existing tables). Each step is idempotent.
+ */
+async function migrate(client) {
+  // 1. Dishes may be "calculated from ingredients" (USDA values) besides SFCT-linked or none.
+  await client.query(`ALTER TABLE Dishes DROP CONSTRAINT IF EXISTS dishes_nutrition_source_check`);
+  await client.query(`ALTER TABLE Dishes ADD CONSTRAINT dishes_nutrition_source_check CHECK (nutrition_source IN ('sfct','ingredients','none'))`);
+  // 2. Once: dishes the code now calculates from ingredients, still stored as "none" by the earlier version.
+  const done = await client.query(`SELECT 1 FROM Meta WHERE key = 'migration_ingredient_nutrition'`);
+  if (!done.rows.length) {
+    const ids = DISHES.filter((d) => d.nutrition?.source === 'ingredients').map((d) => d.id);
+    const r = await client.query(`UPDATE Dishes SET nutrition_source = 'ingredients' WHERE nutrition_source = 'none' AND id = ANY($1)`, [ids]);
+    if (r.rowCount) await client.query(`UPDATE Meta SET value = (value::int + 1)::text WHERE key = 'catalog_version'`);
+    await client.query(`INSERT INTO Meta (key, value) VALUES ('migration_ingredient_nutrition', $1) ON CONFLICT (key) DO NOTHING`, [String(r.rowCount)]);
+  }
 }
 
 /** INSERT rows in chunks; with conflict key columns, existing rows are updated instead. */
@@ -667,13 +708,15 @@ const HOSPITAL_SQL = `
     'events', ${agg('row_to_json(v)', 'ScheduleEvents v WHERE v.schedule_id = s.id', 'v.position')})`, 'MealSchedule s', 's.id')},
   'intake', ${agg('row_to_json(i)', 'MealIntake i', 'i.id')},
   'requests', ${agg('row_to_json(r)', 'PatientRequests r', 'r.id')},
+  'health', ${agg('row_to_json(h)', 'HealthRecords h', 'h.id')},
   'audit', ${agg(`json_build_object('id', a.id, 'at', a.at, 'actor_id', a.actor_id, 'actor_role', a.actor_role, 'actor_name', a.actor_name, 'patient_id', a.patient_id, 'action', a.action, 'detail', a.detail)`,
     `(SELECT x.*, row_number() OVER (PARTITION BY x.patient_id, split_part(x.action, '.', 1) ORDER BY x.id DESC) AS rn FROM AuditLog x) a WHERE a.rn <= ${AUDIT_WINDOW}`, 'a.id')},
   'maxIds', json_build_object('patients', (SELECT coalesce(max(id), 0) FROM Patients), 'entries', (SELECT coalesce(max(id), 0) FROM MealSchedule),
-    'intake', (SELECT coalesce(max(id), 0) FROM MealIntake), 'requests', (SELECT coalesce(max(id), 0) FROM PatientRequests), 'audit', (SELECT coalesce(max(id), 0) FROM AuditLog)),`;
+    'intake', (SELECT coalesce(max(id), 0) FROM MealIntake), 'requests', (SELECT coalesce(max(id), 0) FROM PatientRequests), 'audit', (SELECT coalesce(max(id), 0) FROM AuditLog),
+    'health', (SELECT coalesce(max(id), 0) FROM HealthRecords)),`;
 // Public pages need only the menu catalogue.
-const NO_HOSPITAL_SQL = `'users', '[]'::json, 'patients', '[]'::json, 'entries', '[]'::json, 'intake', '[]'::json, 'requests', '[]'::json, 'audit', '[]'::json,
-  'maxIds', json_build_object('patients', 0, 'entries', 0, 'intake', 0, 'requests', 0, 'audit', 0),`;
+const NO_HOSPITAL_SQL = `'users', '[]'::json, 'patients', '[]'::json, 'entries', '[]'::json, 'intake', '[]'::json, 'requests', '[]'::json, 'audit', '[]'::json, 'health', '[]'::json,
+  'maxIds', json_build_object('patients', 0, 'entries', 0, 'intake', 0, 'requests', 0, 'audit', 0, 'health', 0),`;
 const snapshotSql = (hospital) => `SELECT json_build_object(${hospital ? HOSPITAL_SQL : NO_HOSPITAL_SQL}
   'catalogVersion', (SELECT value FROM Meta WHERE key = 'catalog_version'),
   'catalog', CASE WHEN (SELECT value FROM Meta WHERE key = 'catalog_version') IS DISTINCT FROM $1::text THEN json_build_object(
@@ -723,6 +766,7 @@ export async function loadSnapshot(db, catalogCache = null, { hospital = true } 
     intake: new Map(s.intake.map((r) => [String(r.id), intakeFromRow(r)])),
     requests: new Map(s.requests.map((r) => [String(r.id), requestFromRow(r)])),
     audit: new Map(s.audit.map((r) => [String(r.id), auditFromRow(r)])),
+    health: new Map(s.health.map((r) => [String(r.id), healthFromRow(r)])),
     maxIds: s.maxIds,
     catalogCache: catalog,
   };
@@ -739,6 +783,7 @@ export function createSnapshotRepo(snapshot, { readOnly = false } = {}) {
   const s = {
     users: new Map(snapshot.users), patients: new Map(snapshot.patients), entries: new Map(snapshot.entries),
     intake: new Map(snapshot.intake), requests: new Map(snapshot.requests), audit: new Map(snapshot.audit),
+    health: new Map(snapshot.health),
   };
   const maxIds = { ...snapshot.maxIds };
   const nextId = (table) => String(++maxIds[table]);
@@ -819,6 +864,7 @@ export function createSnapshotRepo(snapshot, { readOnly = false } = {}) {
       const key = String(Number(id));
       s.patients.delete(key);
       for (const bucket of ['entries', 'intake', 'requests', 'audit']) for (const [k, x] of s[bucket]) if (x.patientId === key) s[bucket].delete(k);
+      for (const [k, x] of s.health) if (x.owner === `p:${key}`) s.health.delete(k);
     },
 
     // ---- editable menu catalogue
@@ -915,6 +961,30 @@ export function createSnapshotRepo(snapshot, { readOnly = false } = {}) {
       return clone(s.requests.get(key));
     },
 
+    // ---- personal health records (members and patients)
+    listHealth(q = {}) {
+      return clone([...s.health.values()]
+        .filter((r) => (!q.owner || r.owner === q.owner) && (!q.kind || r.kind === q.kind) && (!q.ownerPrefix || r.owner.startsWith(q.ownerPrefix)) && inRange(r.date, q))
+        .sort((a, b) => cmp(a.date ?? '', b.date ?? '') || Number(a.id) - Number(b.id)));
+    },
+    getHealth: (id) => clone(s.health.get(String(Number(id))) ?? null),
+    addHealth(r) {
+      guard();
+      const id = nextId('health');
+      s.health.set(id, healthFromRow(healthToRow(r, id)));
+      return clone(s.health.get(id));
+    },
+    updateHealth(id, r) {
+      guard();
+      const key = String(Number(id));
+      const old = s.health.get(key);
+      if (!old) return null;
+      s.health.set(key, healthFromRow(healthToRow({ ...r, owner: old.owner, kind: old.kind, createdAt: old.createdAt }, key)));
+      return clone(s.health.get(key));
+    },
+    deleteHealth(id) { guard(); s.health.delete(String(Number(id))); },
+    deleteHealthOwner(owner) { guard(); for (const [k, x] of s.health) if (x.owner === owner) s.health.delete(k); },
+
     // ---- audit log
     addAudit(a) {
       guard();
@@ -932,6 +1002,8 @@ export function createSnapshotRepo(snapshot, { readOnly = false } = {}) {
       guard();
       for (const u of users()) if (u.patientId != null) setUser(u.id, { ...u, patientId: null });
       for (const bucket of ['patients', 'entries', 'intake', 'requests', 'audit']) s[bucket].clear();
+      // Hospital health records go too; members' private records are kept.
+      for (const [k, x] of s.health) if (x.owner.startsWith('p:')) s.health.delete(k);
       // The snapshot holds only recent audit rows, so the tables are emptied in full when saved.
       effects.push({ type: 'clearHospital' });
     },
@@ -942,7 +1014,7 @@ export function createSnapshotRepo(snapshot, { readOnly = false } = {}) {
   if (snapshot.hospital === false) {
     // A catalogue-only snapshot: reaching hospital data is a programming error, not an empty hospital.
     for (const name of Object.keys(repo)) {
-      if (/User|Admins|Patient|Entr|Intake|Request|Audit|clearHospital/.test(name)) repo[name] = () => { throw new Error(`${name}: this request loaded only the menu catalogue.`); };
+      if (/User|Admins|Patient|Entr|Intake|Request|Audit|Health|clearHospital/.test(name)) repo[name] = () => { throw new Error(`${name}: this request loaded only the menu catalogue.`); };
     }
   }
   return repo;
@@ -967,7 +1039,7 @@ function diff(before, after) {
 /** Write what changed in a snapshot repository, in dependency order. Call inside the write transaction. */
 export async function saveChanges(client, repo) {
   const { snapshot, s, cat, base, catalogReplaced, effects } = repo._changes();
-  const d = Object.fromEntries(['users', 'patients', 'entries', 'intake', 'requests', 'audit'].map((k) => [k, diff(snapshot[k], s[k])]));
+  const d = Object.fromEntries(['users', 'patients', 'entries', 'intake', 'requests', 'audit', 'health'].map((k) => [k, diff(snapshot[k], s[k])]));
   const ids = (keys) => keys.map(Number);
 
   // Accounts: only the CareBite fields that changed; better-auth owns everything else.
@@ -981,10 +1053,12 @@ export async function saveChanges(client, repo) {
 
   if (effects.some((e) => e.type === 'clearHospital')) {
     for (const t of ['AuditLog', 'PatientRequests', 'MealIntake', 'MealSchedule', 'Patients']) await client.query(`DELETE FROM ${t}`);
+    await client.query(`DELETE FROM HealthRecords WHERE owner LIKE 'p:%'`);
   }
 
   // Removed records, dependants first (deleting a patient also cascades in the database).
   if (d.audit.removed.length) await client.query('DELETE FROM AuditLog WHERE id = ANY($1)', [ids(d.audit.removed)]);
+  if (d.health.removed.length) await client.query('DELETE FROM HealthRecords WHERE id = ANY($1)', [ids(d.health.removed)]);
   if (d.requests.removed.length) await client.query('DELETE FROM PatientRequests WHERE id = ANY($1)', [ids(d.requests.removed)]);
   if (d.intake.removed.length) await client.query('DELETE FROM MealIntake WHERE id = ANY($1)', [ids(d.intake.removed)]);
   if (d.entries.removed.length) await client.query('DELETE FROM MealSchedule WHERE id = ANY($1)', [ids(d.entries.removed)]);
@@ -1028,6 +1102,7 @@ export async function saveChanges(client, repo) {
   await flat('MealIntake', 'intake', intakeToRow);
   await flat('PatientRequests', 'requests', requestToRow);
   await flat('AuditLog', 'audit', auditToRow);
+  await flat('HealthRecords', 'health', healthToRow);
 
   // Menu catalogue.
   let catalogChanged = false;

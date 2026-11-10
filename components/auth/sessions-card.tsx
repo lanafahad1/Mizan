@@ -9,13 +9,15 @@ import { Notice } from '@/components/ui/notice';
 import { LoadingBlock } from '@/components/ui/skeleton';
 import { toast } from '@/components/ui/toast';
 import { formatDateTime } from '@/lib/format';
+import { useT } from '@/components/site/lang';
+import type { T } from '@/lib/i18n';
 import type { AuthError } from './form-bits';
 
 // What list-sessions returns once the server has removed the session tokens.
 type SessionRow = { id: string; createdAt: string | Date; updatedAt?: string | Date; expiresAt: string | Date; ipAddress?: string | null; userAgent?: string | null };
 
 /** A short, readable device name from a user-agent string (best effort). */
-export function describeDevice(ua?: string | null): { label: string; mobile: boolean } {
+export function describeDevice(ua?: string | null): { label: string; mobile: boolean; browser?: string | null; os?: string | null } {
   if (!ua) return { label: 'Unknown device', mobile: false };
   const browser = /Edg\//.test(ua) ? 'Edge' : /OPR\/|Opera/.test(ua) ? 'Opera' : /Firefox\//.test(ua) ? 'Firefox'
     : /HeadlessChrome/.test(ua) ? 'Headless Chrome' : /Chrome\/|CriOS/.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : null;
@@ -23,7 +25,14 @@ export function describeDevice(ua?: string | null): { label: string; mobile: boo
     : /Mac OS X|Macintosh/.test(ua) ? 'macOS' : /CrOS/.test(ua) ? 'ChromeOS' : /Linux/.test(ua) ? 'Linux' : null;
   const mobile = /Mobile|iPhone|Android/.test(ua);
   if (!browser && !os) return { label: ua.slice(0, 60), mobile };
-  return { label: [browser ?? 'Browser', os ? `on ${os}` : null].filter(Boolean).join(' '), mobile };
+  return { label: [browser ?? 'Browser', os ? `on ${os}` : null].filter(Boolean).join(' '), mobile, browser, os };
+}
+
+/** The device name from describeDevice() in the page language (browser and OS names stay as they are). */
+function deviceLabel(d: ReturnType<typeof describeDevice>, t: T): string {
+  if (!d.browser && !d.os) return t(d.label);
+  const browser = d.browser ? t(d.browser) : t('Browser');
+  return d.os ? t('{browser} on {os}', { browser, os: d.os }) : browser;
 }
 
 const iso = (d: string | Date) => (typeof d === 'string' ? d : d.toISOString());
@@ -33,6 +42,7 @@ const iso = (d: string | Date) => (typeof d === 'string' ? d : d.toISOString());
  * IP addresses and browsers are not theirs to see) and do not offer to sign the others out.
  */
 export function SessionsCard({ shared = false }: { shared?: boolean }) {
+  const { t, lang } = useT();
   const [rows, setRows] = React.useState<SessionRow[] | null>(null);
   const [currentId, setCurrentId] = React.useState<string | null>(null);
   const [error, setError] = React.useState<{ stale: boolean; message: string } | null>(null);
@@ -68,8 +78,8 @@ export function SessionsCard({ shared = false }: { shared?: boolean }) {
     setRevoking(true);
     const { error: err } = await authClient.revokeOtherSessions();
     setRevoking(false);
-    if (err) { toast(authErrorMessage(err), { tone: 'error' }); return; }
-    toast('Signed out of all other devices.');
+    if (err) { toast(t(authErrorMessage(err)), { tone: 'error' }); return; }
+    toast(t('Signed out of all other devices.'));
     void load();
   };
 
@@ -80,25 +90,25 @@ export function SessionsCard({ shared = false }: { shared?: boolean }) {
     <Card aria-labelledby="sess-h">
       <CardHeader>
         <div className="flex min-w-0 flex-col gap-1">
-          <CardTitle id="sess-h" className="flex items-center gap-2"><MonitorSmartphone aria-hidden className="size-5 text-sage-deep" />Signed-in devices</CardTitle>
-          <CardDescription>Each device where your account is logged in. A session ends after 8 hours without activity, when you log out, or when you change your password.</CardDescription>
+          <CardTitle id="sess-h" className="flex items-center gap-2"><MonitorSmartphone aria-hidden className="size-5 text-sage-deep" />{t('Signed-in devices')}</CardTitle>
+          <CardDescription>{t('Everywhere you’re logged in right now. Each one ends after 8 hours with no activity, when you log out, or when you change your password.')}</CardDescription>
         </div>
       </CardHeader>
-      {loading && !rows ? <LoadingBlock label="Loading your sessions…" rows={2} /> : null}
+      {loading && !rows ? <LoadingBlock label={t('Loading your devices…')} rows={2} /> : null}
       {error ? (
         error.stale ? (
-          <Notice tone="info" title="Log in again to see your devices.">
-            For your security, the list of signed-in devices is shown only within 15 minutes of logging in.{' '}
-            <Button variant="link" size="sm" className="min-h-0 py-0 align-baseline" onClick={async () => { await authClient.signOut(); window.location.assign('/login?next=/settings'); }}>Log in again</Button>
+          <Notice tone="info" title={t('Log in again to see your devices.')}>
+            {t('For your security, the list of signed-in devices is shown only within 15 minutes of logging in.')}{' '}
+            <Button variant="link" size="sm" className="min-h-0 py-0 align-baseline" onClick={async () => { await authClient.signOut(); window.location.assign('/login?next=/settings'); }}>{t('Log in again')}</Button>
           </Notice>
         ) : (
-          <Notice tone="danger" title="Your sessions could not be loaded.">
-            {error.message} <Button variant="link" size="sm" onClick={() => void load()}><RefreshCw aria-hidden />Try again</Button>
+          <Notice tone="danger" title={t('We couldn’t load your devices.')}>
+            {t(error.message)} <Button variant="link" size="sm" onClick={() => void load()}><RefreshCw aria-hidden />{t('Try again')}</Button>
           </Notice>
         )
       ) : null}
       {rows ? (
-        <ul className="flex flex-col gap-2" aria-label="Signed-in devices">
+        <ul className="flex flex-col gap-2" aria-label={t('Signed-in devices')}>
           {sorted.map((s) => {
             const d = describeDevice(s.userAgent);
             const Icon = d.mobile ? Smartphone : Monitor;
@@ -106,14 +116,14 @@ export function SessionsCard({ shared = false }: { shared?: boolean }) {
             return (
               <li key={s.id} className="flex items-start gap-3 rounded-[14px] border border-border bg-background/60 p-3">
                 <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-mint text-sage-deep"><Icon className="size-5" /></span>
-                <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <div className="flex min-w-0 flex-1 flex-col gap-0.5 [overflow-wrap:anywhere]">
                   <p className="flex flex-wrap items-center gap-2">
-                    <b className="font-display font-semibold text-heading">{d.label}</b>
-                    {current ? <Badge variant="ok">This device</Badge> : null}
+                    <b className="font-display font-semibold text-heading">{deviceLabel(d, t)}</b>
+                    {current ? <Badge variant="ok">{t('This device')}</Badge> : null}
                   </p>
-                  <p className="text-sm text-muted-foreground">IP address: {s.ipAddress || 'not recorded'}</p>
-                  <p className="text-sm text-muted-foreground">Signed in {formatDateTime(iso(s.createdAt))} · expires {formatDateTime(iso(s.expiresAt))}</p>
-                  {s.userAgent ? <p className="truncate text-xs text-muted-foreground" title={s.userAgent}>{s.userAgent}</p> : null}
+                  <p className="text-sm text-muted-foreground">{t('IP address:')} {s.ipAddress ? <bdi>{s.ipAddress}</bdi> : t('not recorded')}</p>
+                  <p className="text-sm text-muted-foreground">{t('Signed in {start} · expires {end}', { start: formatDateTime(iso(s.createdAt), lang), end: formatDateTime(iso(s.expiresAt), lang) })}</p>
+                  {s.userAgent ? <p dir="ltr" className="truncate text-start text-xs text-muted-foreground" title={s.userAgent}>{s.userAgent}</p> : null}
                 </div>
               </li>
             );
@@ -121,14 +131,14 @@ export function SessionsCard({ shared = false }: { shared?: boolean }) {
         </ul>
       ) : null}
       {rows && shared ? (
-        <p className="text-sm text-muted-foreground">This is a shared demo account that other visitors use at the same time, so only this device is shown and other sessions cannot be signed out from here.</p>
+        <p className="text-sm text-muted-foreground">{t('Other visitors use this demo account at the same time, so you only see this device and can’t sign the others out from here.')}</p>
       ) : null}
       {rows && !shared ? (
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Button variant="outline" onClick={revokeOthers} disabled={revoking || others === 0}>
-            {revoking ? <Loader2 aria-hidden className="animate-spin" /> : <LogOut aria-hidden />}Sign out of all other devices
+            {revoking ? <Loader2 aria-hidden className="animate-spin" /> : <LogOut aria-hidden />}{t('Sign out of all other devices')}
           </Button>
-          <p className="text-sm text-muted-foreground">{others === 0 ? 'No other devices are signed in.' : `${others} other ${others === 1 ? 'device is' : 'devices are'} signed in.`}</p>
+          <p className="text-sm text-muted-foreground">{others === 0 ? t('No other devices are signed in.') : others === 1 ? t('1 other device is signed in.') : t('{n} other devices are signed in.', { n: others })}</p>
         </div>
       ) : null}
     </Card>

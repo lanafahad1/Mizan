@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { logoMark } from '@/lib/art.js';
 
-export const alt = 'CareBite: personalized hospital meals that fit every patient';
+export const alt = 'CareBite: Care in every bite';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -23,8 +23,8 @@ export default function OpengraphImage() {
             <img src={logo} width={140} height={140} alt="" />
             <div style={{ fontSize: 112, fontWeight: 700, color: C.heading, letterSpacing: -2 }}>CareBite</div>
           </div>
-          <div style={{ fontSize: 50, fontWeight: 600, color: C.roseInk, maxWidth: 860, lineHeight: 1.15 }}>Hospital meals that fit every patient.</div>
-          <div style={{ fontSize: 30, color: C.text, maxWidth: 820, lineHeight: 1.35 }}>Diet orders, allergies, preferences and appetite matched to the hospital menu, with Saudi government guidance (MOH, SFDA, MEWA, GFSA).</div>
+          <div style={{ fontSize: 50, fontWeight: 600, color: C.roseInk, maxWidth: 860, lineHeight: 1.15 }}>Care in every bite.</div>
+          <div style={{ fontSize: 30, color: C.text, maxWidth: 820, lineHeight: 1.35 }}>Keep a private food diary at home and get meals checked for you in hospital, guided by the Saudi Ministry of Health and SFDA.</div>
           <div style={{ display: 'flex', marginTop: 8 }}>
             <div style={{ fontSize: 24, color: C.heading, background: C.mint, border: `2px solid ${C.sage}`, borderRadius: 999, padding: '10px 24px' }}>A university Health Informatics project</div>
           </div>

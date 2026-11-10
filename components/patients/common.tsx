@@ -8,13 +8,16 @@ import { ApiError } from '@/lib/api-client';
 import { formatDateTime } from '@/lib/format';
 import { scrollToFirstError } from '@/components/forms/errors';
 import { cn } from '@/lib/utils';
+import { useT } from '@/components/site/lang';
+import { makeT, type T } from '@/lib/i18n';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /** A timestamp ("Oct 19, 2:05 PM"). Rendered on the server and the client, so hydration differences are allowed. */
 export function When({ iso }: { iso?: string | null }) {
+  const { lang } = useT();
   if (!iso) return null;
-  return <time dateTime={iso} suppressHydrationWarning>{formatDateTime(iso)}</time>;
+  return <time dateTime={iso} suppressHydrationWarning>{formatDateTime(iso, lang)}</time>;
 }
 
 const isApiRead = (k: unknown) => typeof k === 'string' && k.startsWith('/api/') && !k.startsWith('/api/reference');
@@ -45,16 +48,17 @@ export function useRevalidate() {
 }
 
 /** The message to show for a failed request, with the screening reasons when the server sent them. */
-export function errorText(err: unknown): string {
+export function errorText(err: unknown, t: T = makeT('en')): string {
   if (err instanceof ApiError) {
     const reasons = (err.details?.reasons as string[] | undefined) ?? [];
-    return `${err.message}${reasons.length ? ` ${reasons.join(' ')}` : ''}`;
+    return `${t(err.message)}${reasons.length ? ` ${reasons.map((r) => t(r)).join(' ')}` : ''}`;
   }
-  return 'Something went wrong. Check your connection and try again.';
+  return t('Something went wrong. Check your connection and try again.');
 }
 
 /** Submit state for a form: busy flag, field errors (for FormErrors) and a form-level message. */
 export function useSubmit() {
+  const { t } = useT();
   const [busy, setBusy] = React.useState(false);
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [formError, setFormError] = React.useState<string | null>(null);
@@ -65,19 +69,20 @@ export function useSubmit() {
     } catch (err) {
       const fieldErrors = err instanceof ApiError ? err.errors : {};
       setErrors(fieldErrors);
-      setFormError(errorText(err));
+      setFormError(errorText(err, t));
       if (Object.keys(fieldErrors).length) scrollToFirstError(root ?? null);
     } finally {
       setBusy(false);
     }
-  }, []);
+  }, [t]);
   return { busy, errors, formError, setFormError, setErrors, run };
 }
 
 /** Form-level error under a form (announced). */
 export function FormMessage({ message, className }: { message?: string | null; className?: string }) {
+  const { t } = useT();
   if (!message) return null;
-  return <p role="alert" className={cn('rounded-[12px] border border-[#F3C9D3] bg-destructive-soft px-3 py-2 text-sm font-semibold text-destructive', className)}>{message}</p>;
+  return <p role="alert" className={cn('rounded-[12px] border border-[#F3C9D3] bg-destructive-soft px-3 py-2 text-sm font-semibold text-destructive', className)}>{t(message)}</p>;
 }
 
 /** Controlled modal with header, scrollable body and footer. Focus is trapped and returns via `finalFocus`. */
@@ -105,3 +110,12 @@ export const CellLabel = ({ children }: { children: React.ReactNode }) => (
 );
 
 export type AnyRecord = any;
+
+/** Request types in staff wording (the patient sees "Request a change to my meal schedule"; staff read "Change to meal schedule"). */
+const STAFF_REQUEST_LABELS: Record<string, string> = {
+  alternative: 'Different meal requested',
+  'schedule-change': 'Change to meal schedule',
+  assistance: 'Support requested',
+  'clinical-change': 'Allergy or diet change reported',
+};
+export const staffRequestLabel = (type: string, fallback?: string | null) => STAFF_REQUEST_LABELS[type] ?? fallback ?? type;

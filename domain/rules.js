@@ -42,7 +42,7 @@ export const SOURCES = {
     title: 'Saudi Food Composition Tables, first edition (released 25 June 2026)',
     publisher: 'Saudi Food & Drug Authority (SFDA), National Nutrition Committee',
     url: 'https://www.sfda.gov.sa/en/news/19089',
-    summary: 'Laboratory-analysed nutrient values per 100 g (and per full recipe) for traditional dishes from the 13 regions of the Kingdom, with each standard recipe. This is CareBite’s only nutrient source: a hospital dish is linked to an SFCT entry only when it is prepared to that recipe. Dishes without a link have no nutrient values, and diets with nutrient limits need admin review for them.',
+    summary: 'Laboratory-analysed nutrient values per 100 g (and per full recipe) for traditional dishes from the 13 regions of the Kingdom, with each standard recipe. CareBite uses it first for Saudi dishes: a hospital dish is linked to an SFCT entry only when it is prepared to that recipe. Other dishes use values calculated from their ingredients (USDA FoodData Central). A dish with neither has no nutrient values, and diets with nutrient limits need admin review for it.',
     links: [
       { label: 'Saudi Food Composition Tables (English PDF)', url: 'https://www.sfda.gov.sa/sites/default/files/2026-04/SFCT-E.pdf' },
       { label: 'جداول تركيب الأغذية السعودية (Arabic PDF)', url: 'https://www.sfda.gov.sa/sites/default/files/2026-04/SFCT-A.pdf' },
@@ -91,6 +91,29 @@ export const SOURCES = {
     publisher: 'Ministry of Health (MOH), General Directorate of Nutrition',
     url: 'https://www.moh.gov.sa/en/HealthAwareness/Pages/SaudihealthFoodGuide.aspx',
     summary: 'National dietary guidelines on the kinds and amounts of food to eat. They promote nutrient-rich foods and discourage sugary, salty and fatty foods to reduce the risk of obesity, diabetes and hypertension.',
+  },
+  'MOH-OBESITY': {
+    authority: 'MOH', saudi: true,
+    title: 'The Saudi clinical practice guideline for the management of overweight and obesity in adults (Saudi Medical Journal, 2016)',
+    publisher: 'Ministry of Health (MOH) working group, with McMaster University',
+    url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC5221364/',
+    summary: 'National guideline (GRADE method) for adults with overweight (BMI 25–29.9 kg/m²) or obesity (BMI 30 kg/m² or more). It recommends lifestyle interventions (diet, physical activity and behaviour support) as the basis of care, with medicines or surgery only for selected patients under clinical supervision.',
+  },
+  'MOH-CALC': {
+    authority: 'MOH', saudi: true,
+    title: 'Calorie calculator and BMI calculator (Health Awareness · Medical tools)',
+    publisher: 'Ministry of Health (MOH), Saudi Arabia',
+    url: 'https://www.moh.gov.sa/en/healthawareness/medicaltools/pages/caloriecalculate.aspx',
+    summary: 'MOH estimates daily calories with the Mifflin-St Jeor equation (men: 10 × weight kg + 6.25 × height cm − 5 × age + 5; women: … − 161) multiplied by an activity level: 1.2 sedentary, 1.375 light (1–3 times a week), 1.55 moderate (3–5 times a week), 1.725 very active (6–7 times a week), 1.9 extra active. BMI = weight ÷ height²: under 18.5 underweight, 18.5–24.9 healthy, 25–29.9 overweight, 30–34.9 obesity class 1, 35–39.9 class 2, 40 or more class 3.',
+    links: [{ label: 'MOH BMI calculator', url: 'https://www.moh.gov.sa/en/healthawareness/medicaltools/pages/bodymassindex.aspx' }],
+  },
+  'MOH-GUIDE': {
+    authority: 'MOH', saudi: true,
+    title: 'Calorie Guide for Weight Loss, 1,200–2,200 calories (دليل السعرات الحرارية لخفض الوزن)',
+    publisher: 'Ministry of Health (MOH), Saudi Arabia · Live Well programme',
+    url: 'https://www.moh.gov.sa/HealthAwareness/EducationalContent/Food-and-Nutrition/Documents/Food-Calorie-Calculator.pdf',
+    summary: 'MOH food exchange list (one portion: milk 120 kcal, starch 80 kcal, protein 75 kcal, vegetables 25 kcal, fruit 60 kcal, fat 45 kcal), daily meal plans from 1,200 to 2,200 kcal, the healthy plate, waist circumference risk levels (men 94/102 cm, women 80/88 cm), label reading, household measures, physical activity and sleep advice.',
+    links: [{ label: 'MOH Food Calorie Calculator for Weight Loss page', url: 'https://www.moh.gov.sa/en/HealthAwareness/EducationalContent/Food-and-Nutrition/Pages/Food-Calorie-Calculator.aspx' }],
   },
   'MOH-FOODCHOICES': {
     authority: 'MOH', saudi: true,
@@ -160,6 +183,21 @@ export const SOURCES = {
     url: 'https://iddsi.org/saudi-arabia',
     summary: 'A standard set of levels for texture-modified foods. No Saudi government texture standard was found; the Saudi Arabia IDDSI Reference Group promotes IDDSI across Saudi public and private healthcare. The texture level is set by the care team.',
   },
+  'USDA-FDC': {
+    authority: 'USDA', saudi: false,
+    title: 'FoodData Central, SR Legacy (April 2018)',
+    publisher: 'U.S. Department of Agriculture, Agricultural Research Service',
+    url: 'https://fdc.nal.usda.gov/',
+    summary: 'Public-domain nutrient values per 100 g of single foods. The SFDA Saudi Food Composition Tables cover Saudi dishes only, so CareBite uses these values for the ingredients of its international recipes and adds them up by recipe weight. These dish values are calculated from ingredients, not laboratory-analysed.',
+  },
+  'OFF': {
+    authority: 'Open Food Facts', saudi: false,
+    title: 'Open Food Facts (products sold in Saudi Arabia)',
+    publisher: 'Open Food Facts contributors (community database)',
+    url: 'https://world.openfoodfacts.org',
+    summary: 'Supermarket products and their nutrition labels, entered by volunteers and not verified. Used only because no Saudi government product database is published. Always check the product’s own label. Contains data from Open Food Facts, © Open Food Facts contributors, under the Open Database Licence (ODbL) v1.0.',
+    links: [{ label: 'Open Database Licence (ODbL) v1.0', url: 'https://opendatacommons.org/licenses/odbl/1-0/' }],
+  },
   // ---- CareBite prototype assumptions (documented, not external guidance)
   'CAREBITE-ALLOC': {
     authority: 'CareBite', saudi: false,
@@ -192,7 +230,7 @@ export const MEAL_SHARE = { breakfast: 0.25, lunch: 0.3, dinner: 0.3, snack: 0.1
  * `support` says how completely CareBite can screen the category, so that
  * cases needing professional review are visible instead of looking automatic.
  *   ingredient – screened from ingredient data alone
- *   nutrient   – nutrient limits screened where SFDA SFCT values exist; meals without them need review
+ *   nutrient   – nutrient limits screened where every dish has values (SFCT, or calculated from ingredients); meals without them need review
  *   ranking    – changes the order of options only; nothing is excluded by it
  *   review     – every meal needs admin review
  * Retired categories are not offered for new diet orders (see `retiredReason`).
@@ -226,10 +264,10 @@ export const DIET_CATEGORIES = [
 ];
 export const ACTIVE_DIET_CATEGORIES = DIET_CATEGORIES.filter((d) => d.status !== 'retired');
 export const DIET_SUPPORT = {
-  ingredient: { label: 'Screened from ingredients', text: 'Checked automatically from each meal’s ingredient data.' },
-  nutrient: { label: 'Needs SFDA nutrient values', text: 'Nutrient limits are checked automatically where SFDA Saudi Food Composition Table values exist for every dish in the meal; other meals need admin review.' },
-  ranking: { label: 'Ranking only', text: 'Changes the order of suitable options; it never excludes a meal. Targets are monitored by the admin.' },
-  review: { label: 'Always needs professional review', text: 'No meal can be approved automatically; an admin reviews every meal.' },
+  ingredient: { label: 'Screened from ingredients', text: 'Checked automatically from each meal’s ingredients.' },
+  nutrient: { label: 'Needs nutrient values', text: 'Nutrient limits are checked automatically when every dish in the meal has nutrient values (SFDA Saudi Food Composition Tables, or calculated from ingredients). Other meals need admin review.' },
+  ranking: { label: 'Ranking only', text: 'Changes the order of suitable options and never excludes a meal. The admin keeps track of the targets.' },
+  review: { label: 'Always needs professional review', text: 'No meal is approved automatically. An admin reviews every meal.' },
 };
 export const dietCategory = (id) => DIET_CATEGORIES.find((d) => d.id === id);
 
@@ -279,7 +317,7 @@ export const SAFETY_RULES = [
   { ...base, id: 'DIET-RENAL-PARAMS', outcome: 'review', title: 'Renal limits missing', logic: 'A renal diet without potassium and phosphorus limits from the admin cannot be screened fully, so every meal needs review.', sources: ['MOH-KIDNEY'] },
   { ...base, id: 'DIET-CHO-PARAMS', outcome: 'review', title: 'Carbohydrate amount missing', logic: 'A consistent-carbohydrate diet without a per-meal carbohydrate amount from the admin cannot be screened, so every meal needs review.', sources: ['SDCPG'] },
   { ...base, id: 'DIET-NPO', outcome: 'exclude', title: 'Nothing by mouth (NPO)', logic: 'While the diet order is NPO, no meal is recommended, offered or sent to the kitchen.', sources: [] },
-  { ...base, id: 'DATA-REQUIRED', outcome: 'review', title: 'Nutrition data not available', logic: 'If a rule needs a nutrient value and any dish in the meal has no SFDA Saudi Food Composition Table value for it, the meal needs admin review instead of being assumed to pass. Values are never estimated and partial totals are never used for a limit.', sources: ['SFDA-SFCT'] },
+  { ...base, id: 'DATA-REQUIRED', outcome: 'review', title: 'Nutrition data not available', logic: 'If a rule needs a nutrient value and any dish in the meal has no value for it (SFDA Saudi Food Composition Tables first; otherwise calculated from USDA ingredient values), the meal needs admin review instead of being assumed to pass. Values are never estimated and partial totals are never used for a limit.', sources: ['SFDA-SFCT', 'USDA-FDC'] },
   { ...base, id: 'ALG-REPORTED', outcome: 'review', title: 'Patient-reported allergy awaiting review', logic: 'When a patient reports a possible allergy to one of the 14 SFDA allergens, meals that contain or may contain it need admin review until the report is resolved. The report never changes the allergy record by itself.', sources: ['SFDA-ALLERGENS'] },
   { ...base, id: 'MENU-INFO-REVIEW', outcome: 'review', title: 'Menu information not yet verified', logic: 'When a meal’s ingredients, allergens, portion weights or nutrition source are changed by anyone other than an admin who verifies them, the meal needs admin review for every patient until an admin verifies the information.', sources: [] },
   { ...base, id: 'MENU-UNAVAILABLE', outcome: 'exclude', title: 'Meal unavailable', logic: 'A meal the kitchen marks as unavailable is not screened, offered or confirmed. Upcoming orders for it are put on hold for the nutrition team to replace.', sources: [] },

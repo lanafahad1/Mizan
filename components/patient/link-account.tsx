@@ -12,9 +12,11 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/components/ui/toast';
+import { useT } from '@/components/site/lang';
 
 export function LinkAccount() {
   const router = useRouter();
+  const { t } = useT();
   const [error, setError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
   async function submit(e: React.FormEvent<HTMLFormElement>) {
@@ -23,26 +25,26 @@ export function LinkAccount() {
     setBusy(true); setError(null);
     try {
       await apiSend('POST', '/api/account/link', { linkCode });
-      toast('Your account is now linked to your meal profile.');
+      toast(t('Your account is now linked to your meal profile.'));
       router.refresh();
     } catch (err) {
       const ae = err as ApiError;
-      if (ae.errors?.linkCode) setError(ae.errors.linkCode);
-      else toast(ae.message, { tone: 'error' });
+      if (ae.errors?.linkCode) setError(t(ae.errors.linkCode));
+      else toast(t(ae.message), { tone: 'error' });
     } finally { setBusy(false); }
   }
   return (
     <>
-      <PageHead eyebrow="My meals" title="Link your account to your meal profile" narrow>
-        <p>Your account is not linked to a hospital meal profile yet. Ask the nutrition team for a one-time link code and enter it here.</p>
+      <PageHead eyebrow={t('My meals')} title={t('Link your account to your meal profile')} space="member">
+        <p>{t('Your account isn’t linked to your hospital meals yet. Ask the nutrition team for a one-time link code and enter it below.')}</p>
       </PageHead>
-      <PageBody narrow>
+      <PageBody space="member">
         <Card>
           <form noValidate onSubmit={submit} className="flex flex-col gap-4">
-            <Field id="lk-code" label="Link code" error={error}>
-              <Input name="linkCode" placeholder="ABCD-2345" autoCapitalize="characters" autoComplete="one-time-code" maxLength={12} />
+            <Field id="lk-code" label={t('Link code')} error={error}>
+              <Input name="linkCode" placeholder="ABCD-2345" dir="ltr" autoCapitalize="characters" autoComplete="one-time-code" maxLength={12} />
             </Field>
-            <Button type="submit" disabled={busy} className="w-full sm:w-fit"><Link2 aria-hidden />{busy ? 'Linking…' : 'Link my account'}</Button>
+            <Button type="submit" disabled={busy} className="w-full sm:w-fit"><Link2 aria-hidden />{busy ? t('Linking…') : t('Link my account')}</Button>
           </form>
         </Card>
       </PageBody>
@@ -52,9 +54,10 @@ export function LinkAccount() {
 
 /** Other patient pages ask the patient to link their account on My Meals first. */
 export function LinkFirst({ title }: { title: string }) {
+  const { t, lang } = useT();
   return (
-    <PageHead title={title} narrow>
-      <p>Link your account first on <Link href="/my-meals">My Meals</Link>.</p>
+    <PageHead title={t(title)} space="member">
+      <p>{lang === 'ar' ? <>{t('To see this page, first link your account on')} <Link href="/my-meals">{t('My Meals')}</Link>.</> : <>To see this page, first link your account on <Link href="/my-meals">My Meals</Link>.</>}</p>
     </PageHead>
   );
 }

@@ -1,10 +1,13 @@
 # Wastelimiting · CareBite
 
-**CareBite** is a personalized hospital meal recommendation platform: a university Health Informatics project that helps hospital nutrition teams serve patients meals they can safely eat and are likely to finish, so that less food is wasted. It matches each meal on the hospital menu to the patient's prescribed diet, medical restrictions, food allergies, preferences and appetite. It then follows every meal from the offer to the tray, and records what was actually eaten, refused or left over.
+**CareBite** supports healthy eating for **obesity and chronic diseases** (obesity, type 2 diabetes, high blood pressure, heart and kidney disease). It is a university Health Informatics project with two spaces:
 
-Every food and health rule is based on Saudi government guidance: the Ministry of Health, the Saudi National Diabetes Center, the Saudi Food & Drug Authority (SFDA), the Ministry of Environment, Water and Agriculture (MEWA) and the General Food Security Authority (GFSA).
+- **Member** — anyone, including healthcare workers, managing their own lifestyle: a food diary with calories and macros for Saudi dishes, single ingredients and supermarket products (search, grams, barcode), the MOH BMI and calorie calculator, personal targets, weight / blood pressure / blood sugar readings, an optional assessment, meal ideas and an MOH meal plan with a shopping list. **Private: no hospital role can see it.**
+- **Hospital care** — patients, staff and admins: meals screened against each patient's diet order, conditions and allergies, followed from the offer to the tray; a care-team assessment with daily targets and review dates; and a home plan at discharge. Recording plate waste is kept as a secondary benefit (less food wasted).
 
-**Project Development Team:** Lana Fahad Alhari · Nebras Almutairi · Alhanouf Aldubyan · Shumua Alharbi
+Every food value and health rule cites its source, **Saudi government first**: the Ministry of Health (calorie and BMI calculators, the Calorie Guide for Weight Loss, the obesity guideline, salt and diabetes advice), the Saudi National Diabetes Center, the Saudi Food & Drug Authority (Saudi Food Composition Tables, allergens), MEWA and GFSA. Non-Saudi sources are used only where no Saudi one exists, and are labelled (USDA FoodData Central for single ingredients, Open Food Facts for packaged products, IDDSI for textures).
+
+**Designed and developed by:** Lana Fahad Alhari (لانا فهد الحريّ)
 
 > **Medical disclaimer.** CareBite is an educational Health Informatics project designed to demonstrate personalized nutritional decision support. It does not diagnose medical conditions, replace professional medical advice, or guarantee clinical outcomes. Meal suggestions depend on the available data and reviewed dietary rules. Users with complex medical conditions, prescribed diets, or uncertain allergy information should consult a qualified healthcare professional.
 
@@ -22,7 +25,16 @@ All patients, staff and records in this project are fictional (synthetic demonst
 
 ---
 
-## Why: limiting hospital food waste
+## Why: obesity and chronic diseases
+
+MOH reports that about 20% of adults in Saudi Arabia live with obesity (MOH national survey, 2019, cited in the MOH Calorie Guide for Weight Loss), and obesity raises the risk of type 2 diabetes, high blood pressure and heart disease. CareBite helps people eat to a target they understand:
+
+1. **Know your numbers.** BMI, MOH waist risk levels and daily energy needs with the MOH method (Mifflin-St Jeor × activity).
+2. **Track what you eat.** Calories, carbohydrate, protein, fat, sugar and sodium for every food, with the source of each value.
+3. **Follow a plan.** MOH meal plans from 1,200 to 2,200 kcal, the MOH exchange list for swaps, and a printable shopping list.
+4. **In hospital,** meals are checked against every condition and allergy together, the care team reviews the assessment and sets targets, and the patient leaves with a home plan.
+
+## Less food waste (secondary)
 
 Hospital meals that do not fit a patient (wrong diet, an allergen, a disliked food, too large a portion for a poor appetite) are refused or left on the plate. CareBite addresses this at each step:
 
@@ -38,13 +50,14 @@ Hospital meals that do not fit a patient (wrong diet, an allergen, a disliked fo
 
 ## Features by role
 
-CareBite has three roles. Every action is authorized by role-based access control (RBAC).
+Hospital care has three roles; the member space has one. Every action is authorized by role-based access control (RBAC).
 
 | Role | What they do |
 | --- | --- |
-| **Patient** | **My Meals**: the next meal and what to do next, approved options with "Why this meal?", choosing a meal, the day and week view, and feedback after delivery. **My Requests**: requests and the team's responses. **My Food Profile**: preferences and appetite, and reporting a diet or allergy change for review. |
-| **Staff** | **Patient overview** and nutrition profiles. Offering and confirming eligible meals, recording a patient's choice, cancelling and handling held meals. **Kitchen summary**: quantities, tray tickets, prepared → delivered, and change alerts. Also the meal schedule, recording intake (including weighed waste), editing the menu, answering requests, and admission and discharge. |
-| **Admin** | Everything staff can do, plus: clinical information (diet orders, allergies, restrictions), approving meals that need review, verifying menu dietary information, creating and deleting records, and approving staff access and assigning roles. |
+| **Member** | **Today**: food diary by meal, search (MOH portions, SFDA Saudi dishes, ingredients, supermarket products), grams or household portions, barcode, quick add and "add from a pack label". **My Health**: BMI, waist risk, daily needs, personal targets, readings with history, the optional assessment. **Meal Ideas** and **My Plan** (MOH meal plan, exchanges, shopping list, healthy habits). |
+| **Patient** | **Today** and **My Health** (as members, but targets come from the care team and hospital meals eaten count automatically). **My Meals**: the next meal and what to do next, approved options with "Why this meal?", choosing a meal, the day and week view, and feedback after delivery. **My Requests**: requests and the team's responses. **My Food Profile**: preferences and appetite, and reporting a diet or allergy change for review. |
+| **Staff** | **Health tab** for each patient (readings, targets, assessment), the chronic-conditions dashboard section. **Patient overview** and nutrition profiles. Offering and confirming eligible meals, recording a patient's choice, cancelling and handling held meals. **Kitchen summary**: quantities, tray tickets, prepared → delivered, and change alerts. Also the meal schedule, recording intake (including weighed waste), editing the menu, answering requests, and admission and discharge. |
+| **Admin** | Everything staff can do, plus reviewing assessments and setting nutrition targets, and: clinical information (diet orders, allergies, restrictions), approving meals that need review, verifying menu dietary information, creating and deleting records, and approving staff access and assigning roles. |
 
 The meal workflow is **Options offered → Patient choice submitted → Confirmed by nutrition team → Prepared → Delivered**. Delivered does not mean eaten: intake is recorded separately.
 
@@ -92,6 +105,10 @@ On first start the tables are created in that database and seeded with:
 | `npm run typecheck` | TypeScript check. |
 | `npm run reset-db -- --yes` | Delete every CareBite table in the `DATABASE_URL` database; the next start creates and seeds them again. To reset only the demonstration hospital, sign in as `admin.demo` and use the reset in Settings. |
 
+### Account emails (optional)
+
+Email confirmation and "Forgot password?" emails are sent through Gmail with an app password. Set `GMAIL_USER`, `GMAIL_APP_PASSWORD` (and optionally `EMAIL_FROM_NAME`) in `.env.local` or in Vercel → Settings → Environment Variables (see `.env.example`). Recipients see **CareBite &lt;GMAIL_USER&gt;**. Without these settings no email is sent: the reset page says it isn't set up, and in development the link is printed in the server log. Demo accounts never receive emails and can't be reset.
+
 ### Demo accounts (demonstration access only)
 
 All demo accounts use the password `CareBite#2026`, and the login page has one-click buttons. **No identity is verified**: these are shared demonstration accounts, not real credentials.
@@ -101,6 +118,7 @@ All demo accounts use the password `CareBite#2026`, and the login page has one-c
 | `admin.demo` | Admin |
 | `staff.demo` | Staff |
 | `noura.1001`, `khalid.1004` | Patients CB-1001 and CB-1004 |
+| `sara.member` | Member (personal use, no hospital) |
 
 `layla.applicant` is a pending staff access request that `admin.demo` can approve.
 
@@ -179,10 +197,13 @@ test/, e2e/          node:test suites and the cross-role browser test
 
 ## Data sources
 
-- **Nutrition:** the **SFDA Saudi Food Composition Tables (SFCT)**, first edition: laboratory values for 130 traditional dishes.
-  - 18 hospital dishes are linked to SFCT entries.
-  - Missing values are never estimated, and meals that a rule cannot check go to admin review.
-  - 9 published tables that are internally inconsistent are kept as published, and cannot be linked to a dish.
+- **Food values, in this order of preference:**
+  1. **MOH Calorie Guide for Weight Loss** — the food exchange list (calories and macros per MOH portion) and meal plans from 1,200 to 2,200 kcal.
+  2. **SFDA Saudi Food Composition Tables (SFCT)**, first edition — laboratory values for 130 traditional Saudi dishes (all searchable; 18 hospital dishes are prepared to SFCT recipes). 9 internally inconsistent tables are kept as published and cannot be linked.
+  3. **USDA FoodData Central (SR Legacy)** — per-100 g values for 140 single ingredients; international recipes are calculated from their ingredient weights and labelled "calculated".
+  4. **Open Food Facts** — 600 supermarket products sold in Saudi Arabia (community data, ODbL; "check the pack label"), plus products people add from their own pack labels.
+  - Missing values are never estimated; meals a rule cannot check go to admin review.
+- **Calculator:** the MOH calorie and BMI calculators (Mifflin-St Jeor × activity factor; MOH BMI categories) and MOH waist risk levels.
 - **Rules:**
   - MOH salt limit (5 g a day), diabetes, kidney disease and gluten-free guidance;
   - the Saudi Diabetes Clinical Practice Guidelines;
@@ -197,17 +218,21 @@ The full list of sources is on the site's **Data sources & limitations** page.
 ## Limitations
 
 - **Not production-ready:**
-  - no real identity verification or email service;
+  - no real identity verification (email confirmation is a reminder only; account emails need the optional Gmail settings below);
   - no notifications outside the app;
   - no connection to hospital systems (EHR, admission, pharmacy).
 - **Not clinically validated.** The rules follow cited Saudi guidance but have not been validated; a hospital dietetics department would need to review them.
+- **Readings are not interpreted.** Blood pressure and blood sugar are a history only; CareBite gives no alerts or medical advice.
+- **Targets are not prescriptions.** Members' targets are personal estimates; patients' targets come from the care team.
 - **Data gaps:**
-  - only the 18 SFCT-linked dishes have nutrient values;
+  - USDA and Open Food Facts values are not Saudi laboratory values; packaged-product allergens come from community tags and must be checked on the label;
+  - barcode scanning with the camera works only in browsers with the BarcodeDetector API (typing the number works everywhere);
   - menu items have no texture levels;
   - dashboard figures describe recorded meals only and do not show cause and effect.
 
 ## Acknowledgements
 
-- [SFDA Saudi Food Composition Tables](https://www.sfda.gov.sa/en/news/19089).
+- [SFDA Saudi Food Composition Tables](https://www.sfda.gov.sa/en/news/19089) and the [MOH Calorie Guide for Weight Loss](https://www.moh.gov.sa/HealthAwareness/EducationalContent/Food-and-Nutrition/Documents/Food-Calorie-Calculator.pdf).
+- [USDA FoodData Central](https://fdc.nal.usda.gov/) (public domain) and [Open Food Facts](https://world.openfoodfacts.org) (contains data from Open Food Facts, © Open Food Facts contributors, under the [ODbL](https://opendatacommons.org/licenses/odbl/1-0/)).
 - [transitions.dev](https://transitions.dev) CSS transitions, used under its terms (the library itself is not redistributed here).
 - [Base UI](https://base-ui.com), [shadcn/ui](https://ui.shadcn.com) patterns, [better-auth](https://www.better-auth.com), [Next.js](https://nextjs.org), [SWR](https://swr.vercel.app) and [Tailwind CSS](https://tailwindcss.com).

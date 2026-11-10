@@ -50,10 +50,10 @@ export function createAccountApi({ repo, service, hashPassword, verifyPassword, 
     if (type === 'patient') {
       patient = service.checkLinkCode(body.linkCode);
       if (!String(body.linkCode ?? '').trim()) errors.linkCode = 'Enter the link code the nutrition team gave you.';
-      else if (!patient) errors.linkCode = 'This code is not valid or has expired. Ask the nutrition team for a new code.';
+      else if (!patient) errors.linkCode = 'That code didn’t work. It may be mistyped or expired. Ask your nutrition team for a new one.';
       else if (repo.listUsersByPatient(patient.id).length) errors.linkCode = 'This patient profile already has a personal account.';
     } else {
-      if (!name) errors.name = 'Enter your name as the admin will know it.';
+      if (!name) errors.name = 'Enter your name the way the admin will recognise it.';
       if (!ASSIGNABLE_STAFF_ROLES.includes(body.requestedRole)) errors.requestedRole = 'Choose the job you are asking access for.';
       if (!clean(body.requestNote, 200)) errors.requestNote = 'Tell the admin your department or job title.';
     }
@@ -115,7 +115,7 @@ export function createAccountApi({ repo, service, hashPassword, verifyPassword, 
       if (errors.confirmPassword) fail(422, 'validation_failed', errors.confirmPassword, { errors: { confirmPassword: errors.confirmPassword } });
       repo.updateUser(user.id, { passwordHash: await hashPassword(String(body.newPassword)), updatedAt: now().toISOString() });
       otherSessionsEnd?.();
-      return { status: 200, body: { ok: true, message: 'Password updated. Other sessions were signed out.' } };
+      return { status: 200, body: { ok: true, message: 'Password updated. You were signed out on your other devices.' } };
     }
     if (method === 'POST' && path === '/api/account/link') {
       if (user.role !== 'patient') fail(403, 'forbidden', 'Only patient accounts can be linked to a patient profile.');
@@ -137,7 +137,7 @@ export function createAccountApi({ repo, service, hashPassword, verifyPassword, 
       repo.deleteUser(user.id);
       return {
         status: 200, session: { end: true },
-        body: { deleted: true, message: user.role === 'patient' ? 'Your personal account was deleted. Your hospital nutrition record is kept by the hospital nutrition team.' : 'Your account was deleted.' },
+        body: { deleted: true, message: user.role === 'patient' ? 'Your personal account is deleted. Your hospital nutrition record stays with the hospital nutrition team.' : 'Your account was deleted.' },
       };
     }
     return null;
