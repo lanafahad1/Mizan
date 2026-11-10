@@ -196,6 +196,8 @@ function NextCard({ d, onOpen, onFeedback, onAsk }: { d: MyMeals; onOpen: (date:
         <p>{d.dischargedOn
           ? t('You were discharged on {date}, so no more hospital meals are planned. You can still look back at your past meals and requests below.', { date: formatDate(d.dischargedOn, { weekday: 'long', month: 'long', day: 'numeric' }, lang) })
           : t('You were discharged, so no more hospital meals are planned. You can still look back at your past meals and requests below.')}</p>
+        <p>{t('Your plan for home is ready in Eat well: meal ideas, a Ministry of Health meal plan and a shopping list.')}</p>
+        <Link href="/eat-well" className={cn(buttonVariants({ size: 'lg' }), 'w-full no-underline sm:w-auto sm:self-start')}>{t('See my plan for home')}</Link>
       </section>
     );
   }

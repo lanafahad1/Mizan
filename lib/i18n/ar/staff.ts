@@ -1034,4 +1034,7 @@ export const STAFF: Record<string, string> = {
   'Allergy or diet change reported': 'بلاغ عن تغيير في الحساسية أو الحمية',
   'Why this meal? · Needs admin review': 'لماذا هذه الوجبة؟ · تحتاج مراجعة المشرف',
   'Why this meal?': 'لماذا هذه الوجبة؟',
+  "Before discharge: prepare the home plan": "قبل الخروج: جهّز خطة المنزل",
+  "The patient’s plan for home (meal ideas, a Ministry of Health meal plan and a shopping list in Eat well) uses the daily targets in the Health tab. Check them, and review the assessment if one is waiting.": "تعتمد خطة المريض للمنزل (أفكار الوجبات، وخطة وجبات وزارة الصحة، وقائمة التسوّق في «غذاء صحي») على الأهداف اليومية في تبويب الصحة. راجعها، وراجع التقييم الغذائي إن كان بانتظار المراجعة.",
+  "Prepare home plan": "جهّز خطة المنزل",
 };

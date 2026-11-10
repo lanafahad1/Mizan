@@ -18,9 +18,9 @@ All patients, staff and records in this project are fictional (synthetic demonst
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/my-meals-mobile.png" alt="A patient's My Meals page on a phone" width="230">
-  <img src="docs/screenshots/kitchen-mobile.png" alt="Kitchen summary on a phone" width="230">
-  <img src="docs/screenshots/meal-mobile.png" alt="A meal page with SFDA nutrition values on a phone" width="230">
+  <img src="docs/screenshots/member-home-mobile.png" alt="A member's home page on a phone: calories left today and each meal" width="230">
+  <img src="docs/screenshots/diary-mobile.png" alt="The food diary on a phone with calories, carbohydrate, protein and fat" width="230">
+  <img src="docs/screenshots/health-mobile-ar.png" alt="My health in Arabic on a phone: weight, BMI and waist risk" width="230">
 </p>
 
 ---
@@ -45,7 +45,7 @@ Hospital meals that do not fit a patient (wrong diet, an allergen, a disliked fo
 5. **Measured outcomes.** Acceptance, the estimated amount eaten, satisfaction and **weighed plate waste (grams)** are recorded separately and shown on the team dashboard. This follows the GFSA National Program to Reduce Food Loss and Waste.
 
 <p align="center">
-  <img src="docs/screenshots/dashboard-desktop.png" alt="Nutrition team dashboard indicators" width="720">
+  <img src="docs/screenshots/dashboard-desktop.png" alt="Nutrition team dashboard: chronic conditions, BMI categories and reviews due" width="720">
 </p>
 
 ## Features by role
@@ -62,7 +62,7 @@ Hospital care has three roles; the member space has one. Every action is authori
 The meal workflow is **Options offered → Patient choice submitted → Confirmed by nutrition team → Prepared → Delivered**. Delivered does not mean eaten: intake is recorded separately.
 
 <p align="center">
-  <img src="docs/screenshots/patient-profile-desktop.png" alt="Patient nutrition profile with the meal workflow per meal period" width="720">
+  <img src="docs/screenshots/patient-profile-desktop.png" alt="A patient record for the nutrition team, with the meal workflow per meal period" width="720">
 </p>
 
 ## Tech stack

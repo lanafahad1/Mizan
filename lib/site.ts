@@ -38,10 +38,12 @@ export const PATIENT_NAV: NavItem[] = [
   { href: '/today', label: 'Diary' },
   { href: '/my-health', label: 'Health' },
   { href: '/my-requests', label: 'Requests' },
+  { href: '/eat-well', label: 'Eat well' },
 ];
 /** Extra links in the patient's account menu (and nowhere else in the header). */
 export const PATIENT_ACCOUNT_NAV: NavItem[] = [
   { href: '/my-profile', label: 'My food profile' },
+  { href: '/eat-well', label: 'Eat well' },
 ];
 /** Member space (personal use, no hospital). */
 export const MEMBER_NAV: NavItem[] = [

@@ -197,4 +197,9 @@ export const PATIENT: Record<string, string> = {
   'See this meal': 'اعرض هذه الوجبة',
   'Tell us about a change': 'أبلغ عن تغيير',
   'To see this page, first link your account on': 'لعرض هذه الصفحة، اربط حسابك أولًا من صفحة',
+  "Your plan for home is ready in Eat well: meal ideas, a Ministry of Health meal plan and a shopping list.": "خطتك للمنزل جاهزة في «غذاء صحي»: أفكار للوجبات، وخطة وجبات من وزارة الصحة، وقائمة تسوّق.",
+  "See my plan for home": "اعرض خطتي للمنزل",
+  "Your plan for home": "خطتك للمنزل",
+  "Meal ideas, a Ministry of Health meal plan and a shopping list for when you’re back home.": "أفكار للوجبات، وخطة وجبات من وزارة الصحة، وقائمة تسوّق لما بعد عودتك إلى المنزل.",
+  "Open Eat well": "افتح «غذاء صحي»",
 };

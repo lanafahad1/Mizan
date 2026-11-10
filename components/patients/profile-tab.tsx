@@ -84,6 +84,11 @@ export function ProfileTab() {
         ) : (
           <>
             <p className="text-sm">{lang === 'ar' ? t('Recording a discharge removes the patient from upcoming meal and kitchen lists and cancels meals not yet delivered (the kitchen is alerted). It does not delete anything: past meals, intake and requests are kept. It is separate from removing the patient account and from deleting the record.') : <>Recording a discharge removes the patient from upcoming meal and kitchen lists and cancels meals not yet delivered (the kitchen is alerted). It does <b>not</b> delete anything: past meals, intake and requests are kept. It is separate from removing the patient account and from deleting the record.</>}</p>
+            <div className="flex flex-col gap-2 rounded-[14px] border border-border bg-mint/50 p-3">
+              <p className="flex items-center gap-1.5 font-display font-medium text-heading"><HeartPulse className="size-4" aria-hidden />{t('Before discharge: prepare the home plan')}</p>
+              <p className="text-sm text-muted-foreground">{t('The patient’s plan for home (meal ideas, a Ministry of Health meal plan and a shopping list in Eat well) uses the daily targets in the Health tab. Check them, and review the assessment if one is waiting.')}</p>
+              <div><Button size="sm" variant="outline" onClick={() => c.goToTab('health')}>{t('Prepare home plan')}</Button></div>
+            </div>
             {c.can('patient:admission') ? <div><Button variant="outline" size="sm" onClick={discharge}><LogOut aria-hidden />{t('Record discharge')}</Button></div> : null}
           </>
         )}

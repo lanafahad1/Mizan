@@ -44,6 +44,8 @@ export type PatientCtx = {
   refresh: () => Promise<unknown>;
   setDate: (date: string) => void;
   goToMeal: (date: string, period: string) => void;
+  /** Switch to another tab of the patient profile (e.g. 'health'). */
+  goToTab: (tab: string) => void;
 };
 
 export const Ctx = React.createContext<PatientCtx | null>(null);

@@ -102,6 +102,7 @@ function PatientProfile({ id, initialRecord, initialDay, reference, permissions,
   const ctx: PatientCtx = {
     id, record, day, date, reference, discharged, dayLoading,
     can: (p) => permSet.has(p), open, close, refresh: revalidate, setDate, goToMeal,
+    goToTab: (t) => { changeTab(t as Tab); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' })); },
   };
   const openReq = record.requests.filter((r: any) => r.status === 'open').length;
 

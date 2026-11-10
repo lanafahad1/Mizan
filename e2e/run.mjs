@@ -57,16 +57,25 @@ const dialog = (page) => page.locator('[role=dialog]').last();
 
 // ---------------------------------------------------------------- 1. choose → confirm
 const noura = await session('noura.1001');
+// Meal period headers (one per section), and opening one: each is centred first, because
+// late in the day a header can sit under the sticky header or the tab bar.
+const periodHeads = async (page) => (await page.locator('section[id^=mp-]').evaluateAll((els) => els.map((e) => e.id)))
+  .map((id) => page.locator(`#${id} button[aria-expanded]`).first());
+const openHead = async (head) => {
+  if ((await head.getAttribute('aria-expanded')) !== 'false') return;
+  await head.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await head.click();
+  await head.page().waitForTimeout(300);
+};
 await noura.goto(`${base}/my-meals`);
 await noura.waitForLoadState('networkidle');
 ok(/^(Choose your|Your )/.test((await noura.locator('main').textContent()).match(/(Choose your \w+\.|Your [^.]+\.)/)?.[0] ?? ''), 'patient sees a plain next-meal message');
 ok(!(await noura.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1)), 'My Meals has no horizontal scroll at 390 px');
 // Which meal period is open first depends on the time of day: open each closed period until one offers a choice.
 let choose = noura.locator('.t-acc[data-open=true] button:visible', { hasText: /^Choose this meal$/ }).first();
-for (const head of await noura.locator('section[id^=mp-] button[aria-expanded=false]').all()) {
+for (const head of await periodHeads(noura)) {
   if (await choose.count()) break;
-  await head.click();
-  await noura.waitForTimeout(300);
+  await openHead(head);
   choose = noura.locator('.t-acc[data-open=true] button:visible', { hasText: /^Choose this meal$/ }).first();
 }
 const chosenPeriod = (await choose.evaluate((b) => b.closest('section[id^=mp-]')?.id ?? '')).replace('mp-', '');
@@ -89,10 +98,9 @@ await noura.goto(`${base}/my-meals`);
 await noura.waitForLoadState('networkidle');
 // The button is inside the meal periods; open them until one shows it (which is open first depends on the time of day).
 const askBtn = () => noura.locator('.t-acc[data-open=true] button:visible', { hasText: /Ask for a different meal/ }).first();
-for (const head of await noura.locator('section[id^=mp-] button[aria-expanded=false]').all()) {
+for (const head of await periodHeads(noura)) {
   if (await askBtn().count()) break;
-  await head.click();
-  await noura.waitForTimeout(300);
+  await openHead(head);
 }
 await askBtn().click();
 await dialog(noura).locator('textarea').fill('Could I have something with more vegetables? (e2e)');
