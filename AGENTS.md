@@ -1,7 +1,3 @@
-# CareBite
-
-Before you change anything: if `HANDOFF.md` exists in this folder, read it first (it is kept only on the owner's computer). Then read `docs/CONVENTIONS.md`.
-
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know
