@@ -1,9 +1,8 @@
 # CareBite (Next.js) — conventions for contributors
 
-CareBite is a hospital meal recommendation platform (university Health Informatics project).
-This app is the Next.js 16 migration of the previous vanilla-JS SPA, which lives in
-`/home/user/carebite` (read-only reference: `public/js/pages/*.js`, `public/js/components.js`,
-`public/css/styles.css`). **Port behaviour and wording faithfully; improve only layout/UX.**
+CareBite supports healthy eating for obesity and chronic diseases (university Health Informatics
+project) with two spaces: **Member** (personal) and **Hospital care**. If `HANDOFF.md` is in the
+project folder (kept on the owner's computer only), read it first: it has the full picture.
 
 Next.js 16 differs from older versions: read `node_modules/next/dist/docs/` when unsure
 (`params`/`searchParams` are Promises; `proxy.ts` replaces middleware; `forbidden()` is enabled).
@@ -19,9 +18,10 @@ Next.js 16 differs from older versions: read `node_modules/next/dist/docs/` when
 - SWR for client reads with server-fetched `fallbackData`.
 
 ## Roles and RBAC (primary authorization)
-Three roles: `admin` (everything, incl. clinical edits, review approvals, menu verification, staff
-access), `staff` (daily meal service; no clinical edits/approvals/access management), `patient`
-(own record only). Permissions are named in `domain/rbac.js` (e.g. `patient:list`,
+Hospital care has three roles: `admin` (everything, incl. clinical edits, review approvals, menu
+verification, staff access), `staff` (daily meal service; no clinical edits/approvals/access
+management), `patient` (own record only). `member` is a separate role for personal use: their own
+health space only, never visible to hospital roles. Permissions are named in `domain/rbac.js` (e.g. `patient:list`,
 `patient:edit-clinical`, `meal:approve-review`, `kitchen:progress`, `menu:verify`, `staff:manage`).
 - Pages: `const actor = await requirePermission('<permission>', '/path')` (from `@/lib/server/session`).
   Patient pages: `requirePermission('patient:read', ...)` then check `actor.role === 'patient'`

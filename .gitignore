@@ -21,3 +21,6 @@ transitions/
 
 # macOS
 .DS_Store
+
+# Private handover notes (kept on the owner's Mac only)
+HANDOFF.md
