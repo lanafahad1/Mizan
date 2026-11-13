@@ -9,7 +9,7 @@ export const contentType = 'image/png';
 const C = { bg: '#FBF8F3', blush: '#F3EFE8', rose: '#E3F1FA', pink: '#CDE5F5', sage: '#DCD9F4', mint: '#EEEDFA', heading: '#1B1A3A', roseInk: '#3730A3', text: '#615F74', chip: '#2E2A86' };
 
 export default function OpengraphImage() {
-  const logo = `data:image/svg+xml;utf8,${encodeURIComponent(logoMark().replace('<svg ', '<svg width="160" height="160" '))}`;
+  const logo = `data:image/svg+xml;utf8,${encodeURIComponent(logoMark({ withWord: true }).replace('<svg ', '<svg width="160" height="160" '))}`;
   return new ImageResponse(
     (
       <div style={{ width: '100%', height: '100%', display: 'flex', position: 'relative', background: C.bg, fontFamily: 'sans-serif' }}>
