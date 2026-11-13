@@ -19,7 +19,7 @@ export type DiaryEntry = {
 };
 export type EntryAmount = { servingIndex: number; quantity: number; grams?: undefined } | { grams: number; servingIndex?: undefined; quantity?: undefined };
 export type DiaryMeal = { id: MealId; label: string; entries: DiaryEntry[]; totals: Nutrients; missing: Partial<Record<NutrientKey, number>> };
-export type RecentFood = { foodId: string; name: string; brand?: string | null; amountLabel: string; kcal: number | null };
+export type RecentFood = { foodId: string; name: string; brand?: string | null; amountLabel: string; kcal: number | null; art?: unknown };
 export type Diary = {
   date: string; today: string; owner: 'member' | 'patient'; meals: DiaryMeal[]; totals: Nutrients;
   missing: Partial<Record<NutrientKey, number>>; estimated: boolean;
@@ -39,6 +39,8 @@ export type Food = {
   checkLabel?: boolean; barcode?: string; approxG?: number | null; matchFoodId?: string | null; note?: string | null;
   /** MOH group (moh-portion) or ingredient group (ingredient). */
   group?: string; region?: string; createdAt?: string;
+  /** Picture recipe for lists (lib/art.js foodArt); packaged and own foods may have none. */
+  art?: unknown;
 };
 
 /** A product found on Open Food Facts, in pack-label shape (app/api/foods/online). */

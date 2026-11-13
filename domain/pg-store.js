@@ -682,6 +682,33 @@ async function migrate(client) {
   await client.query(`ALTER TABLE Patients DROP CONSTRAINT IF EXISTS patients_demo_id_check`);
   await client.query(`UPDATE Patients SET demo_id = 'MZ-' || substring(demo_id from 4) WHERE demo_id LIKE 'CB-%'`);
   await client.query(`ALTER TABLE Patients ADD CONSTRAINT patients_demo_id_check CHECK (demo_id ~ '^MZ-[0-9]{4}$')`);
+  // 5. New, more detailed pictures for the seeded hospital dishes. Only a dish still showing its
+  //    original seeded picture is updated, so a picture a staff member changed is kept.
+  const OLD_ART = [
+    ["bukhari-chicken", "{\"vessel\":\"platter\",\"base\":\"rice-yellow\",\"items\":[\"chicken*5\",\"carrot*8\",\"tomato-dice*4\"]}"],
+    ["jareesh", "{\"vessel\":\"bowl\",\"base\":\"jareesh\",\"items\":[\"onion-fried*6\",\"cumin*10\",\"herb*3\"]}"],
+    ["margouq", "{\"vessel\":\"bowl\",\"base\":\"stew-red\",\"items\":[\"dough*6\",\"zucchini*4\",\"eggplant*3\",\"herb*4\"]}"],
+    ["madini-chicken", "{\"vessel\":\"platter\",\"base\":\"rice-yellow\",\"items\":[\"chicken*5\",\"raisin*6\",\"herb*3\"]}"],
+    ["lentil-rice", "{\"vessel\":\"bowl\",\"base\":\"rice-yellow\",\"items\":[\"chickpea*14\",\"herb*4\"]}"],
+    ["sayadiah", "{\"vessel\":\"platter\",\"base\":\"rice-brown\",\"items\":[\"fish-white*3\",\"onion-fried*6\",\"herb*3\"]}"],
+    ["tashreebah-chicken", "{\"vessel\":\"bowl\",\"base\":\"curry\",\"items\":[\"dough*6\",\"chicken*3\",\"herb*3\"]}"],
+    ["purslane-stew", "{\"vessel\":\"bowl\",\"base\":\"stew-red\",\"items\":[\"herb*12\",\"tomato-dice*5\"]}"],
+    ["fried-fish", "{\"vessel\":\"plate\",\"base\":\"none\",\"items\":[\"fish-white*2\",\"lemon*2\",\"herb*3\"]}"],
+    ["dates-aseedah", "{\"vessel\":\"bowl\",\"base\":\"porridge\",\"items\":[\"date*4\",\"drizzle*1\"]}"],
+    ["wheat-aseedah", "{\"vessel\":\"bowl\",\"base\":\"porridge\",\"items\":[\"date*3\",\"cinnamon*8\"]}"],
+    ["lahouh", "{\"vessel\":\"plate\",\"base\":\"oats\",\"items\":[\"seed*10\"]}"],
+    ["balaleet", "{\"vessel\":\"plate\",\"base\":\"noodles\",\"items\":[\"egg-fried*1\",\"herb*2\"]}"],
+    ["muhalla", "{\"vessel\":\"bowl\",\"base\":\"porridge\",\"items\":[\"date*3\",\"drizzle*1\"]}"],
+    ["timman-rice", "{\"vessel\":\"platter\",\"base\":\"rice-spiced\",\"items\":[\"zucchini*3\",\"eggplant*3\",\"herb*4\"]}"],
+  ];
+  let art = 0;
+  for (const [id, before] of OLD_ART) {
+    const d = DISHES.find((x) => x.id === id);
+    if (!d?.art) continue;
+    const r = await client.query(`UPDATE Dishes SET art = $1 WHERE id = $2 AND art = $3`, [J(d.art), id, before]);
+    art += r.rowCount;
+  }
+  if (art) await client.query(`UPDATE Meta SET value = (value::int + 1)::text WHERE key = 'catalog_version'`);
 }
 
 /** INSERT rows in chunks; with conflict key columns, existing rows are updated instead. */

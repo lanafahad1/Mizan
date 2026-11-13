@@ -21,6 +21,27 @@ const SKIP = 'nav, header, footer, [role="tablist"], [role="listbox"], [role="me
 /** Leave these (and everything inside them) alone: their own entrance motion, canvases, fixed/sticky children. */
 const STILL = '.mz-rise, canvas, video, iframe, .fixed, .sticky, [data-no-reveal]';
 
+/** The browser runs page changes as view transitions (app/template.tsx). */
+const VT = typeof document !== 'undefined' && 'startViewTransition' in document;
+
+/** Anything a person presses: buttons, button-like links, tabs, chips, clickable cards. */
+const PRESSABLE = 'button:not(:disabled), [role="button"]:not([aria-disabled="true"]), [role="tab"], [role="menuitem"], [role="option"], summary, a.mz-press, a.mz-lift, label:has(> input[type="checkbox"], > input[type="radio"])';
+const GLOW: Keyframe[] = [
+  { outlineOffset: '0px', outlineColor: 'color-mix(in srgb, var(--primary) 55%, transparent)' },
+  { outlineOffset: '9px', outlineColor: 'color-mix(in srgb, var(--primary) 0%, transparent)' },
+];
+/** Tap glow: a soft ring spreads out around what was pressed (outline, so it never shifts layout). */
+function glow(target: EventTarget | null) {
+  const el = target instanceof Element ? target.closest(PRESSABLE) : null;
+  if (!(el instanceof HTMLElement)) return;
+  el.getAnimations().forEach((a) => { if ((a as Animation & { id: string }).id === 'mz-glow') a.cancel(); });
+  el.classList.add('mz-glow-ring');
+  const a = el.animate(GLOW, { duration: 560, easing: 'cubic-bezier(.2,.7,.2,1)' });
+  a.id = 'mz-glow';
+  const done = () => { if (!el.getAnimations().some((x) => x.id === 'mz-glow')) el.classList.remove('mz-glow-ring'); };
+  a.onfinish = done; a.oncancel = done;
+}
+
 const RISE: Keyframe[] = [{ opacity: 0, transform: 'translate3d(0, 12px, 0)' }, { opacity: 1, transform: 'none' }];
 const RISE_KID: Keyframe[] = [{ opacity: 0, transform: 'translate3d(0, 8px, 0)' }, { opacity: 1, transform: 'none' }];
 
@@ -139,6 +160,16 @@ function scan(root: Element, main: Element) {
 function flushAll() { for (const el of [...waiting.keys()]) release(el, 0); }
 
 export function MotionRuntime() {
+  // Tap glow on every pressable thing on the page (pointer, and Enter/Space from the keyboard).
+  React.useEffect(() => {
+    if (prefersReducedMotion() || !Element.prototype.animate) return;
+    const onDown = (e: PointerEvent) => { if (e.button === 0) glow(e.target); };
+    const onKey = (e: KeyboardEvent) => { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) glow(e.target); };
+    document.addEventListener('pointerdown', onDown, { passive: true });
+    document.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('pointerdown', onDown); document.removeEventListener('keydown', onKey); };
+  }, []);
+
   React.useEffect(() => {
     const main = document.getElementById('main');
     if (!main || prefersReducedMotion() || typeof IntersectionObserver === 'undefined' || !Element.prototype.animate) return;
@@ -150,7 +181,8 @@ export function MotionRuntime() {
         rec.addedNodes.forEach((n) => {
           if (!(n instanceof HTMLElement) || !n.isConnected || n.closest('[hidden]')) return;
           // Page entry: a new page (or the content replacing its loading placeholder) fades in.
-          if (n.parentElement === main && !(n instanceof HTMLScriptElement) && !(n instanceof HTMLTemplateElement)) {
+          // (Browsers with view transitions get the smoother page change from app/template.tsx instead.)
+          if (!VT && n.parentElement === main && !(n instanceof HTMLScriptElement) && !(n instanceof HTMLTemplateElement)) {
             n.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: EASE });
           }
           scan(n, main);

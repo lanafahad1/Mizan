@@ -14,6 +14,7 @@ import type { IllustrationName } from '@/lib/illustrations';
 import { cn } from '@/lib/utils';
 import { useT } from '@/components/site/lang';
 import { ArabicName, SourceBadge } from './source-badge';
+import { FoodPicture } from './food-picture';
 import { amountText, firstServingKcal, fmt, foodName, previewNutrients, servingText, tMsg, type Food, type RecentFood } from './types';
 
 export type ShelfId = 'recent' | 'saudi' | 'groups' | 'ingredients' | 'supermarket' | 'mine';
@@ -74,17 +75,6 @@ export function ShelfGrid({ onShelf }: { onShelf: (id: ShelfId) => void }) {
 }
 
 // ------------------------------------------------------------------ rows
-/** The picture of a food in lists: its MOH group or the shelf it comes from. */
-function foodArt(f: Food): IllustrationName {
-  if (f.kind === 'moh-portion') return MOH_GROUPS.find((g) => g.id === f.group)?.art ?? 'shelf-groups';
-  if (f.kind === 'saudi-dish') return 'shelf-saudi';
-  if (f.kind === 'ingredient') return 'shelf-ingredients';
-  if (f.kind === 'packaged') return 'shelf-supermarket';
-  if (f.kind === 'custom') return 'shelf-my-foods';
-  if (f.kind === 'recipe') return 'ideas';
-  return 'log-food';
-}
-
 /** One food as a compact row card: picture, name, "kcal · grams · protein", then where the values come from. */
 export function FoodRow({ food: f, onPick, favorite }: { food: Food; onPick: () => void; favorite?: boolean }) {
   const { t, lang } = useT();
@@ -100,7 +90,7 @@ export function FoodRow({ food: f, onPick, favorite }: { food: Food; onPick: () 
     <li>
       <button type="button" onClick={onPick}
         className="mz-lift grid min-h-14 w-full grid-cols-[56px_minmax(0,1fr)] items-center gap-3 rounded-[16px] border border-border bg-card p-2.5 text-start transition-colors hover:border-sage hover:bg-secondary/40 focus-visible:bg-secondary/40">
-        <span aria-hidden className="grid aspect-square w-full place-items-center rounded-[12px] bg-muted"><Illustration name={foodArt(f)} className="size-11" still /></span>
+        <FoodPicture food={f} className="aspect-square w-full" />
         <span className="flex min-w-0 flex-col gap-0.5">
           <span className="font-display font-semibold leading-snug text-foreground">
             {favorite ? <><Star aria-hidden className="me-1 inline size-3.5 fill-current align-[-2px] text-primary" /><span className="sr-only">{t('Favourite')}: </span></> : null}
@@ -257,7 +247,7 @@ function RecentShelf({ onFood, favorites, recent }: ShelfProps) {
               <li key={r.foodId}>
                 <button type="button" onClick={() => openRecent(r)} disabled={opening != null}
                   className="flex min-h-14 w-full items-center gap-3 rounded-[16px] border border-border bg-card p-2.5 text-start transition-colors hover:border-sage hover:bg-secondary/40 disabled:opacity-60">
-                  <span aria-hidden className="grid size-14 shrink-0 place-items-center rounded-[12px] bg-muted"><Illustration name="shelf-recent" className="size-11" still /></span>
+                  <FoodPicture food={{ id: r.foodId, name: r.name, brand: r.brand, art: r.art }} className="size-14 shrink-0" />
                   <span className="flex min-w-0 flex-1 flex-col">
                     <span dir="auto" className={cn('truncate font-semibold', lang === 'ar' ? 'text-right' : 'text-left')}>{t(r.name)}</span>
                     <span className="truncate text-sm text-muted-foreground">{r.brand ? `${r.brand} · ` : ''}{t('Last time: {amount}', { amount: amountText(r.amountLabel, t, lang) })}</span>

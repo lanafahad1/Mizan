@@ -590,7 +590,8 @@ export function createHealthService({ repo, today, stamp, requirePermission, acc
     for (const e of repo.listHealth({ owner, kind: 'food', from: addDays(today(), -30) }).reverse()) {
       if (!e.foodId || seen.has(e.foodId)) continue;
       seen.add(e.foodId);
-      out.push({ foodId: e.foodId, name: e.name, brand: e.brand, amountLabel: e.amountLabel, kcal: e.nutrients?.kcal ?? null });
+      // the food's picture recipe (lib/art.js foodArt), so the row shows the food itself
+      out.push({ foodId: e.foodId, name: e.name, brand: e.brand, amountLabel: e.amountLabel, kcal: e.nutrients?.kcal ?? null, art: getFood(e.foodId)?.art ?? null });
       if (out.length >= 8) break;
     }
     return out;

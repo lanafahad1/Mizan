@@ -26,6 +26,8 @@ import { DISHES } from '../data/dishes.js';
 import { PACKAGED_FOODS } from '../data/packaged-foods.js';
 import { EXCHANGE_FOODS, exchangeNutrients } from '../data/moh-calorie-guide.js';
 import { NUTRIENTS, ingredientValue } from './nutrition.js';
+import { SAUDI_ART, INGREDIENT_ART, MOH_ART } from '../data/food-art.js';
+import { packSpec } from '../lib/art.js';
 
 export const FOOD_KINDS = ['moh-portion', 'saudi-dish', 'ingredient', 'recipe', 'packaged', 'custom'];
 /** Tie-break order in search: MOH > SFCT > USDA ingredient > USDA-calculated recipe > Open Food Facts > custom. */
@@ -87,6 +89,7 @@ function ingredientFood(ing) {
     per100g, servings, basis: 'lab', sourceId: 'USDA-FDC',
     source: { fdcId: usda.fdcId, usdaName: usda.usdaName, note: usda.note ?? null },
     allergens: ing.allergens ?? [], mayContain: ing.mayContain ?? [], labelCheck: Boolean(ing.labelCheck),
+    art: INGREDIENT_ART[ing.id] ?? null,
   };
 }
 
@@ -114,6 +117,7 @@ function sfctFood(id, entry, hospitalDishes) {
     per100g, servings, basis: 'lab', sourceId: 'SFDA-SFCT',
     source: { sfctId: id, tablePage: entry.tablePage, recipePage: entry.recipePage, yield: entry.yield, recipeGrams: recipeG },
     allergens: sfctAllergens(entry.ingredients), allergensDerived: true, mayContain: [],
+    art: SAUDI_ART[id] ?? null,
   };
 }
 
@@ -145,6 +149,7 @@ function recipeFood(dish) {
     basis: 'calculated', sourceId: 'USDA-FDC',
     source: { method: 'Ingredient grams × USDA FoodData Central (SR Legacy) values per 100 g. Not laboratory-analysed.' },
     allergens: [...contains], mayContain: [...may], labelCheck,
+    art: dish.art ?? null,
   };
 }
 
@@ -155,6 +160,7 @@ function packagedFood(p) {
     id: p.id, kind: 'packaged', name: p.name, nameAr: p.nameAr ?? undefined, brand: p.brand ?? undefined, barcode: p.barcode,
     quantity: p.quantity, category: p.category ?? null, per100g, servings, basis: 'community', sourceId: 'OFF',
     sodiumFromSalt: Boolean(p.sodiumFromSalt), allergens: p.allergens ?? [], mayContain: p.mayContain ?? [], checkLabel: true,
+    art: packSpec({ id: p.id, kind: 'packaged', name: p.name, brand: p.brand, category: p.category }),
   };
 }
 
@@ -199,6 +205,7 @@ function mohFood(f) {
     grams: f.grams ?? null, approxG, approxSource: approxG != null ? 'USDA-FDC' : null,
     matchFoodId: m ? `ing:${m.ing}` : null,
     basis: 'moh-exchange', sourceId: 'MOH-GUIDE', note: f.note ?? null, allergens: [], mayContain: [],
+    art: MOH_ART[f.id] ?? null,
   };
 }
 

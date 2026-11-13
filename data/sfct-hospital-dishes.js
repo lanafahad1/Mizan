@@ -6,6 +6,9 @@
 // egg 50 g); it never affects nutrition, which comes from the SFCT per-100 g
 // laboratory values. Portion weights are demonstration hospital values.
 
+// Pictures: the same recipe as the dish's SFCT food (data/food-art.js).
+import { SAUDI_ART } from './food-art.js';
+
 export const SFCT_HOSPITAL_DISHES = [
   {
     id: 'chicken-kabsa',
@@ -51,15 +54,7 @@ export const SFCT_HOSPITAL_DISHES = [
       source: 'sfct',
       sfctId: 'chicken-kabsa'
     },
-    art: {
-      vessel: 'platter',
-      base: 'rice-yellow',
-      items: [
-        'chicken*6',
-        'tomato-dice*5',
-        'herb*4'
-      ]
-    },
+    art: SAUDI_ART['chicken-kabsa'],
     sfctRecipe: {
       yield: 'Approximately 4 adults',
       recipeGrams: 1964,
@@ -114,15 +109,7 @@ export const SFCT_HOSPITAL_DISHES = [
       source: 'sfct',
       sfctId: 'bukhari-rice-with-chicken'
     },
-    art: {
-      vessel: 'platter',
-      base: 'rice-yellow',
-      items: [
-        'chicken*5',
-        'carrot*8',
-        'tomato-dice*4'
-      ]
-    },
+    art: SAUDI_ART['bukhari-rice-with-chicken'],
     sfctRecipe: {
       yield: 'Approximately 4 adults',
       recipeGrams: 2421,
@@ -161,14 +148,7 @@ export const SFCT_HOSPITAL_DISHES = [
       source: 'sfct',
       sfctId: 'al-saleeg-with-chicken'
     },
-    art: {
-      vessel: 'platter',
-      base: 'saleeg',
-      items: [
-        'chicken*5',
-        'herb*3'
-      ]
-    },
+    art: SAUDI_ART['al-saleeg-with-chicken'],
     sfctRecipe: {
       yield: 'Approximately 4 adults',
       recipeGrams: 1502,
@@ -219,15 +199,7 @@ export const SFCT_HOSPITAL_DISHES = [
       source: 'sfct',
       sfctId: 'al-jareesh'
     },
-    art: {
-      vessel: 'bowl',
-      base: 'jareesh',
-      items: [
-        'onion-fried*6',
-        'cumin*10',
-        'herb*3'
-      ]
-    },
+    art: SAUDI_ART['al-jareesh'],
     sfctRecipe: {
       yield: 'Approximately 4 adults',
       recipeGrams: 2426,
@@ -314,16 +286,7 @@ export const SFCT_HOSPITAL_DISHES = [
       source: 'sfct',
       sfctId: 'margaouq'
     },
-    art: {
-      vessel: 'bowl',
-      base: 'stew-red',
-      items: [
-        'dough*6',
-        'zucchini*4',
-        'eggplant*3',
-        'herb*4'
-      ]
-    },
+    art: SAUDI_ART['margaouq'],
     sfctRecipe: {
       yield: 'Approximately 4 adults',
       recipeGrams: 2255,
@@ -406,15 +369,7 @@ export const SFCT_HOSPITAL_DISHES = [
       source: 'sfct',
       sfctId: 'madini-rice-with-chicken'
     },
-    art: {
-      vessel: 'platter',
-      base: 'rice-yellow',
-      items: [
-        'chicken*5',
-        'raisin*6',
-        'herb*3'
-      ]
-    },
+    art: SAUDI_ART['madini-rice-with-chicken'],
     sfctRecipe: {
       yield: 'Approximately 4 adults',
       recipeGrams: 2019,
@@ -477,14 +432,7 @@ export const SFCT_HOSPITAL_DISHES = [
       source: 'sfct',
       sfctId: 'lentil-rice'
     },
-    art: {
-      vessel: 'bowl',
-      base: 'rice-yellow',
-      items: [
-        'chickpea*14',
-        'herb*4'
-      ]
-    },
+    art: SAUDI_ART['lentil-rice'],
     sfctRecipe: {
       yield: 'Approximately 4 adults',
       recipeGrams: 1639,
@@ -568,15 +516,7 @@ export const SFCT_HOSPITAL_DISHES = [
       source: 'sfct',
       sfctId: 'al-sayadiah'
     },
-    art: {
-      vessel: 'platter',
-      base: 'rice-brown',
-      items: [
-        'fish-white*3',
-        'onion-fried*6',
-        'herb*3'
-      ]
-    },
+    art: SAUDI_ART['al-sayadiah'],
     sfctRecipe: {
       yield: 'Approximately 4 adults',
       recipeGrams: 2460,
@@ -663,16 +603,7 @@ export const SFCT_HOSPITAL_DISHES = [
       source: 'sfct',
       sfctId: 'couscousiyah-with-chicken'
     },
-    art: {
-      vessel: 'platter',
-      base: 'couscous',
-      items: [
-        'chicken*4',
-        'carrot*5',
-        'zucchini*4',
-        'herb*4'
-      ]
-    },
+    art: SAUDI_ART['couscousiyah-with-chicken'],
     sfctRecipe: {
       yield: 'Approximately 6 adults',
       recipeGrams: 4004,
@@ -735,15 +666,7 @@ export const SFCT_HOSPITAL_DISHES = [
       source: 'sfct',
       sfctId: 'al-tashreebah-with-chicken'
     },
-    art: {
-      vessel: 'bowl',
-      base: 'curry',
-      items: [
-        'dough*6',
-        'chicken*3',
-        'herb*3'
-      ]
-    },
+    art: SAUDI_ART['al-tashreebah-with-chicken'],
     sfctRecipe: {
       yield: 'Approximately 4 adults',
       recipeGrams: 2204,
@@ -786,14 +709,7 @@ export const SFCT_HOSPITAL_DISHES = [
       source: 'sfct',
       sfctId: 'purslane-stew'
     },
-    art: {
-      vessel: 'bowl',
-      base: 'stew-red',
-      items: [
-        'herb*12',
-        'tomato-dice*5'
-      ]
-    },
+    art: SAUDI_ART['purslane-stew'],
     sfctRecipe: {
       yield: 'Approximately 4 adults',
       recipeGrams: 861,
@@ -841,15 +757,7 @@ export const SFCT_HOSPITAL_DISHES = [
       source: 'sfct',
       sfctId: 'fried-fish'
     },
-    art: {
-      vessel: 'plate',
-      base: 'none',
-      items: [
-        'fish-white*2',
-        'lemon*2',
-        'herb*3'
-      ]
-    },
+    art: SAUDI_ART['fried-fish'],
     sfctRecipe: {
       yield: 'Approximately 4 adults',
       recipeGrams: 847,
@@ -890,14 +798,7 @@ export const SFCT_HOSPITAL_DISHES = [
       source: 'sfct',
       sfctId: 'dates-aseedah'
     },
-    art: {
-      vessel: 'bowl',
-      base: 'porridge',
-      items: [
-        'date*4',
-        'drizzle*1'
-      ]
-    },
+    art: SAUDI_ART['dates-aseedah'],
     sfctRecipe: {
       yield: 'Approximately 4 adults',
       recipeGrams: 1599,
@@ -936,14 +837,7 @@ export const SFCT_HOSPITAL_DISHES = [
       source: 'sfct',
       sfctId: 'whole-wheat-aseedah'
     },
-    art: {
-      vessel: 'bowl',
-      base: 'porridge',
-      items: [
-        'date*3',
-        'cinnamon*8'
-      ]
-    },
+    art: SAUDI_ART['whole-wheat-aseedah'],
     sfctRecipe: {
       yield: 'Approximately 4 adults',
       recipeGrams: 1400,
@@ -994,13 +888,7 @@ export const SFCT_HOSPITAL_DISHES = [
       source: 'sfct',
       sfctId: 'lahouh'
     },
-    art: {
-      vessel: 'plate',
-      base: 'oats',
-      items: [
-        'seed*10'
-      ]
-    },
+    art: SAUDI_ART['lahouh'],
     sfctRecipe: {
       yield: 'Approximately 4 adults',
       recipeGrams: 847,
@@ -1047,14 +935,7 @@ export const SFCT_HOSPITAL_DISHES = [
       source: 'sfct',
       sfctId: 'balaleet-eggs-and-onions'
     },
-    art: {
-      vessel: 'plate',
-      base: 'noodles',
-      items: [
-        'egg-fried*1',
-        'herb*2'
-      ]
-    },
+    art: SAUDI_ART['balaleet-eggs-and-onions'],
     sfctRecipe: {
       yield: 'Approximately 4 adults',
       recipeGrams: 1279,
@@ -1097,14 +978,7 @@ export const SFCT_HOSPITAL_DISHES = [
       source: 'sfct',
       sfctId: 'muhalla'
     },
-    art: {
-      vessel: 'bowl',
-      base: 'porridge',
-      items: [
-        'date*3',
-        'drizzle*1'
-      ]
-    },
+    art: SAUDI_ART['muhalla'],
     sfctRecipe: {
       yield: 'Approximately 4 adults',
       recipeGrams: 1816,
@@ -1196,15 +1070,7 @@ export const SFCT_HOSPITAL_DISHES = [
       source: 'sfct',
       sfctId: 'timman-rice'
     },
-    art: {
-      vessel: 'platter',
-      base: 'rice-spiced',
-      items: [
-        'zucchini*3',
-        'eggplant*3',
-        'herb*4'
-      ]
-    },
+    art: SAUDI_ART['timman-rice'],
     sfctRecipe: {
       yield: 'Approximately 4 adults',
       recipeGrams: 2434,

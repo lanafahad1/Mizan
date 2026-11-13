@@ -110,6 +110,7 @@ export const HEALTH: Record<string, string> = {
   'Saturated fat (g)': 'دهون مشبعة (جم)',
   'Fibre (g)': 'ألياف (جم)',
   '{amount} over': 'زيادة {amount}',
+  'of goals': 'من الأهداف',
   '1 entry does not report {nutrient}': 'إدخال واحد لا يذكر {nutrient}',
   '{n} entries do not report {nutrient}': '{n} إدخالات لا تذكر {nutrient}',
 

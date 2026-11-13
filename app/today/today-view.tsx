@@ -15,7 +15,8 @@ import { toast } from '@/components/ui/toast';
 import { cn } from '@/lib/utils';
 import { containerClass } from '@/components/site/page-head';
 import { MealBar } from '@/components/diary/meal-bar';
-import { MacroBars, MinorBars } from '@/components/diary/macro-bars';
+import { MinorBars } from '@/components/diary/macro-bars';
+import { MacroRings } from '@/components/diary/macro-rings';
 import { MealCard } from '@/components/diary/meal-card';
 import { AddFoodDialog } from '@/components/diary/food-search-dialog';
 import { useT } from '@/components/site/lang';
@@ -276,7 +277,7 @@ function Summary({ diary: d, role, announce }: { diary: Diary; role: 'member' | 
         </div>
       ) : null}
 
-      <MacroBars totals={d.totals} targets={d.targets} missing={d.missing} />
+      <MacroRings totals={d.totals} targets={d.targets} missing={d.missing} />
 
       {daily ? (
         <ul aria-label={t('Also today')} className="grid grid-cols-2 gap-2">

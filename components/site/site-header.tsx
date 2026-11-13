@@ -24,7 +24,7 @@ export async function SiteHeader() {
   const account = bar === 'patient' ? PATIENT_ACCOUNT_NAV : [];
   return (
     <>
-      <header className="sticky top-[env(safe-area-inset-top,0px)] z-40 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/85">
+      <header style={{ viewTransitionName: 'site-header' }} className="sticky top-[env(safe-area-inset-top,0px)] z-40 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/85">
         <MainNav
           home={home}
           tabBar={Boolean(bar)}

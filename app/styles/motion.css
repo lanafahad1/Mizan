@@ -68,6 +68,12 @@
   .mz-seg:dir(rtl), .mz-bar:dir(rtl) { transform-origin: right center; }
   .mz-fade { animation: mz-fade 600ms var(--mz-ease) 160ms both; }
   .mz-pop { animation: mz-pop 420ms var(--mz-ease) both; animation-delay: calc(160ms + var(--i, 0) * 45ms); }
+  /* Macro rings fill from the top, one after another, and glide to new numbers */
+  .mz-ring {
+    transition: stroke-dasharray 800ms var(--mz-ease), stroke 240ms var(--mz-ease);
+    animation: mz-ring 900ms var(--mz-ease) both;
+    animation-delay: calc(160ms + var(--i, 0) * 110ms);
+  }
   .mz-line { stroke-dasharray: 1; animation: mz-draw 700ms var(--mz-ease) 160ms both; }
   .mz-area { animation: mz-fade 600ms var(--mz-ease) 380ms both; }
   .mz-dot {
@@ -100,6 +106,7 @@
 
 @keyframes mz-grow-x { from { transform: scaleX(0); } }
 @keyframes mz-fade { from { opacity: 0; } }
+@keyframes mz-ring { from { stroke-dasharray: 0 100; } }
 @keyframes mz-pop { from { opacity: 0; transform: scale(.3); } }
 @keyframes mz-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes mz-dot { 0% { transform: scale(0); } 65% { transform: scale(1.18); } 100% { transform: scale(1); } }
@@ -107,7 +114,27 @@
 @keyframes mz-twinkle { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.62); } }
 @keyframes mz-twinkle-hover { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.62); } }
 
+/* ── Tap glow: a soft ring spreads out from any button that is pressed (started from reveal.tsx) ── */
+.mz-glow-ring { outline: 2px solid color-mix(in srgb, var(--primary) 55%, transparent); }
+
+/* ── Smooth page changes (React <ViewTransition> in app/template.tsx): the old page fades out,
+      the new one fades in and rises a little. The header stays still. ── */
+::view-transition { pointer-events: none; }
+::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+::view-transition-group(site-header) { animation: none; z-index: 100; }
+::view-transition-old(site-header) { display: none; }
+::view-transition-new(site-header) { animation: none; }
+::view-transition-old(.mz-page-out) { animation: mz-page-out 160ms ease-in both; }
+::view-transition-new(.mz-page-in) { animation: mz-page-in 360ms var(--mz-ease) 90ms both; }
+::view-transition-group(.mz-page-in), ::view-transition-group(.mz-page-out) { animation-duration: 360ms; }
+@keyframes mz-page-out { to { opacity: 0; transform: translateY(-6px); } }
+@keyframes mz-page-in { from { opacity: 0; transform: translateY(14px); } }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*), ::view-transition-new(*), ::view-transition-group(*) { animation-duration: 0s !important; animation-delay: 0s !important; }
+}
+
 @media print {
+  .mz-ring,
   .mz-seg, .mz-bar, .mz-fade, .mz-pop, .mz-line, .mz-area, .mz-dot, .mz-illo, .mz-illo > svg > path { animation: none !important; }
   .mz-line { stroke-dasharray: none; }
 }
