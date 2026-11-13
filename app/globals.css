@@ -1,27 +1,32 @@
 @import "tailwindcss";
 @import "./styles/transitions.css";
 
-/* CareBite design system on Tailwind v4 + shadcn-style semantic tokens.
-   A calm off-white canvas with blush and mint bands; sage carries headings and
-   primary actions, powder pink carries highlights. Light only (no dark surfaces). */
+/* CareBite (Mizan) design system on Tailwind v4 + shadcn-style semantic tokens.
+   One calm indigo (#3730A3) for the main action and progress, soft lavender and sky-blue
+   supports on a cream page. Health colours mean one thing: green fits, amber means check,
+   red means allergen or problem. Light only: the .dark block below is kept for later and
+   is not switched on anywhere. */
 
 :root {
-  /* Brand palette (as specified) */
-  --cb-bg: #FFF9F7;
-  --cb-blush: #FFF1F4;
-  --cb-pink: #F6C9D2;
-  --cb-rose: #FBE1E6;
-  --cb-sage: #D6E8D5;
-  --cb-mint: #E8F3E8;
-  --cb-heading: #526B59;
-  --cb-text: #515151;
-  --cb-border: #EDE5E5;
+  /* Palette (Mizan) */
+  --cb-bg: #FBF8F3;        /* cream page */
   --cb-white: #FFFFFF;
-  /* Derived */
-  --cb-text-muted: #6B6666;
-  --cb-sage-deep: #3F5646;
-  --cb-rose-ink: #7A3E50;
-  --cb-pink-deep: #EDB3C0;
+  --cb-text: #1B1A3A;      /* indigo ink */
+  --cb-text-muted: #615F74;
+  --cb-border: #E8E2D8;
+  /* The older CareBite names, re-mapped by role so every existing class keeps working:
+     heading → indigo ink; mint/sage (the old green supports) → lavender;
+     blush (soft band) → cream; rose/pink (the old second colour) → sky;
+     sage-deep and rose-ink (dark text on those) → deep indigo. */
+  --cb-heading: #1B1A3A;
+  --cb-mint: #EEEDFA;      /* lavender (secondary) */
+  --cb-sage: #E2E0F7;      /* deeper lavender: borders, hover */
+  --cb-sage-deep: #2E2A86; /* deep indigo */
+  --cb-blush: #F3EFE8;     /* cream (muted) */
+  --cb-rose: #E3F1FA;      /* sky (accent) */
+  --cb-pink: #CDE5F5;      /* deeper sky: borders, hover */
+  --cb-pink-deep: #9FCCEB;
+  --cb-rose-ink: #2E2A86;
 
   /* shadcn semantic tokens */
   --background: var(--cb-bg);
@@ -30,30 +35,114 @@
   --card-foreground: var(--cb-text);
   --popover: var(--cb-white);
   --popover-foreground: var(--cb-text);
-  --primary: var(--cb-heading);
-  --primary-foreground: var(--cb-white);
-  --primary-hover: var(--cb-sage-deep);
-  --secondary: var(--cb-mint);
-  --secondary-foreground: var(--cb-sage-deep);
-  --muted: var(--cb-blush);
-  --muted-foreground: var(--cb-text-muted);
-  --accent: var(--cb-rose);
-  --accent-foreground: var(--cb-rose-ink);
-  --destructive: #A23B53;
-  --destructive-soft: #FCE8EC;
-  --warning: #7D5A12;
-  --warning-soft: #FFF4DE;
-  --success: #3F6B4C;
-  --success-soft: #E8F3E8;
+  --primary: #3730A3;
+  --primary-foreground: #FFFFFF;
+  --primary-hover: #2E2A86;
+  --secondary: #EEEDFA;
+  --secondary-foreground: #2E2A86;
+  --secondary-hover: #E2E0F7;
+  --muted: #F3EFE8;
+  --muted-foreground: #615F74;
+  --accent: #E3F1FA;
+  --accent-foreground: #0B5A88;
+  --destructive: #C0362C;
+  --destructive-soft: #FBE9E7;
+  --destructive-border: #F2CBC6;
+  --warning: #9A5806;
+  --warning-soft: #FBEFD9;
+  --warning-border: #EFD9AE;
+  --success: #1F7A4D;
+  --success-soft: #E4F3EA;
+  --success-border: #C4E3D0;
   --border: var(--cb-border);
-  --input: #E5DADA;
-  --ring: var(--cb-heading);
+  --input: #DCD5CA;
+  --ring: #6E68E0;
+  --chart-1: #3730A3;
+  --chart-2: #0EA5E9;
+  --chart-3: #8B7CF6;
+  --chart-4: #2BA889;
+  --chart-5: #E0A23B;
+  --sidebar: #F6F2EB;
+  --sidebar-foreground: #1B1A3A;
+  --sidebar-primary: #3730A3;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #ECEAF8;
+  --sidebar-accent-foreground: #2E2A86;
+  --sidebar-border: #E6DFD3;
+  --sidebar-ring: #6E68E0;
   --radius: 16px;
 
   /* Transitions.dev tooltip colours follow the palette */
   --tt-bg: var(--cb-white);
   --tt-fg: var(--cb-text);
+  /* Transitions.dev sliding tabs follow the palette too */
+  --tabs-text-muted: var(--muted-foreground);
+  --tabs-text-active: var(--foreground);
+  --tabs-bar-bg: var(--muted);
+  --tabs-pill-bg: var(--card);
   color-scheme: light;
+}
+
+/* Dark values (from the Mizan theme studio), kept for later. Nothing adds the .dark class yet. */
+.dark {
+  --cb-bg: #12112A;
+  --cb-white: #1A1936;
+  --cb-text: #ECEBF7;
+  --cb-text-muted: #A6A4C0;
+  --cb-border: #2E2D4E;
+  --cb-heading: #ECEBF7;
+  --cb-mint: #26244A;
+  --cb-sage: #34335A;
+  --cb-sage-deep: #DCDAF8;
+  --cb-blush: #22213F;
+  --cb-rose: #0F2E44;
+  --cb-pink: #1B4560;
+  --cb-pink-deep: #2A6A92;
+  --cb-rose-ink: #DCDAF8;
+  --background: #12112A;
+  --foreground: #ECEBF7;
+  --card: #1A1936;
+  --card-foreground: #ECEBF7;
+  --popover: #1A1936;
+  --popover-foreground: #ECEBF7;
+  --primary: #A5A1F5;
+  --primary-foreground: #17154A;
+  --primary-hover: #B9B6F8;
+  --secondary: #26244A;
+  --secondary-foreground: #DCDAF8;
+  --secondary-hover: #302E5A;
+  --muted: #22213F;
+  --muted-foreground: #A6A4C0;
+  --accent: #0F2E44;
+  --accent-foreground: #9FD6F5;
+  --destructive: #F0857A;
+  --destructive-soft: #3A1A1A;
+  --destructive-border: #5A2A26;
+  --warning: #F2B45A;
+  --warning-soft: #3A2A10;
+  --warning-border: #5A4218;
+  --success: #5FD39B;
+  --success-soft: #123326;
+  --success-border: #1E4D38;
+  --border: #2E2D4E;
+  --input: #34335A;
+  --ring: #8B86F0;
+  --chart-1: #A5A1F5;
+  --chart-2: #38BDF8;
+  --chart-3: #C4B5FD;
+  --chart-4: #4FD1A5;
+  --chart-5: #F6C15B;
+  --sidebar: #161531;
+  --sidebar-foreground: #ECEBF7;
+  --sidebar-primary: #A5A1F5;
+  --sidebar-primary-foreground: #17154A;
+  --sidebar-accent: #26244A;
+  --sidebar-accent-foreground: #DCDAF8;
+  --sidebar-border: #2B2A4A;
+  --sidebar-ring: #8B86F0;
+  --tt-bg: #1A1936;
+  --tt-fg: #ECEBF7;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -68,19 +157,31 @@
   --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary-hover: var(--secondary-hover);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-soft: var(--destructive-soft);
+  --color-destructive-border: var(--destructive-border);
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);
+  --color-warning-border: var(--warning-border);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
+  --color-success-border: var(--success-border);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-border: var(--sidebar-border);
 
   --color-blush: var(--cb-blush);
   --color-pink: var(--cb-pink);
@@ -102,8 +203,9 @@
   --radius-lg: var(--radius);
   --radius-xl: 24px;
 
-  --shadow-soft: 0 1px 2px rgba(82, 107, 89, .06), 0 2px 8px rgba(82, 107, 89, .05);
-  --shadow-lift: 0 4px 18px rgba(82, 107, 89, .09);
+  /* Indigo-tinted shadows */
+  --shadow-soft: 0 1px 2px rgb(27 26 58 / .05), 0 2px 10px -2px rgb(55 48 163 / .07);
+  --shadow-lift: 0 1px 2px rgb(27 26 58 / .06), 0 8px 24px -12px rgb(27 26 58 / .18);
 
   --text-display: clamp(2.25rem, 4.2vw + 1rem, 3.5rem);
   --text-display--line-height: 1.12;
@@ -122,9 +224,9 @@
     overflow-x: hidden;
   }
   h1, h2, h3, h4 { font-family: var(--font-display); color: var(--color-heading); line-height: 1.2; font-weight: 600; text-wrap: balance; }
-  a { color: var(--color-heading); text-underline-offset: 3px; }
+  a { color: var(--color-primary); text-underline-offset: 3px; }
   :focus-visible { outline: 3px solid var(--color-ring); outline-offset: 2px; border-radius: 6px; }
-  ::selection { background: var(--cb-pink); color: var(--cb-rose-ink); }
+  ::selection { background: var(--cb-sage); color: var(--cb-sage-deep); }
   [hidden] { display: none !important; }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -151,7 +253,7 @@
     font-weight: 600;
     letter-spacing: .12em;
     text-transform: uppercase;
-    color: var(--cb-rose-ink);
+    color: var(--color-accent-foreground);
   }
   /* Long-form reading (About, Sources, Privacy). */
   .prose-cb { max-width: 68ch; display: flex; flex-direction: column; gap: 1rem; }

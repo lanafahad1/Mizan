@@ -62,7 +62,7 @@ export function RequestsView({ initial, permissions, initialFilters }: { initial
           <div role="group" aria-label={t('Show requests by status')} className="flex flex-wrap gap-2">
             {STATUS_PILLS.map(([s, l]) => (
               <button key={s} type="button" aria-pressed={f.status === s} onClick={() => update({ status: s })}
-                className="min-h-10 rounded-full border border-border bg-card px-3.5 py-1.5 font-display text-sm font-medium text-heading hover:bg-mint aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground">
+                className="min-h-10 rounded-full border-[1.5px] border-input bg-card px-3.5 py-1.5 font-display text-sm font-medium text-foreground hover:bg-secondary aria-pressed:border-primary aria-pressed:bg-secondary aria-pressed:text-secondary-foreground">
                 {t(l)} ({count(s)})
               </button>
             ))}
@@ -96,7 +96,7 @@ export function RequestsView({ initial, permissions, initialFilters }: { initial
         {rows.length ? (
           <ul className="m-0 flex list-none flex-col gap-3 p-0">
             {rows.map((r) => (
-              <li key={r.id} className={cn('flex flex-col gap-3 rounded-[20px] border bg-card p-4 shadow-soft sm:p-5', r.clinical ? 'border-[#F1DFB8] border-s-4 border-s-warning' : 'border-border')}>
+              <li key={r.id} className={cn('flex flex-col gap-3 rounded-[20px] border bg-card p-4 shadow-soft sm:p-5', r.clinical ? 'border-warning-border border-s-4 border-s-warning' : 'border-border')}>
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <PatientHeader b={r.patient} />
                   <RequestStatusChip status={r.status} />

@@ -11,7 +11,7 @@ import { useAfterSignIn } from './use-after-sign-in';
 export type DemoAccount = { username: string; name: string; role: string; roleLabel: string; summary: string; patientDemoId: string | null };
 
 const ROLE_ICON = { admin: Lock, staff: Users, patient: User, member: HeartPulse } as Record<string, typeof Lock>;
-const ROLE_TONE: Record<string, string> = { admin: 'bg-heading text-white', staff: 'bg-sage text-sage-deep', patient: 'bg-rose text-rose-ink', member: 'bg-mint text-sage-deep' };
+const ROLE_TONE: Record<string, string> = { admin: 'bg-primary text-primary-foreground', staff: 'bg-sage text-sage-deep', patient: 'bg-rose text-rose-ink', member: 'bg-mint text-sage-deep' };
 const ORDER = ['admin', 'staff', 'patient', 'member'];
 
 /** One-click demo sign-in. The shared demo password is published on this page, so it is not a secret. */

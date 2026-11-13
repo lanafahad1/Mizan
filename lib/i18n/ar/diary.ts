@@ -1,10 +1,8 @@
 // Arabic for the diary area. Key = exact English text; value = Arabic.
 export const DIARY: Record<string, string> = {
   // day summary
-  'Eaten': 'المتناول',
   'Target': 'الهدف',
   'kcal left': 'سعرة متبقية',
-  'kcal over': 'سعرة زائدة',
   'Set a calorie target to see what’s left for the day.': 'حدّد هدفًا للسعرات لترى المتبقي من يومك.',
   'Also today': 'أيضًا اليوم',
   'Water: {n} cups': 'الماء: {n} أكواب',

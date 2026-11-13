@@ -8,10 +8,10 @@ import { useT } from '@/components/site/lang';
 export type Compat = { id: string; code: string; label: string; status: 'eligible' | 'depends' | 'review' | 'excluded'; note: string; portions: string[] };
 
 const COMPAT: Record<Compat['status'], [string, string, React.ComponentType<{ className?: string; 'aria-hidden'?: boolean }>]> = {
-  eligible: ['border-sage bg-success-soft text-success', 'Fits', ShieldCheck],
-  depends: ['border-[#F1DFB8] bg-warning-soft text-warning', 'Depends on limits', Scale],
-  review: ['border-[#F1DFB8] bg-warning-soft text-warning', 'Needs review', TriangleAlert],
-  excluded: ['border-[#F3C9D3] bg-destructive-soft text-destructive', 'Not suitable', ShieldX],
+  eligible: ['border-success-border bg-success-soft text-success', 'Fits', ShieldCheck],
+  depends: ['border-warning-border bg-warning-soft text-warning', 'Depends on limits', Scale],
+  review: ['border-warning-border bg-warning-soft text-warning', 'Needs review', TriangleAlert],
+  excluded: ['border-destructive-border bg-destructive-soft text-destructive', 'Not suitable', ShieldX],
 };
 
 /** One diet-compatibility result: code + text + icon; opens the reason on tap or Enter. */

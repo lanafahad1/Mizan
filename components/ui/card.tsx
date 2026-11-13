@@ -7,7 +7,7 @@ const cardVariants = cva('flex flex-col gap-4 rounded-xl border p-5 sm:p-6', {
     tone: {
       default: 'border-border bg-card shadow-soft',
       mint: 'border-sage bg-mint',
-      blush: 'border-rose bg-blush',
+      blush: 'border-border bg-blush',
       plain: 'border-border bg-card',
     },
   },

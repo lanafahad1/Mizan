@@ -110,7 +110,7 @@ export function ProfileTab() {
       </Panel>
 
       {c.can('patient:delete') ? (
-        <Panel id="sec-del" title="Delete patient record permanently" className="border-[#F3C9D3] bg-destructive-soft/40 lg:col-span-2">
+        <Panel id="sec-del" title="Delete patient record permanently" className="border-destructive-border bg-destructive-soft/40 lg:col-span-2">
           <p className="text-sm">{t('Demonstration data control: permanently deletes this record with its meals, intake and requests. This cannot be undone. To end a stay, record a discharge instead.')}</p>
           <div><Button variant="destructive" size="sm" onClick={(ev) => c.open({ kind: 'delete' }, { from: ev.currentTarget, fallback: 'sec-del' })}><Trash2 aria-hidden />{t('Delete record permanently')}</Button></div>
         </Panel>

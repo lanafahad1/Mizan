@@ -346,7 +346,7 @@ function DeleteCard({ viewer }: { viewer: Viewer }) {
   };
 
   return (
-    <Card className="border-[#F2C9D2]" aria-labelledby="del-h">
+    <Card className="border-destructive-border" aria-labelledby="del-h">
       <SectionTitle id="del-h" icon={Trash2} className="flex items-center gap-2 text-destructive">{t('Delete account')}</SectionTitle>
       <p className="text-sm">
         {t('Permanently delete your personal account.')} {viewer.role === 'patient' ? t('Your hospital nutrition record is kept by the hospital nutrition team.') : t('Changes you made stay in patients’ audit logs under your display name.')}

@@ -5,8 +5,8 @@ export const alt = 'CareBite: Care in every bite';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-// Palette (globals.css): background, blush, rose, pink, sage, mint, heading, rose ink, text.
-const C = { bg: '#FFF9F7', blush: '#FFF1F4', rose: '#FBE1E6', pink: '#F6C9D2', sage: '#D6E8D5', mint: '#E8F3E8', heading: '#526B59', roseInk: '#7A3E50', text: '#515151' };
+// Palette (globals.css): cream background, sky, lavender, indigo ink and primary.
+const C = { bg: '#FBF8F3', blush: '#F3EFE8', rose: '#E3F1FA', pink: '#CDE5F5', sage: '#DCD9F4', mint: '#EEEDFA', heading: '#1B1A3A', roseInk: '#3730A3', text: '#615F74', chip: '#2E2A86' };
 
 export default function OpengraphImage() {
   const logo = `data:image/svg+xml;utf8,${encodeURIComponent(logoMark().replace('<svg ', '<svg width="160" height="160" '))}`;
@@ -26,7 +26,7 @@ export default function OpengraphImage() {
           <div style={{ fontSize: 50, fontWeight: 600, color: C.roseInk, maxWidth: 860, lineHeight: 1.15 }}>Care in every bite.</div>
           <div style={{ fontSize: 30, color: C.text, maxWidth: 820, lineHeight: 1.35 }}>Keep a private food diary at home and get meals checked for you in hospital, guided by the Saudi Ministry of Health and SFDA.</div>
           <div style={{ display: 'flex', marginTop: 8 }}>
-            <div style={{ fontSize: 24, color: C.heading, background: C.mint, border: `2px solid ${C.sage}`, borderRadius: 999, padding: '10px 24px' }}>A university Health Informatics project</div>
+            <div style={{ fontSize: 24, color: C.chip, background: C.mint, border: `2px solid ${C.sage}`, borderRadius: 999, padding: '10px 24px' }}>A university Health Informatics project</div>
           </div>
         </div>
       </div>

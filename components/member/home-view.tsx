@@ -9,7 +9,7 @@ import { useApi, apiSend, ApiError } from '@/lib/api-client';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/toast';
-import { CalorieRing } from '@/components/diary/calorie-ring';
+import { MealBar, MEAL_COLOR } from '@/components/diary/meal-bar';
 import { Illustration } from '@/components/illustrations/illustration';
 import { MOH_GUIDE_META } from '@/data/moh-calorie-guide.js';
 import { cn } from '@/lib/utils';
@@ -82,17 +82,16 @@ export function HomeView({ name, hour: serverHour, overview, diary, week, activi
           <h2 id="today-h" className="text-lg sm:text-xl">{t('Today')}</h2>
           <Link href="/today" className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold">{t('Open your diary')}<ChevronRight className="size-4 rtl:rotate-180" aria-hidden /></Link>
         </div>
-        <Link href="/today" className="flex flex-col items-center gap-4 rounded-[18px] text-foreground no-underline hover:bg-background/70 sm:flex-row sm:gap-6 sm:p-2">
-          <CalorieRing eaten={eaten} target={target} />
-          <span className="sr-only">{target ? t('{n} of {target} kcal eaten today.', { n: n0(eaten), target: n0(target) }) : t('{n} kcal eaten today.', { n: n0(eaten) })}</span>
-          <ul className="m-0 grid w-full list-none grid-cols-2 gap-2 p-0">
+        <Link href="/today" className="flex flex-col gap-4 rounded-[18px] text-foreground no-underline hover:bg-background/70 sm:p-2">
+          <MealBar meals={d.meals.map((m) => ({ id: m.id, kcal: m.totals?.kcal }))} target={target} size="lg" />
+          <ul className="m-0 grid w-full list-none grid-cols-2 gap-2 p-0 sm:grid-cols-4">
             {d.meals.map((m) => {
               const has = m.entries.length > 0;
               return (
-                <li key={m.id} className={cn('flex min-h-11 items-center gap-2 rounded-[14px] border px-3 py-2', has ? 'border-sage bg-mint' : 'border-border bg-background')}>
-                  {has ? <Check className="size-5 shrink-0 text-sage-deep" aria-hidden /> : <Circle className="size-5 shrink-0 text-muted-foreground" aria-hidden />}
+                <li key={m.id} className={cn('flex min-h-11 items-center gap-2 rounded-[14px] px-3 py-2', has ? 'bg-secondary' : 'bg-muted')}>
+                  {has ? <Check className="size-5 shrink-0 text-secondary-foreground" aria-hidden /> : <Circle className="size-5 shrink-0 text-muted-foreground" aria-hidden />}
                   <span className="flex min-w-0 flex-col leading-tight">
-                    <b className="font-display text-sm font-medium text-heading">{t(MEAL_LABELS[m.id])}</b>
+                    <b className="flex items-center gap-1.5 font-display text-sm font-medium text-heading"><i aria-hidden className={cn('size-2 shrink-0 rounded-full', MEAL_COLOR[m.id])} />{t(MEAL_LABELS[m.id])}</b>
                     <span className="text-xs text-muted-foreground">{has ? t('{n} kcal', { n: n0(m.totals?.kcal ?? 0) }) : t('Not logged yet')}</span>
                   </span>
                 </li>
@@ -101,9 +100,9 @@ export function HomeView({ name, hour: serverHour, overview, diary, week, activi
           </ul>
         </Link>
         {!logged ? (
-          <div className="flex items-center gap-3 rounded-[16px] bg-blush px-3 py-2.5">
+          <div className="flex items-center gap-3 rounded-[16px] bg-muted px-3 py-2.5">
             <Illustration name="empty-diary" className="size-12" />
-            <p className="m-0 text-sm text-rose-ink">{t('What did you eat today? Add your {meal} to start.', { meal: mealIn(meal, MEAL_LABELS[meal].toLowerCase(), lang) })}</p>
+            <p className="m-0 text-sm text-foreground">{t('What did you eat today? Add your {meal} to start.', { meal: mealIn(meal, MEAL_LABELS[meal].toLowerCase(), lang) })}</p>
           </div>
         ) : null}
         <Link href={logHref} className={cn(buttonVariants({ size: 'lg' }), 'w-full sm:w-fit')}><Utensils aria-hidden />{t('Add what you ate')}</Link>
@@ -115,7 +114,7 @@ export function HomeView({ name, hour: serverHour, overview, diary, week, activi
 
       {/* 4. Next steps (new members) */}
       {left && welcome === 'hidden' ? (
-        <section aria-labelledby="next-h" className="flex flex-col gap-3 rounded-[20px] border border-sage bg-mint/60 p-4 sm:p-5">
+        <section aria-labelledby="next-h" className="flex flex-col gap-3 rounded-[20px] bg-secondary p-4 sm:p-5">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h2 id="next-h" className="flex items-center gap-2 text-lg sm:text-xl"><ListChecks className="size-5 text-sage-deep" aria-hidden />{t('Next steps')}</h2>
             <span className="text-sm text-muted-foreground">{t('{done} of {all} done', { done: steps.length - left, all: steps.length })}</span>
@@ -145,8 +144,8 @@ export function HomeView({ name, hour: serverHour, overview, diary, week, activi
 
       {/* 6. A MOH tip and an idea for the next meal */}
       <div className="grid gap-3 md:grid-cols-2">
-        <section aria-labelledby="tip-h" className="flex flex-col gap-2 rounded-[20px] border border-rose bg-blush p-4 sm:p-5">
-          <h2 id="tip-h" className="flex items-center gap-2 text-base sm:text-lg"><Lightbulb className="size-5 text-rose-ink" aria-hidden />{t('Tip of the day')}</h2>
+        <section aria-labelledby="tip-h" className="flex flex-col gap-2 rounded-[20px] bg-accent p-4 sm:p-5">
+          <h2 id="tip-h" className="flex items-center gap-2 text-base sm:text-lg"><Lightbulb className="size-5 text-accent-foreground" aria-hidden />{t('Tip of the day')}</h2>
           <p className="m-0 text-[1.02rem] text-foreground">{t(tip.text)}</p>
           <p className="m-0 mt-auto text-xs text-muted-foreground">
             {t('Source:')} <a href={MOH_GUIDE_META.url} target="_blank" rel="noopener noreferrer">{lang === 'ar' ? MOH_GUIDE_META.titleAr : t('Saudi Ministry of Health, Calorie Guide for Weight Loss')}<span className="sr-only"> {t('(opens in a new tab)')}</span></a>

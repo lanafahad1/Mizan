@@ -192,7 +192,7 @@ function OrderBlock({ per }: { per: Per }) {
   return (
     <>
       {e.selectedMealId ? (
-        <div className={cn('flex flex-col gap-1 rounded-[14px] border px-4 py-3', settled ? 'border-sage bg-success-soft/60' : e.status === 'on-hold' ? 'border-[#F3C9D3] bg-destructive-soft/50' : 'border-border bg-blush/50')}>
+        <div className={cn('flex flex-col gap-1 rounded-[14px] border px-4 py-3', settled ? 'border-success-border bg-success-soft/60' : e.status === 'on-hold' ? 'border-destructive-border bg-destructive-soft/50' : 'border-border bg-blush/50')}>
           <span className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground">{e.status === 'on-hold' ? t('On hold (was {status})', { status: t(e.holdFrom) }) : t(e.status === 'selected' ? 'Patient choice, waiting for confirmation' : 'Current order')}</span>
           <b className="font-display text-heading"><Link href={href(e.selectedMealId)}>{t(e.mealName)}</Link></b>
           <span className="flex flex-wrap items-center gap-x-2 text-sm">{m ? <MealType m={m} /> : null}<span>· {t('{portion} portion', { portion: t(portionLabel(e.portion)) })}</span></span>
@@ -288,7 +288,7 @@ function PeriodCard({ per }: { per: Per }) {
               </div>
             ) : null}
             {sc.excluded.length ? (
-              <Accordion className="rounded-[14px] border border-[#F3C9D3] bg-destructive-soft/30" headClassName="px-4 py-3 font-display text-sm font-semibold text-heading"
+              <Accordion className="rounded-[14px] border border-destructive-border bg-destructive-soft/30" headClassName="px-4 py-3 font-display text-sm font-semibold text-heading"
                 title={<span className="inline-flex items-center gap-2"><ShieldX className="size-4" aria-hidden />{t('Excluded for this patient ({n})', { n: sc.excluded.length })}</span>}>
                 <div className="flex flex-col gap-3 px-4 pb-4">
                   <p className="text-sm text-muted-foreground">{t('Excluded meals can never be offered or confirmed. Preferences do not change this.')}</p>

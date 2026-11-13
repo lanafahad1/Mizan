@@ -23,7 +23,7 @@ export function VerifyEmailBanner({ email }: { email: string }) {
     toast(error ? (error.status === 429 ? t('Too many tries in a row. Wait a few minutes, then try again.') : t('We couldn’t send the email. Try again later.')) : t('Sent. Check your inbox (and spam folder).'), { tone: error ? 'error' : 'ok' });
   };
   return (
-    <div role="status" className="border-b border-rose bg-blush print:hidden">
+    <div role="status" className="border-b border-border bg-blush print:hidden">
       <div className="container-page flex flex-wrap items-center gap-x-3 gap-y-1 py-2 text-sm text-rose-ink">
         <MailWarning aria-hidden className="size-4 shrink-0" />
         <span className="min-w-0 flex-1">{t('Please confirm your email so we can help if you forget your password.')}</span>

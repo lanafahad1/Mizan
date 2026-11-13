@@ -41,9 +41,9 @@ export function OptionCard({ type = 'radio', name, value, checked, defaultChecke
   title: React.ReactNode; description?: React.ReactNode; disabled?: boolean;
 }) {
   return (
-    <label className={cn('group relative flex cursor-pointer items-start gap-3 rounded-[14px] border border-border bg-card px-3.5 py-3 transition-colors has-[:checked]:border-primary has-[:checked]:bg-mint has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-primary/25', disabled && 'cursor-not-allowed opacity-55')}>
+    <label className={cn('group relative flex cursor-pointer items-start gap-3 rounded-[14px] border-[1.5px] border-input bg-card px-3.5 py-3 transition-colors hover:bg-secondary/50 has-[:checked]:border-primary has-[:checked]:bg-secondary has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/25', disabled && 'cursor-not-allowed opacity-55')}>
       <input type={type} name={name} value={value} checked={checked} defaultChecked={defaultChecked} onChange={onChange} disabled={disabled} className="peer sr-only" />
-      <span aria-hidden className={cn('mt-0.5 grid size-5 shrink-0 place-items-center border-2 border-input bg-card text-white transition-colors peer-checked:border-primary peer-checked:bg-primary', type === 'radio' ? 'rounded-full' : 'rounded-[6px]')}>
+      <span aria-hidden className={cn('mt-0.5 grid size-5 shrink-0 place-items-center border-2 border-input bg-card text-white transition-colors peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground', type === 'radio' ? 'rounded-full' : 'rounded-[6px]')}>
         <svg viewBox="0 0 16 16" className="size-3 opacity-0 transition-opacity group-has-[:checked]:opacity-100"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </span>
       <span className="flex min-w-0 flex-col">

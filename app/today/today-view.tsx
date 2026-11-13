@@ -14,7 +14,7 @@ import { Notice } from '@/components/ui/notice';
 import { toast } from '@/components/ui/toast';
 import { cn } from '@/lib/utils';
 import { containerClass } from '@/components/site/page-head';
-import { CalorieRing } from '@/components/diary/calorie-ring';
+import { MealBar } from '@/components/diary/meal-bar';
 import { MacroBars, MinorBars } from '@/components/diary/macro-bars';
 import { MealCard } from '@/components/diary/meal-card';
 import { AddFoodDialog } from '@/components/diary/food-search-dialog';
@@ -266,28 +266,15 @@ function Summary({ diary: d, role, announce }: { diary: Diary; role: 'member' | 
         ) : null}
       </div>
 
-      <div className="flex items-center gap-4 sm:gap-6">
-        <CalorieRing eaten={kcal} target={target} show="left" size={128} />
-        <div className="flex min-w-0 flex-col gap-1">
-          {target != null ? (
-            <>
-              <p className="sr-only">{kcal <= target ? t('{n} kcal left', { n: fmt(target - kcal) }) : t('{n} kcal over', { n: fmt(kcal - target) })}</p>
-              <dl className="flex flex-col gap-1 text-sm">
-                <div className="flex items-baseline gap-2"><dt className="text-muted-foreground">{t('Eaten')}</dt><dd className="font-display font-semibold text-heading tabular">{t('{n} kcal', { n: fmt(kcal) })}</dd></div>
-                <div className="flex items-baseline gap-2"><dt className="text-muted-foreground">{t('Target')}</dt><dd className="font-display font-semibold text-heading tabular">{t('{n} kcal', { n: fmt(target) })}</dd></div>
-              </dl>
-            </>
-          ) : (
-            <>
-              <p className="sr-only">{t('{n} kcal eaten', { n: fmt(kcal) })}</p>
-              <p className="text-sm text-muted-foreground">{t('Set a calorie target to see what’s left for the day.')}</p>
-              {role === 'member'
-                ? <Link href="/my-health#targets" className="text-sm font-semibold">{t('Set your targets')}</Link>
-                : <p className="text-sm text-muted-foreground">{t('Your care team sets your targets.')}</p>}
-            </>
-          )}
+      <MealBar meals={d.meals.map((m) => ({ id: m.id, kcal: m.totals?.kcal }))} target={target} />
+      {target == null ? (
+        <div className="flex flex-col gap-1">
+          <p className="text-sm text-muted-foreground">{t('Set a calorie target to see what’s left for the day.')}</p>
+          {role === 'member'
+            ? <Link href="/my-health#targets" className="text-sm font-semibold">{t('Set your targets')}</Link>
+            : <p className="text-sm text-muted-foreground">{t('Your care team sets your targets.')}</p>}
         </div>
-      </div>
+      ) : null}
 
       <MacroBars totals={d.totals} targets={d.targets} missing={d.missing} />
 

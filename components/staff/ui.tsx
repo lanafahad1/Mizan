@@ -17,7 +17,7 @@ export function Panel({ id, title, icon: Icon, action, children, className, tone
   const { t } = useT();
   return (
     <section aria-labelledby={id} className={cn('flex min-w-0 flex-col gap-4 rounded-[20px] border p-4 sm:p-5',
-      tone === 'alert' ? 'border-[#F3C9D3] bg-destructive-soft/50' : tone === 'mint' ? 'border-sage bg-mint' : 'border-border bg-card shadow-soft', className)}>
+      tone === 'alert' ? 'border-destructive-border bg-destructive-soft/50' : tone === 'mint' ? 'border-sage bg-mint' : 'border-border bg-card shadow-soft', className)}>
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
         <h2 id={id} className="flex items-center gap-2 text-lg sm:text-xl">{Icon ? <Icon className="size-5 shrink-0" aria-hidden /> : null}<span>{typeof title === 'string' ? t(title) : title}</span></h2>
         {action}
@@ -29,9 +29,9 @@ export function Panel({ id, title, icon: Icon, action, children, className, tone
 
 const TONE = {
   default: 'border-border bg-card',
-  danger: 'border-[#F3C9D3] bg-destructive-soft',
-  warn: 'border-[#F1DFB8] bg-warning-soft',
-  ok: 'border-sage bg-success-soft',
+  danger: 'border-destructive-border bg-destructive-soft',
+  warn: 'border-warning-border bg-warning-soft',
+  ok: 'border-success-border bg-success-soft',
 };
 
 /** KPI tile: label, big value, detail; optionally a link to the filtered list. */
@@ -46,7 +46,7 @@ export function KpiTile({ label, value, of, sub, href, tone = 'default' }: { lab
     </>
   );
   const cls = cn('flex min-w-0 flex-col gap-1 rounded-[16px] border px-4 py-3', TONE[tone]);
-  return href ? <Link href={href} className={cn(cls, 'text-foreground no-underline transition-colors hover:border-heading')}>{body}</Link> : <div className={cls}>{body}</div>;
+  return href ? <Link href={href} className={cn(cls, 'text-foreground no-underline transition-colors hover:border-primary')}>{body}</Link> : <div className={cls}>{body}</div>;
 }
 
 export const KpiRow = ({ children, className }: { children: React.ReactNode; className?: string }) => (

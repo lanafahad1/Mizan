@@ -6,8 +6,9 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useSWRConfig } from 'swr';
-import { Search, MapPin, CircleCheck, TriangleAlert, Plus, ChevronDown, ShieldAlert, FlaskConical, Calculator, Info, Target, Droplet } from 'lucide-react';
+import { Search, MapPin, CircleCheck, CircleAlert, TriangleAlert, Plus, ChevronDown, ShieldAlert, FlaskConical, Calculator, Info, Target, Droplet } from 'lucide-react';
 import { MealArt } from '@/components/cb/meal';
+import { RowCard } from '@/components/cb/row-card';
 import { Illustration } from '@/components/illustrations/illustration';
 import { apiSend, ApiError } from '@/lib/api-client';
 import { EmptyState } from '@/components/cb/misc';
@@ -26,6 +27,8 @@ import { CUISINE_AR } from '@/lib/i18n/ar/health';
 export type Idea = {
   id: string; kind: 'saudi-dish' | 'recipe'; name: string; nameAr: string | null; origin: string; period: string | null;
   serving: string; servingNote: string | null;
+  /** Grams in one serving, when known. */
+  grams?: number | null;
   kcal: number; carbs: number | null; protein: number | null; fat: number | null; sodium: number | null;
   contains: string[]; mayContain: string[]; allergensDerived: boolean; labelCheck: boolean;
   /** The recipe's meal picture (lib/art.js) and its dish id; null for Saudi dishes. */
@@ -115,7 +118,7 @@ export function IdeasView({ kind, ideas, hidden, allergies, targetKcal, targetsB
     } finally { setBusy(null); }
   }
 
-  const pill = 'inline-flex min-h-11 items-center gap-1.5 rounded-full border px-3.5 py-2 font-display text-sm font-medium transition-colors aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground border-border bg-card text-heading hover:bg-mint [&_svg]:size-4';
+  const pill = 'inline-flex min-h-11 items-center gap-1.5 rounded-full border px-3.5 py-2 font-display text-sm font-medium transition-colors aria-pressed:border-primary aria-pressed:bg-secondary aria-pressed:text-secondary-foreground border-input bg-card text-foreground hover:bg-secondary [&_svg]:size-4';
   const shown = list.slice(0, limit);
   const sodiumText = period === 'any'
     ? t('at most the meal’s share of {day} mg a day (breakfast {b} mg, lunch or dinner {l} mg, snack {s} mg)', { day: n0(SODIUM_DAY_MG), b: n0(SODIUM_DAY_MG * (shares.breakfast ?? 0)), l: n0(SODIUM_DAY_MG * (shares.lunch ?? 0)), s: n0(SODIUM_DAY_MG * (shares.snack ?? 0)) })
@@ -236,24 +239,25 @@ function IdeaCard({ it, period, busy, onAdd, targetKcal, bySize }: { it: Scored;
   const sodiumText = t('More sodium than your {meal} share of the daily 2,000 mg ({n} mg, Ministry of Health).', { meal: inMeal(it.meal), n: n0(it.sodiumLimit) });
   const warnings = [it.fits === false ? t('A big portion for one meal') : null, highSodium ? sodiumText : null].filter((x): x is string => Boolean(x));
   return (
-    <li className="flex min-w-0 flex-col gap-3 rounded-[20px] border border-border bg-card p-3 shadow-soft sm:p-4">
-      <div className="flex items-start gap-3">
-        {it.art && it.artId
-          ? <MealArt meal={{ id: it.artId, name: it.name, art: it.art, category: it.period ?? undefined }} className="size-[72px] shrink-0 sm:size-20" />
-          : <div className="grid size-[72px] shrink-0 place-items-center rounded-[14px] bg-blush sm:size-20"><Illustration name="ideas" className="size-14 sm:size-16" /></div>}
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <h2 className="flex items-start gap-1.5 text-base leading-snug">
-            <span className="min-w-0 break-words">{name}</span>
-            {warnings.length ? (
-              <span role="img" aria-label={warnings.join(' ')} title={warnings.join(' ')} className="mt-0.5 shrink-0 text-warning">
-                <TriangleAlert className="size-4" aria-hidden />
-              </span>
-            ) : null}
-          </h2>
-          <p className="m-0"><b className="font-display text-xl font-semibold leading-tight text-heading tabular">{n0(it.kcal)}</b> <span className="text-sm text-muted-foreground">{t('kcal per serving')}</span></p>
-          {it.fits === true ? <Badge variant="ok" className="self-start"><CircleCheck aria-hidden />{t('Fits your {meal}', { meal: inMeal(it.meal) })}</Badge> : null}
-        </div>
-      </div>
+    <RowCard className="rounded-[20px] border border-border bg-card p-3 shadow-soft sm:p-4"
+      art={it.art && it.artId
+        ? <MealArt meal={{ id: it.artId, name: it.name, art: it.art, category: it.period ?? undefined }} className="size-full rounded-none" />
+        : <Illustration name="ideas" className="size-14" />}
+      title={
+        <h2 className="flex items-start gap-1.5 text-base leading-snug">
+          <span className="min-w-0 break-words">{name}</span>
+          {warnings.length ? (
+            <span role="img" aria-label={warnings.join(' ')} title={warnings.join(' ')} className="mt-0.5 shrink-0 text-warning">
+              <TriangleAlert className="size-4" aria-hidden />
+            </span>
+          ) : null}
+        </h2>
+      }
+      facts={[t('{n} kcal', { n: n0(it.kcal) }), it.grams ? `${n0(it.grams)} ${t('g')}` : null, it.protein != null ? t('{n} g protein', { n: n0(it.protein) }) : null]}
+      tags={it.fits === true
+        ? <Badge variant="ok"><CircleCheck aria-hidden />{t('Fits your {meal}', { meal: inMeal(it.meal) })}</Badge>
+        : it.fits === false ? <Badge variant="warn"><CircleAlert aria-hidden />{t('A big portion for one meal')}</Badge>
+          : highSodium ? <Badge variant="warn"><CircleAlert aria-hidden />{t('Higher in sodium')}</Badge> : null}>
 
       <div className="mt-auto flex items-center gap-2">
         <Button variant="ghost" className="shrink-0 px-3" aria-expanded={open} aria-controls={panelId} onClick={() => setOpen((o) => !o)}>
@@ -310,6 +314,6 @@ function IdeaCard({ it, period, busy, onAdd, targetKcal, bySize }: { it: Scored;
           </div>
         </div>
       ) : null}
-    </li>
+    </RowCard>
   );
 }

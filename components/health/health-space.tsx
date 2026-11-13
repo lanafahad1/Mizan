@@ -5,7 +5,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Plus, Scale, Target, HeartPulse, ClipboardList, PencilLine, Trash2, Utensils } from 'lucide-react';
+import { Plus, Scale, Target, HeartPulse, ClipboardList, PencilLine, Trash2, Utensils, Activity, Droplet, Ruler } from 'lucide-react';
 import { useSWRConfig } from 'swr';
 import { useApi, apiSend } from '@/lib/api-client';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -148,6 +148,9 @@ const CHART_TYPES = [
   { id: 'weight', label: 'Weight' }, { id: 'bp', label: 'Blood pressure' }, { id: 'glucose', label: 'Blood sugar' }, { id: 'waist', label: 'Waist' },
 ];
 
+/** The icon tile of each reading card. */
+const READING_ICON: Record<string, React.ComponentType<{ className?: string }>> = { weight: Scale, bp: Activity, glucose: Droplet, waist: Ruler };
+
 function Readings({ o, who, reference, onAdd }: { o: Overview; who: string; reference: HealthRef; onAdd: (type: string) => void }) {
   const { t: tr, lang } = useT();
   const [type, setType] = React.useState('weight');
@@ -174,7 +177,7 @@ function Readings({ o, who, reference, onAdd }: { o: Overview; who: string; refe
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center gap-2"><HeartPulse aria-hidden className="size-5 text-sage-deep" /><CardTitle>{tr('Readings')}</CardTitle></div>
+        <div className="flex items-center gap-2"><HeartPulse aria-hidden className="size-5 text-primary" /><CardTitle>{tr('Readings')}</CardTitle></div>
         <Button size="sm" onClick={() => onAdd(type)}><Plus aria-hidden />{tr('Add a reading')}</Button>
       </CardHeader>
       <div className="flex flex-wrap gap-2" role="tablist" aria-label={tr('Reading type')}>
@@ -185,7 +188,7 @@ function Readings({ o, who, reference, onAdd }: { o: Overview; who: string; refe
           return (
             <button key={c.id} type="button" role="tab" aria-selected={type === c.id} onClick={() => setType(c.id)}
               aria-label={value ? tr('{type}: {value}', { type: tr(c.label), value: `${value}${unitText ? ` ${unitText}` : ''}` }) : tr(c.label)}
-              className={cn('inline-flex min-h-11 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-semibold', type === c.id ? 'border-primary bg-mint text-heading' : 'border-border bg-card text-muted-foreground hover:bg-mint')}>
+              className={cn('inline-flex min-h-11 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-semibold', type === c.id ? 'border-primary bg-secondary text-secondary-foreground' : 'border-input bg-card text-muted-foreground hover:bg-secondary')}>
               <span>{tr(c.label)}</span>
               {value ? <><span aria-hidden className="text-muted-foreground">·</span><bdi className="font-normal tabular" dir="ltr">{value}</bdi></> : null}
             </button>
@@ -202,13 +205,22 @@ function Readings({ o, who, reference, onAdd }: { o: Overview; who: string; refe
         <p className="text-sm text-muted-foreground">{points.length ? tr('Add one more reading to see how it changes over time.') : tr('No {type} readings yet.', { type: lang === 'ar' ? tr(t?.label ?? '') : t?.label.toLowerCase() })}</p>
       )}
       {list.length ? (
-        <ul className="flex flex-col divide-y divide-border rounded-[12px] border border-border text-sm">
-          {list.slice(-4).reverse().map((r) => (
-            <li key={r.id} className="flex items-center justify-between gap-3 px-3 py-2">
-              <span><b className="tabular" dir="ltr">{type === 'bp' ? `${r.value}/${r.value2}` : r.value} {tr(r.unit)}</b> <span className="text-muted-foreground">· {formatDate(r.date, undefined, lang)}{r.time ? ` ${r.time}` : ''}{r.source === 'staff' ? ` · ${tr('care team')}` : ''}</span></span>
-              {(o.self ? r.source === 'self' : true) ? <Button size="icon" variant="ghost" aria-label={tr('Delete the reading of {date}', { date: formatDate(r.date, undefined, lang) })} onClick={() => void remove(r.id)}><Trash2 aria-hidden /></Button> : null}
-            </li>
-          ))}
+        <ul aria-label={tr('Latest readings')} className="m-0 flex list-none flex-col gap-2 p-0 text-sm">
+          {list.slice(-4).reverse().map((r) => {
+            const Ico = READING_ICON[type] ?? HeartPulse;
+            const context = r.context ? tr(reference.glucoseContext.find((c) => c.id === r.context)?.label ?? r.context) : null;
+            return (
+              <li key={r.id} className="grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-x-3 rounded-xl bg-muted py-2.5 ps-3 pe-1.5">
+                <span aria-hidden className="grid size-9 place-items-center rounded-[10px] bg-card text-primary"><Ico className="size-[18px]" /></span>
+                <span className="flex min-w-0 flex-col leading-tight">
+                  <span className="truncate font-semibold text-foreground">{tr(t?.label ?? '')}{context ? `, ${context}` : ''}</span>
+                  <span className="truncate text-[.8rem] text-muted-foreground">{formatDate(r.date, undefined, lang)}{r.time ? ` ${r.time}` : ''}{r.source === 'staff' ? ` · ${tr('care team')}` : ''}</span>
+                </span>
+                <b className="whitespace-nowrap font-display text-[.95rem] font-semibold text-foreground tabular" dir="ltr">{type === 'bp' ? `${r.value}/${r.value2}` : r.value} <span className="font-sans text-xs font-semibold text-muted-foreground">{tr(r.unit)}</span></b>
+                {(o.self ? r.source === 'self' : true) ? <Button size="icon" variant="ghost" aria-label={tr('Delete the reading of {date}', { date: formatDate(r.date, undefined, lang) })} onClick={() => void remove(r.id)}><Trash2 aria-hidden /></Button> : <span aria-hidden className="size-10" />}
+              </li>
+            );
+          })}
         </ul>
       ) : null}
       <p className="text-[.7rem] leading-snug text-muted-foreground">{o.self ? tr('Your readings are a record to share with your healthcare professional. CareBite doesn’t diagnose or send alerts.') : tr('Readings are a record for the patient and the care team. CareBite does not diagnose or give alerts.')}</p>

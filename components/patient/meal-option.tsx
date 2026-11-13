@@ -1,10 +1,10 @@
 'use client';
-// One approved option inside a meal period on My Meals, kept compact: a small
-// picture beside the name, one facts line (energy and portion), allergen chips,
+// One approved option inside a meal period on My Meals, as a compact row card: a square
+// picture beside the name, one facts line (energy, grams, protein), the portion, allergen tags,
 // "Why this meal?" folded, and "Choose this meal" as the one primary button.
 import * as React from 'react';
 import Link from 'next/link';
-import { Info, Check, Sparkles, HeartPulse, Layers, TriangleAlert, ShieldCheck } from 'lucide-react';
+import { Info, Check, Sparkles, HeartPulse, Layers, CircleAlert, Ban } from 'lucide-react';
 import { MealArt, NutriSummary } from '@/components/cb/meal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import { NativeSelect, Label } from '@/components/ui/input';
 import { portionLabel, allergenName } from '@/components/cb/labels';
 import { portionFactor } from '@/domain/constants.js';
 import { cn } from '@/lib/utils';
+import { RowCard } from '@/components/cb/row-card';
 import { youT } from './helpers';
 import { Fold } from './fold';
 import { useT } from '@/components/site/lang';
@@ -48,7 +49,7 @@ export function PatientWhy({ o, portion, defaultOpen = false }: { o: Option; por
   const partial = forPortion(o.nutritionPartial, portion);
   const portionName = t(portionLabel(portion)).toLowerCase();
   return (
-    <Fold defaultOpen={defaultOpen} className="rounded-[14px] border border-sage bg-mint/60" headClassName="px-3.5 py-2 font-display text-sm font-semibold text-heading"
+    <Fold defaultOpen={defaultOpen} className="rounded-[14px] bg-secondary" headClassName="px-3.5 py-2 font-display text-sm font-semibold text-secondary-foreground"
       title={<span className="inline-flex items-center gap-2"><Info className="size-4" aria-hidden />{t('Why this meal?')}</span>}>
       <div className="flex flex-col gap-3 px-3.5 pb-3.5">
         <ul className="flex flex-col gap-1.5 text-sm">
@@ -73,11 +74,11 @@ export function PatientWhy({ o, portion, defaultOpen = false }: { o: Option; por
 function AllergenChips({ a }: { a: { contains: string[]; mayContain: string[] } }) {
   const { t } = useT();
   const an = (id: string) => allergenName(id, t);
-  if (!a.contains.length && !a.mayContain.length) return <div><Badge variant="ok" className="whitespace-normal"><ShieldCheck aria-hidden />{t('None of the 14 SFDA allergens')}</Badge></div>;
+  if (!a.contains.length && !a.mayContain.length) return <Badge variant="ok" className="whitespace-normal"><Check aria-hidden />{t('None of the 14 SFDA allergens')}</Badge>;
   return (
     <ul aria-label={t('Allergens')} className="m-0 flex list-none flex-wrap gap-1.5 p-0">
-      {a.contains.map((x) => <li key={`c-${x}`}><Badge variant="rose" className="whitespace-normal">{t('Contains {allergen}', { allergen: an(x) })}</Badge></li>)}
-      {a.mayContain.map((x) => <li key={`m-${x}`}><Badge variant="warn" className="whitespace-normal"><TriangleAlert aria-hidden />{t('May contain {allergen}', { allergen: an(x) })}</Badge></li>)}
+      {a.contains.map((x) => <li key={`c-${x}`}><Badge variant="danger" className="whitespace-normal"><Ban aria-hidden />{t('Contains {allergen}', { allergen: an(x) })}</Badge></li>)}
+      {a.mayContain.map((x) => <li key={`m-${x}`}><Badge variant="warn" className="whitespace-normal"><CircleAlert aria-hidden />{t('May contain {allergen}', { allergen: an(x) })}</Badge></li>)}
     </ul>
   );
 }
@@ -90,22 +91,24 @@ export function MealOption({ o, period, date, chosen, chosenPortion, canChoose, 
   const [portion, setPortion] = React.useState<string>((chosen && chosenPortion) || o.offer.suggestedPortion || portions[0]);
   const selectId = `pt-${period}-${o.id}`;
   const name = useMealName(o);
-  const kcal = forPortion(o.nutrition, portion)?.kcal;
+  const n = forPortion(o.nutrition, portion);
+  const kcal = n?.kcal;
+  const protein = n?.protein;
+  const grams = typeof o.grams === 'number' && o.grams > 0 ? Math.round(o.grams * portionFactor(portion)) : null;
   const portionText = t('{portion} portion', { portion: t(portionLabel(portion)) });
-  const facts = [t(o.cuisine), kcal != null ? t('{n} kcal', { n: Math.round(kcal) }) : null, portionText].filter(Boolean).join(' · ');
+  const facts = [kcal != null ? t('{n} kcal', { n: Math.round(kcal) }) : null, grams != null ? `${grams} ${t('g')}` : null, protein != null ? t('{n} g protein', { n: Math.round(protein) }) : null];
   const chooseText = chosen ? t('Update my choice') : t('Choose this meal');
   return (
-    <article className={cn('flex flex-col gap-3 rounded-[18px] border bg-card p-3 sm:p-4', chosen ? 'border-heading bg-mint/40 ring-2 ring-heading' : 'border-border')}
-      aria-label={chosen ? `${t('Your choice')}: ${name}` : name}>
-      <div className="flex items-start gap-3">
-        <MealArt meal={o} className="aspect-[4/3] w-24 shrink-0 sm:w-36" />
-        <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-          {chosen ? <span className="inline-flex items-center gap-1 font-display text-sm font-semibold text-heading"><Check className="size-4" aria-hidden />{t('Your choice')}</span> : null}
-          <h3 className="text-base leading-snug"><Link href={`/meal/${o.id}?date=${date}&period=${period}`} className="no-underline hover:underline">{name}</Link></h3>
-          <p className="text-sm text-muted-foreground">{facts}</p>
-          <AllergenChips a={o.allergens} />
-        </div>
-      </div>
+    <RowCard as="article" className={cn('rounded-[18px] border bg-card p-3 shadow-soft sm:p-4', chosen ? 'border-primary bg-secondary/50 ring-2 ring-primary' : 'border-border')}
+      aria-label={chosen ? `${t('Your choice')}: ${name}` : name}
+      art={<MealArt meal={o} className="size-full rounded-none" />}
+      title={<>
+        {chosen ? <span className="inline-flex items-center gap-1 font-display text-sm font-semibold text-primary"><Check className="size-4" aria-hidden />{t('Your choice')}</span> : null}
+        <h3 className="text-base leading-snug"><Link href={`/meal/${o.id}?date=${date}&period=${period}`} className="text-foreground no-underline hover:underline">{name}</Link></h3>
+      </>}
+      facts={facts}
+      sub={[t(o.cuisine), portionText].filter(Boolean).join(' · ')}
+      tags={<AllergenChips a={o.allergens} />}>
       <PatientWhy o={o} portion={portion} />
       {canChoose ? (
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
@@ -123,6 +126,6 @@ export function MealOption({ o, period, date, chosen, chosenPortion, canChoose, 
           </Button>
         </div>
       ) : null}
-    </article>
+    </RowCard>
   );
 }

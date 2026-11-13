@@ -100,7 +100,7 @@ export default async function Home() {
         </div>
       </Band>
 
-      <section aria-labelledby="sa-h" className="border-y border-rose bg-blush py-5">
+      <section aria-labelledby="sa-h" className="border-y border-border bg-blush py-5">
         <div className="container-page flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
             <h2 id="sa-h" className="text-[1rem]">{t('Built on Saudi government guidance')}</h2>

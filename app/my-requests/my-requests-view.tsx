@@ -59,7 +59,7 @@ export function MyRequestsView({ pid, demoId, initial, focusId, vocab, today, ma
             {rs.map((r) => (
               <li key={r.id} id={`rq-${r.id}`} tabIndex={-1} aria-current={r.id === highlight ? 'true' : undefined}
                 className={cn('flex scroll-mt-24 flex-col gap-3 rounded-xl border bg-card p-4 shadow-soft outline-none sm:p-5', r.clinical && 'border-s-[5px] border-s-pink-deep',
-                  r.id === highlight ? 'border-2 border-heading ring-3 ring-sage' : 'border-border')}>
+                  r.id === highlight ? 'border-2 border-primary ring-3 ring-sage' : 'border-border')}>
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <h2 className="flex items-center gap-2 text-lg">{r.clinical ? <HeartPulse className="size-5" aria-hidden /> : <MessageSquare className="size-5" aria-hidden />}{t(r.typeLabel)}</h2>
                   <RequestStatusChip status={r.status} />

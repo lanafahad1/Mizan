@@ -15,7 +15,7 @@ export function DialogContent({ className, children, wide = false, showClose = t
   const { t } = useT();
   return (
     <D.Portal>
-      <D.Backdrop className={(s) => cn('t-backdrop fixed inset-0 z-50 bg-[rgba(81,81,81,.28)] backdrop-blur-[2px]', motionClass(s))} />
+      <D.Backdrop className={(s) => cn('t-backdrop fixed inset-0 z-50 bg-[rgb(27_26_58/.32)] backdrop-blur-[2px]', motionClass(s))} />
       <D.Viewport className="fixed inset-0 z-50 grid place-items-end overflow-y-auto p-0 sm:place-items-center sm:p-6">
         <D.Popup
           className={(s) => cn(

@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { ShieldCheck, ShieldX, TriangleAlert, List, Clock, Check, Layers, X, RefreshCw, ThumbsDown, Activity, MessageSquare, Info } from 'lucide-react';
+import { Ban, CircleAlert, CircleX, List, Clock, Check, Layers, X, RefreshCw, ThumbsDown, Activity, MessageSquare, Info } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { WORKFLOW_STEPS } from '@/domain/constants.js';
@@ -12,23 +12,23 @@ type Variant = React.ComponentProps<typeof Badge>['variant'];
 /** Screening status of a meal for a patient. */
 export function ScreenChip({ status }: { status?: string | null }) {
   const { t } = useT();
-  if (status === 'eligible') return <Badge variant="ok"><ShieldCheck aria-hidden />{t('Passes screening')}</Badge>;
-  if (status === 'review') return <Badge variant="warn"><TriangleAlert aria-hidden />{t('Needs admin review')}</Badge>;
-  if (status === 'excluded') return <Badge variant="danger"><ShieldX aria-hidden />{t('Excluded')}</Badge>;
+  if (status === 'eligible') return <Badge variant="ok"><Check aria-hidden />{t('Passes screening')}</Badge>;
+  if (status === 'review') return <Badge variant="warn"><CircleAlert aria-hidden />{t('Needs admin review')}</Badge>;
+  if (status === 'excluded') return <Badge variant="danger"><Ban aria-hidden />{t('Excluded')}</Badge>;
   return null;
 }
 
-// Colour meaning: mint/white with sage text = neutral or the next step; green = done;
-// pink/rose = a problem only (on hold, cancelled). Always text plus icon, never colour alone.
+// Colour meaning: lavender = the next step; sky = waiting; green = done; amber = check;
+// red = a problem (on hold). Always text plus icon, never colour alone.
 type EntryIcon = React.ComponentType<{ 'aria-hidden'?: boolean; className?: string }>;
 const ENTRY: Record<string, [Variant, EntryIcon | null, string, string]> = {
   offered: ['mint', List, 'Options offered', 'Offered'],
-  selected: ['neutral', Clock, 'Patient choice submitted', 'Choice in'],
+  selected: ['info', Clock, 'Patient choice submitted', 'Choice in'],
   confirmed: ['ok', Check, 'Confirmed by nutrition team', 'Confirmed'],
   prepared: ['ok', Layers, 'Prepared', 'Prepared'],
   delivered: ['dark', Check, 'Delivered', 'Delivered'],
-  'on-hold': ['danger', TriangleAlert, 'On hold: needs review', 'On hold'],
-  cancelled: ['rose', X, 'Cancelled', 'Cancelled'],
+  'on-hold': ['danger', CircleAlert, 'On hold: needs review', 'On hold'],
+  cancelled: ['outline', CircleX, 'Cancelled', 'Cancelled'],
   none: ['outline', null, 'Not scheduled', 'Not scheduled'],
   npo: ['outline', X, 'Nothing by mouth', 'NPO'],
   discharged: ['outline', X, 'Discharged', 'Discharged'],
@@ -43,7 +43,7 @@ const PATIENT_ENTRY: Record<string, [string, string]> = {
   none: ['Not planned yet', 'Not planned yet'],
   npo: ['Nothing by mouth', 'Nothing by mouth'],
 };
-const NEUTRAL_TEXT = 'text-sage-deep';
+const NEUTRAL_TEXT = 'text-secondary-foreground';
 
 /**
  * English label of a meal-period status (wrap it in t()). `patient` gives the patient wording
@@ -82,7 +82,7 @@ export function Stepper({ status, compact = false, patient = false }: { status?:
         const state = i < idx ? 'done' : i === idx ? 'current' : 'todo';
         return (
           <li key={st} aria-current={state === 'current' ? 'step' : undefined} className="flex items-center gap-1.5">
-            <span aria-hidden className={cn('grid size-6 place-items-center rounded-full border text-[.7rem] font-bold', state === 'done' && 'border-primary bg-primary text-white', state === 'current' && 'border-primary bg-mint text-heading ring-2 ring-primary/30', state === 'todo' && 'border-input bg-card text-muted-foreground')}>
+            <span aria-hidden className={cn('grid size-6 place-items-center rounded-full border text-[.7rem] font-bold', state === 'done' && 'border-primary bg-primary text-primary-foreground', state === 'current' && 'border-primary bg-secondary text-secondary-foreground ring-2 ring-ring/30', state === 'todo' && 'border-input bg-card text-muted-foreground')}>
               {state === 'done' ? <Check className="size-3.5" /> : i + 1}
             </span>
             <span className={cn(state === 'current' ? 'font-bold text-heading' : state === 'done' ? 'text-foreground' : 'text-muted-foreground', compact && state === 'todo' && 'max-sm:sr-only')}>{t(labels[st])}</span>
@@ -96,15 +96,15 @@ export function Stepper({ status, compact = false, patient = false }: { status?:
 }
 
 export function RequestStatusChip({ status }: { status: string }) {
-  const variant: Variant = status === 'open' ? 'warn' : status === 'resolved' ? 'ok' : 'outline';
+  const variant: Variant = status === 'open' ? 'info' : status === 'resolved' ? 'ok' : 'outline';
   const { t } = useT();
   const Icon = status === 'open' ? Clock : status === 'resolved' ? Check : X;
   return <Badge variant={variant}><Icon aria-hidden />{t(requestStatusLabel(status))}</Badge>;
 }
 
 const FLAG: Record<string, [Variant, React.ComponentType<{ 'aria-hidden'?: boolean }>]> = {
-  review: ['warn', TriangleAlert], 'no-options': ['danger', ShieldX], hold: ['danger', TriangleAlert], changes: ['warn', RefreshCw],
-  refusal: ['rose', ThumbsDown], 'low-intake': ['rose', Activity], requests: ['outline', MessageSquare], npo: ['outline', X],
+  review: ['warn', CircleAlert], 'no-options': ['danger', Ban], hold: ['danger', CircleAlert], changes: ['warn', RefreshCw],
+  refusal: ['warn', ThumbsDown], 'low-intake': ['warn', Activity], requests: ['info', MessageSquare], npo: ['outline', X],
 };
 export function FlagChips({ flags = [] }: { flags?: { code: string; label: string; text?: string }[] }) {
   const { t } = useT();
@@ -117,26 +117,26 @@ export function FlagChips({ flags = [] }: { flags?: { code: string; label: strin
 
 export function AppetiteChip({ level }: { level: string }) {
   const { t } = useT();
-  return <Badge variant={level === 'poor' ? 'rose' : level === 'fair' ? 'warn' : 'ok'}>{t(appetiteLabel(level))}</Badge>;
+  return <Badge variant={level === 'poor' ? 'warn' : level === 'fair' ? 'info' : 'ok'}>{level === 'fair' ? <Info aria-hidden /> : null}{t(appetiteLabel(level))}</Badge>;
 }
 
 export function AllergyChips({ b }: { b: { allergyStatus?: string; allergies: string[]; intolerances: string[] } }) {
   const { t } = useT();
-  if (b.allergyStatus === 'unknown') return <Badge variant="warn"><TriangleAlert aria-hidden />{t('Allergies not assessed')}</Badge>;
+  if (b.allergyStatus === 'unknown') return <Badge variant="warn"><CircleAlert aria-hidden />{t('Allergies not assessed')}</Badge>;
   if (!b.allergies.length && !b.intolerances.length) return <Badge variant="outline">{t('No known food allergies')}</Badge>;
   return (
     <span className="flex flex-wrap gap-1.5">
-      {b.allergies.map((a) => <Badge key={a} variant="danger"><TriangleAlert aria-hidden />{t(a)}</Badge>)}
+      {b.allergies.map((a) => <Badge key={a} variant="danger"><Ban aria-hidden />{t(a)}</Badge>)}
       {b.intolerances.map((a) => <Badge key={a} variant="warn">{t(a)}</Badge>)}
     </span>
   );
 }
 
 const STRIP: Record<string, [React.ComponentType<{ 'aria-hidden'?: boolean; className?: string }> | null, string, string]> = {
-  offered: [List, 'offered', 'bg-mint text-sage-deep'], selected: [Clock, 'choice in', 'bg-card text-sage-deep'], confirmed: [Check, 'confirmed', 'bg-success-soft text-success'],
-  prepared: [Layers, 'prepared', 'bg-success-soft text-success'], delivered: [Check, 'delivered', 'bg-heading text-white'], 'on-hold': [TriangleAlert, 'on hold', 'bg-destructive-soft text-destructive'],
-  cancelled: [X, 'cancelled', 'bg-rose text-rose-ink'], npo: [X, 'NPO', 'bg-card text-muted-foreground'], discharged: [X, 'discharged', 'bg-card text-muted-foreground'],
-  'none-flag': [ShieldX, 'no option', 'bg-destructive-soft text-destructive'], 'review-only': [TriangleAlert, 'review', 'bg-warning-soft text-warning'], none: [null, '—', 'bg-card text-muted-foreground'],
+  offered: [List, 'offered', 'bg-secondary text-secondary-foreground'], selected: [Clock, 'choice in', 'bg-accent text-accent-foreground'], confirmed: [Check, 'confirmed', 'bg-success-soft text-success'],
+  prepared: [Layers, 'prepared', 'bg-success-soft text-success'], delivered: [Check, 'delivered', 'bg-primary text-primary-foreground'], 'on-hold': [CircleAlert, 'on hold', 'bg-destructive-soft text-destructive'],
+  cancelled: [CircleX, 'cancelled', 'bg-muted text-muted-foreground'], npo: [X, 'NPO', 'bg-card text-muted-foreground'], discharged: [X, 'discharged', 'bg-card text-muted-foreground'],
+  'none-flag': [Ban, 'no option', 'bg-destructive-soft text-destructive'], 'review-only': [CircleAlert, 'review', 'bg-warning-soft text-warning'], none: [null, '—', 'bg-card text-muted-foreground'],
 };
 /** Meal periods for one day as a compact strip: letter, icon and text (not colour alone). */
 export function PeriodStrip({ periods }: { periods: { period: string; status?: string; entryStatus?: string | null; noSuitable?: boolean; reviewOnly?: boolean }[] }) {

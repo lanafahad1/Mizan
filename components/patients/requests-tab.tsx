@@ -46,7 +46,7 @@ export function RequestsTab() {
       {rs.length ? (
         <ul className="flex flex-col gap-3">
           {rs.map((r) => (
-            <li key={r.id} className={cn('flex flex-col gap-2.5 rounded-xl border bg-card p-4 sm:p-5', r.clinical ? 'border-[#F1DFB8] border-s-[5px] border-s-warning' : 'border-border')}>
+            <li key={r.id} className={cn('flex flex-col gap-2.5 rounded-xl border bg-card p-4 sm:p-5', r.clinical ? 'border-warning-border border-s-[5px] border-s-warning' : 'border-border')}>
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <h3 id={`rq-${r.id}`} tabIndex={-1} className="text-base outline-none sm:text-lg">{t(staffRequestLabel(r.type, r.typeLabel))}</h3>
                 <RequestStatusChip status={r.status} />

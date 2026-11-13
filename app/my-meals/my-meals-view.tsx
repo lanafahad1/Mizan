@@ -124,7 +124,7 @@ export function MyMealsView({ pid, name, demoId, initial, initialWeek, initialVi
           <div role="group" aria-label={lang === 'ar' ? t('Day or week view') : 'View'} className="grid grid-cols-2 rounded-full border border-border bg-blush p-1 sm:w-56">
             {(['day', 'week'] as View[]).map((v) => (
               <button key={v} type="button" aria-pressed={view === v} onClick={() => switchView(v)}
-                className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full px-4 font-display text-sm font-medium text-heading aria-pressed:bg-heading aria-pressed:text-white">
+                className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full px-4 font-display text-sm font-medium text-heading aria-pressed:bg-primary aria-pressed:text-primary-foreground">
                 {v === 'day' ? <CalendarDays className="size-4" aria-hidden /> : <CalendarRange className="size-4" aria-hidden />}{v === 'day' ? t('Day') : t('Week')}
               </button>
             ))}
@@ -165,7 +165,7 @@ export function MyMealsView({ pid, name, demoId, initial, initialWeek, initialVi
         )}
 
         {!d.discharged ? (
-          <section aria-labelledby="help-h" className="flex flex-col gap-3 rounded-xl border border-rose bg-blush p-5">
+          <section aria-labelledby="help-h" className="flex flex-col gap-3 rounded-xl border border-border bg-blush p-5">
             <h2 id="help-h" className="text-lg">{t('Need help?')}</h2>
             <div className="grid gap-2 sm:grid-cols-2">
               {reference.vocab.requestTypes.map((rt: { id: string; label: string; clinical?: boolean }) => {
@@ -262,7 +262,7 @@ function WeekView({ d, busy, onDay, onOpen }: { d: MyMeals; busy: boolean; onDay
   return (
     <section aria-label={t('Week overview')} aria-busy={busy} className={cn('grid gap-3 sm:grid-cols-2 lg:grid-cols-2', busy && 'opacity-60')}>
       {d.week.map((day: any) => (
-        <article key={day.date} className={cn('flex flex-col gap-2 rounded-[20px] border bg-card p-4', day.isToday ? 'border-2 border-heading' : 'border-border')}>
+        <article key={day.date} className={cn('flex flex-col gap-2 rounded-[20px] border bg-card p-4', day.isToday ? 'border-2 border-primary' : 'border-border')}>
           <h3 className="text-base">
             <button type="button" className="inline-flex min-h-10 items-center gap-2 rounded-[10px] text-start underline-offset-4 hover:underline" onClick={() => onDay(day.date)}>
               {day.isToday ? t('Today') : weekday(day)} <span className="font-sans text-sm font-normal text-muted-foreground">{formatDate(day.date, { month: 'short', day: 'numeric' }, lang)}</span>

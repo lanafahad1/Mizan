@@ -40,7 +40,7 @@ export async function SiteFooter() {
         <div className="flex flex-col gap-4">
           <Logo />
           <p className="text-muted-foreground">{t('Care in every bite. Keep a private food diary at home, and get meals checked for you in hospital, guided by Saudi government sources (MOH, SFDA).')}</p>
-          <p className="rounded-[16px] border border-rose bg-card p-4 text-sm text-muted-foreground"><b className="text-heading">{t('Medical disclaimer.')}</b> {t(DISCLAIMER)}</p>
+          <p className="rounded-[16px] border border-border bg-card p-4 text-sm text-muted-foreground"><b className="text-heading">{t('Medical disclaimer.')}</b> {t(DISCLAIMER)}</p>
         </div>
         {COLS.map(([title, links]) => (
           <nav key={title} aria-label={t(title)}>
@@ -51,7 +51,7 @@ export async function SiteFooter() {
           </nav>
         ))}
       </div>
-      <div className="container-page flex flex-col gap-1 border-t border-rose pt-5 text-sm text-muted-foreground">
+      <div className="container-page flex flex-col gap-1 border-t border-border pt-5 text-sm text-muted-foreground">
         <span>© {year} CareBite · {t('A university Health Informatics project')} · {t('Fictional hospital and made-up data only')}</span>
         <span>{t('Website developed by')} {developer}</span>
       </div>

@@ -250,7 +250,7 @@ export default async function MealPage({ params, searchParams }: Props) {
           <Panel tone="blush">
             <h2 className="text-xl">{t('Sources and limitations')}</h2>
             <ul className="flex list-disc flex-col gap-1.5 ps-5 text-sm">{m.limitations.map((x: string) => <li key={x}>{t(x)}</li>)}</ul>
-            <ul className="flex flex-col gap-1.5 border-t border-rose pt-3 text-sm">
+            <ul className="flex flex-col gap-1.5 border-t border-border pt-3 text-sm">
               {m.components.filter((c: any) => c.sfct).map((c: any) => <li key={c.dishId}>{t('SFCT:')} <ExtLink href={m.dataSources.sfct.links[0].url}>{nm(c.sfct)}</ExtLink>{t(', ')}{t(c.sfct.region)}{t(', ')}{t('p. {page}', { page: c.sfct.page })} ({t(c.sfct.yield)})</li>)}
               <li><ExtLink href={m.dataSources.sfct.url}>{t(m.dataSources.sfct.title)}</ExtLink></li>
               <li><ExtLink href={m.dataSources.allergens.url}>{t('SFDA allergen disclosure (14 allergens)')}</ExtLink></li>

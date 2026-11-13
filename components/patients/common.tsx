@@ -82,7 +82,7 @@ export function useSubmit() {
 export function FormMessage({ message, className }: { message?: string | null; className?: string }) {
   const { t } = useT();
   if (!message) return null;
-  return <p role="alert" className={cn('rounded-[12px] border border-[#F3C9D3] bg-destructive-soft px-3 py-2 text-sm font-semibold text-destructive', className)}>{t(message)}</p>;
+  return <p role="alert" className={cn('rounded-[12px] border border-destructive-border bg-destructive-soft px-3 py-2 text-sm font-semibold text-destructive', className)}>{t(message)}</p>;
 }
 
 /** Controlled modal with header, scrollable body and footer. Focus is trapped and returns via `finalFocus`. */

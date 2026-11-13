@@ -18,7 +18,7 @@ type ViewerLite = { name: string; username: string; roleLabel: string; role: str
 const isActive = (path: string, href: string) => (href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`));
 
 /**
- * `tabBar`: the space has the bottom tab bar on phones/tablets (members and patients), so no menu button.
+ * `tabBar`: the space has the top tab strip on phones/tablets (members and patients), so no menu button.
  * `account`: extra links in the account menu (the patient's food profile). `space`: the header width.
  */
 export function MainNav({ nav, more, viewer, home, logo, tabBar = false, account = [], space }: { nav: Item[]; more: Item[]; viewer: ViewerLite; home: string; logo: React.ReactNode; tabBar?: boolean; account?: Item[]; space?: Space }) {
@@ -93,7 +93,7 @@ export function MainNav({ nav, more, viewer, home, logo, tabBar = false, account
               <Link href="/login" className={cn(buttonVariants({ size: 'sm' }), 'shrink-0 whitespace-nowrap max-[379px]:px-3')}><Sparkles aria-hidden className="max-[379px]:hidden" /><span className="sm:hidden">{t('Demo')}</span><span className="hidden sm:inline">{t('Try the demo')}</span></Link>
             </>
           )}
-          {/* Members and patients use the bottom tab bar on phones and tablets (components/member/tab-bar.tsx). */}
+          {/* Members and patients use the top tab strip on phones and tablets (components/member/tab-bar.tsx). */}
           {tabBar ? null : (
             <button type="button" className={cn('grid size-10 shrink-0 place-items-center rounded-full text-heading hover:bg-mint', wide ? 'xl:hidden' : 'lg:hidden')}
               aria-label={open ? t('Close menu') : t('Open menu')} aria-expanded={open} aria-controls="mobile-nav" onClick={() => setOpen((o) => !o)}>

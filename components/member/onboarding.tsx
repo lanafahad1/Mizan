@@ -90,7 +90,7 @@ export function WelcomeCard({ overview, activityLevels, firstMealHref, onClose }
 
   const steps = [t('About you'), t('Your daily target'), t('Done')];
   return (
-    <section aria-labelledby="welcome-h" className="flex flex-col gap-4 rounded-[24px] border border-rose bg-blush p-4 sm:p-6">
+    <section aria-labelledby="welcome-h" className="flex flex-col gap-4 rounded-[24px] border border-border bg-blush p-4 sm:p-6">
       <div className="flex items-start gap-4">
         <Illustration name="welcome" className="size-20 max-sm:hidden" />
         <div className="flex min-w-0 flex-1 flex-col gap-1">

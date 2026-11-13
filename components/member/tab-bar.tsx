@@ -1,15 +1,15 @@
 'use client';
-// App-style bottom tab bar for members and patients on phones and tablets (< lg):
-// members  Home · Diary · (+) · Health · Eat well
-// patients My meals · Diary · (+) · Health · Requests (food profile: account menu)
-// The centre (+) opens a small sheet of quick actions (log food, water, steps,
-// activity, weight). The page gets bottom padding so the bar never covers content.
+// Top tabs for members and patients on phones and tablets (< lg), right under the site header:
+// members  Home · Diary · Health · Eat well
+// patients My meals · Diary · Health · Requests (food profile: account menu)
+// The current page is underlined in the primary colour; the strip scrolls sideways if it has to.
+// A small "+ Add" pill at the end opens the quick actions (log food, water, steps, activity, weight).
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { House, NotebookPen, HeartPulse, Salad, Plus, ChevronRight, UtensilsCrossed, MessageSquare } from 'lucide-react';
+import { Plus, ChevronRight } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogBody } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Input, Label } from '@/components/ui/input';
 import { Illustration } from '@/components/illustrations/illustration';
 import { toast } from '@/components/ui/toast';
@@ -17,59 +17,53 @@ import { cn } from '@/lib/utils';
 import { useT } from '@/components/site/lang';
 import type { IllustrationName } from '@/lib/illustrations';
 import { MEAL_LABELS, mealIn } from '@/components/diary/types';
+import { containerClass } from '@/components/site/page-head';
 import { mealForHour } from './meal-time';
 import { useDaily, n0, type DailyType } from './daily';
 
-type Icon = React.ComponentType<{ className?: string; 'aria-hidden'?: boolean }>;
-type Tab = { href: string; label: string; icon: Icon; also?: string[] };
+type Tab = { href: string; label: string; also?: string[] };
 // One set of words for both spaces: Diary (/today), Health (/my-health). Keep in step with MEMBER_NAV / PATIENT_NAV in lib/site.ts.
-const DIARY: Tab = { href: '/today', label: 'Diary', icon: NotebookPen, also: ['/my-foods'] };
-const HEALTH: Tab = { href: '/my-health', label: 'Health', icon: HeartPulse };
-const TABS: Record<'member' | 'patient', [Tab, Tab, Tab, Tab]> = {
-  member: [{ href: '/home', label: 'Home', icon: House }, DIARY, HEALTH, { href: '/eat-well', label: 'Eat well', icon: Salad, also: ['/meal-ideas', '/my-plan'] }],
-  patient: [{ href: '/my-meals', label: 'My meals', icon: UtensilsCrossed, also: ['/my-schedule', '/meal'] }, DIARY, HEALTH, { href: '/my-requests', label: 'Requests', icon: MessageSquare }],
+const DIARY: Tab = { href: '/today', label: 'Diary', also: ['/my-foods'] };
+const HEALTH: Tab = { href: '/my-health', label: 'Health' };
+const TABS: Record<'member' | 'patient', Tab[]> = {
+  member: [{ href: '/home', label: 'Home' }, DIARY, HEALTH, { href: '/eat-well', label: 'Eat well', also: ['/meal-ideas', '/my-plan'] }],
+  patient: [{ href: '/my-meals', label: 'My meals', also: ['/my-schedule', '/meal'] }, DIARY, HEALTH, { href: '/my-requests', label: 'Requests' }],
 };
 const on = (path: string, href: string) => path === href || path.startsWith(`${href}/`);
 
-/** Body padding (phones/tablets) so content and toasts sit above the bar; nothing of it in print. */
-const SPACE_CSS = '@media (max-width: 1023.98px) { body { padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px)); } body [aria-live="polite"].fixed.bottom-0 { bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px)); } } @media print { body { padding-bottom: 0 !important; } }';
-
-/** Bottom tab bar for the member space (default) or the patient space. */
+/** Top tab strip for the member space (default) or the patient space. Rendered inside the sticky site header. */
 export function MemberTabBar({ space = 'member' }: { space?: 'member' | 'patient' }) {
   const path = usePathname();
   const { t } = useT();
   const [open, setOpen] = React.useState(false);
   React.useEffect(() => { setOpen(false); }, [path]);
-  const tabs = TABS[space];
-  const item = (x: Tab) => {
-    const active = on(path, x.href) || (x.also ?? []).some((h) => on(path, h));
-    const Ico = x.icon;
-    return (
-      <li key={x.href} className="flex flex-1">
-        <Link href={x.href} aria-current={active ? 'page' : undefined}
-          className="flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-[14px] px-1 font-display text-[11px] font-medium text-muted-foreground no-underline aria-[current=page]:text-sage-deep">
-          <span className={cn('grid h-7 w-12 place-items-center rounded-full transition-colors', active && 'bg-sage')}><Ico className="size-5" aria-hidden /></span>
-          <span className="max-w-full truncate">{t(x.label)}</span>
-        </Link>
-      </li>
-    );
-  };
+  const listRef = React.useRef<HTMLUListElement>(null);
+  // Keep the current tab in view when the strip has to scroll (long Arabic words on small phones).
+  React.useEffect(() => {
+    listRef.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [path]);
   return (
     <>
-      <style>{SPACE_CSS}</style>
-      <nav aria-label={space === 'patient' ? t('Patient') : t('Member')} className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-6px_20px_rgba(81,81,81,.06)] backdrop-blur supports-[backdrop-filter]:bg-card/90 lg:hidden print:hidden">
-        <ul className="mx-auto flex max-w-xl list-none items-stretch gap-1 px-2 py-1">
-          {item(tabs[0])}
-          {item(tabs[1])}
-          <li className="flex flex-1 items-start justify-center">
-            <button type="button" onClick={() => setOpen(true)} aria-haspopup="dialog" aria-label={t('Quick add')}
-              className="-mt-5 grid size-14 place-items-center rounded-full border-4 border-background bg-primary text-primary-foreground shadow-lift hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/30">
-              <Plus className="size-7" aria-hidden />
-            </button>
-          </li>
-          {item(tabs[2])}
-          {item(tabs[3])}
-        </ul>
+      <nav aria-label={space === 'patient' ? t('Patient') : t('Member')} className="border-t border-border lg:hidden print:hidden">
+        <div className={cn(containerClass({ space: 'member' }), 'flex items-center gap-2')}>
+          <ul ref={listRef} className="-ms-2 flex min-w-0 flex-1 list-none items-stretch gap-0.5 overflow-x-auto p-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {TABS[space].map((x) => {
+              const active = on(path, x.href) || (x.also ?? []).some((h) => on(path, h));
+              return (
+                <li key={x.href} className="flex shrink-0">
+                  <Link href={x.href} aria-current={active ? 'page' : undefined}
+                    className="-mb-px inline-flex min-h-11 items-center whitespace-nowrap border-b-[2.5px] border-transparent px-2 font-display text-[.86rem] font-semibold text-muted-foreground no-underline transition-colors hover:text-foreground aria-[current=page]:border-primary aria-[current=page]:text-primary sm:px-3.5">
+                    {t(x.label)}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+          <button type="button" onClick={() => setOpen(true)} aria-haspopup="dialog" title={t('Quick add')}
+            className={cn(buttonVariants({ size: 'sm' }), 'min-h-9 shrink-0 gap-1 px-3 max-sm:whitespace-nowrap max-[359px]:px-2.5')}>
+            <Plus aria-hidden />{t('Add')}
+          </button>
+        </div>
       </nav>
       <QuickAdd open={open} onOpenChange={setOpen} />
     </>
@@ -87,7 +81,7 @@ function QuickAdd({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boo
     const v = await save('water', { add: 1 });
     if (v != null) { toast(t('Added a cup of water. That’s {n} today.', { n: n0(v) })); close(); }
   };
-  const tile = 'flex min-h-16 w-full items-center gap-3 rounded-[16px] border border-border bg-card px-3 py-2 text-start font-display text-[.95rem] font-medium text-heading no-underline hover:border-primary hover:bg-mint disabled:opacity-60';
+  const tile = 'flex min-h-16 w-full items-center gap-3 rounded-[16px] border border-border bg-card px-3 py-2 text-start font-display text-[.95rem] font-medium text-heading no-underline hover:border-sage hover:bg-secondary disabled:opacity-60';
   const art = (n: IllustrationName) => <Illustration name={n} className="size-11" />;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -151,7 +145,7 @@ function NumberForm({ type, label, hint, max, onDone, save, busy }: {
     }
   };
   return (
-    <form onSubmit={submit} noValidate className="flex flex-col gap-1.5 rounded-[16px] border border-primary bg-mint/50 p-3">
+    <form onSubmit={submit} noValidate className="flex flex-col gap-1.5 rounded-[16px] bg-secondary p-3">
       <Label htmlFor={id}>{label}</Label>
       <div className="flex gap-2">
         {/* eslint-disable-next-line jsx-a11y/no-autofocus */}

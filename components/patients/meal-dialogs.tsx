@@ -308,7 +308,7 @@ export function HoldDialog({ a, open, finalFocus }: DialogProps<'hold'>) {
       <div role="group" aria-label={t('Decision')} className="grid gap-2.5 sm:grid-cols-2">
         {options.filter((o) => c.can(o[4])).map(([d, Icon, title, text]) => (
           <button key={d} type="button" onClick={() => decide(d)}
-            className={cn('flex min-h-11 flex-col items-start gap-1 rounded-[14px] border-[1.5px] border-border bg-card p-3.5 text-start hover:border-heading focus-visible:border-heading', d === 'cancel' && 'hover:border-destructive')}>
+            className={cn('flex min-h-11 flex-col items-start gap-1 rounded-[14px] border-[1.5px] border-border bg-card p-3.5 text-start hover:border-primary focus-visible:border-primary', d === 'cancel' && 'hover:border-destructive')}>
             <span className="inline-flex items-center gap-2 font-display font-semibold text-heading"><Icon className="size-4" aria-hidden />{t(title)}</span>
             <span className="text-sm text-muted-foreground">{t(text)}</span>
           </button>

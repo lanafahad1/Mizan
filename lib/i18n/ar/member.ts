@@ -85,7 +85,6 @@ export const MEMBER: Record<string, string> = {
   '{day}: {n} kcal of {target}{over}': '{day}: {n} سعرة من {target}{over}',
   '{day}: {n} kcal': '{day}: {n} سعرة',
   'over target': 'فوق الهدف',
-  'target {n}': 'الهدف {n}',
   'Within target': 'ضمن الهدف',
   'Over target': 'فوق الهدف',
   'Logged': 'مسجّل',
@@ -133,4 +132,14 @@ export const MEMBER: Record<string, string> = {
   'Clear today': 'امسح اليوم',
   'A few details so we can estimate your calories': 'بعض المعلومات لتقدير سعراتك',
   'About your health, food and habits. Skip any question you like.': 'عن صحتك وغذائك وعاداتك. يمكنك تخطي أي سؤال.',
+  // daily meal bar, weekly line chart, readings cards, Eat well tags (Mizan theme)
+  '{n} left': 'المتبقي {n}',
+  'over by {n}': 'زيادة {n}',
+  'Left {n}': 'المتبقي {n}',
+  '{meal}: {n} kcal': '{meal}: {n} سعرة',
+  'Within': 'ضمن الهدف',
+  'Over': 'فوق الهدف',
+  'Target {n}': 'الهدف {n}',
+  'Latest readings': 'آخر القراءات',
+  'Higher in sodium': 'أعلى في الصوديوم',
 };

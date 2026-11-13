@@ -39,7 +39,7 @@ export function buildIdeas(allergies: string[]): { ideas: Idea[]; hidden: number
       id: String(f.id), kind: f.kind as Idea['kind'], name: String(f.name), nameAr: (f.nameAr as string | undefined) ?? null,
       origin: f.kind === 'saudi-dish' ? String(f.region ?? '') : String(f.cuisine ?? ''),
       period: PERIOD_IDS.includes(period) ? period : null,
-      serving: s.display, servingNote: s.basis ?? s.note ?? null,
+      serving: s.display, servingNote: s.basis ?? s.note ?? null, grams: s.g ?? null,
       kcal: n.kcal, carbs: n.carbs ?? null, protein: n.protein ?? null, fat: n.fat ?? null, sodium: n.sodium ?? null,
       contains: contains.map(allergenLabel), mayContain: may.map(allergenLabel),
       allergensDerived: Boolean(f.allergensDerived), labelCheck: Boolean(f.labelCheck),

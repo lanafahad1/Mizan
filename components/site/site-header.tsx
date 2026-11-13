@@ -18,7 +18,7 @@ export async function SiteHeader() {
   // Signed-in people keep their own short navigation; public pages stay in the footer.
   const more: typeof nav = [];
   const home = viewer ? homeFor({ role: viewer.role, status: viewer.status }) : '/';
-  // Members and patients get the same app-style bottom tab bar on phones and tablets instead of the menu button.
+  // Members and patients get the same top tab strip (under the header) on phones and tablets instead of the menu button.
   const bar = active && (viewer?.role === 'member' || viewer?.role === 'patient') ? viewer.role : null;
   const space: Space = !viewer || !active ? 'public' : bar ? 'member' : 'staff';
   const account = bar === 'patient' ? PATIENT_ACCOUNT_NAV : [];
@@ -35,9 +35,9 @@ export async function SiteHeader() {
           logo={<Logo href={home} />}
           viewer={viewer ? { name: viewer.name, username: viewer.username, roleLabel: viewer.roleLabel, role: viewer.role, patientDemoId: viewer.patientDemoId, isDemo: viewer.isDemo } : null}
         />
+        {bar ? <MemberTabBar space={bar} /> : null}
       </header>
       {active && viewer && !viewer.emailVerified && !viewer.isDemo && emailConfigured() ? <VerifyEmailBanner email={viewer.email} /> : null}
-      {bar ? <MemberTabBar space={bar} /> : null}
     </>
   );
 }

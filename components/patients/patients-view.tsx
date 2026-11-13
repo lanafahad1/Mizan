@@ -136,7 +136,7 @@ function PatientRow({ r, date, isToday }: { r: Row; date: string; isToday: boole
     <li className={cn(
       'grid grid-cols-2 gap-x-4 gap-y-3 rounded-[18px] border border-border bg-card p-4 [&>div]:flex [&>div]:min-w-0 [&>div]:flex-col [&>div]:gap-1',
       'md:grid-cols-3 xl:grid-cols-[minmax(150px,1fr)_minmax(180px,1.3fr)_minmax(150px,1.1fr)_auto_auto_minmax(150px,1.1fr)_auto] xl:items-center',
-      flagged && 'border-s-[5px] border-s-[#E2A7B6]',
+      flagged && 'border-s-[5px] border-s-destructive',
     )}>
       <div className="col-span-2 md:col-span-1">
         <PatientHeader b={r} link={false} />

@@ -22,7 +22,7 @@ export function FormError({ message, className }: { message: string | null; clas
   return (
     <div role="alert" aria-live="assertive" className={cn('empty:hidden', className)}>
       {message ? (
-        <p className="flex items-start gap-2 rounded-[14px] border border-[#F3C9D3] bg-destructive-soft px-3.5 py-2.5 text-sm font-semibold text-destructive">
+        <p className="flex items-start gap-2 rounded-[14px] border border-destructive-border bg-destructive-soft px-3.5 py-2.5 text-sm font-semibold text-destructive">
           <OctagonAlert aria-hidden className="mt-0.5 size-4 shrink-0" />{t(message)}
         </p>
       ) : null}

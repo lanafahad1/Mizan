@@ -100,7 +100,7 @@ export function KitchenView({ initial, initialPeriod, permissions }: { initial: 
                 {k.alerts.map((a: any) => {
                   const id = `ack-${a.entryId}-${a.changeId}`;
                   return (
-                    <li key={id} className={cn('flex flex-col gap-3 rounded-[14px] border bg-card p-3 sm:flex-row sm:items-center sm:justify-between', a.outcome === 'hold' || a.outcome === 'cancelled' ? 'border-[#F3C9D3] border-s-4 border-s-destructive' : 'border-[#F1DFB8] border-s-4 border-s-warning')}>
+                    <li key={id} className={cn('flex flex-col gap-3 rounded-[14px] border bg-card p-3 sm:flex-row sm:items-center sm:justify-between', a.outcome === 'hold' || a.outcome === 'cancelled' ? 'border-destructive-border border-s-4 border-s-destructive' : 'border-warning-border border-s-4 border-s-warning')}>
                       <div className="flex min-w-0 flex-col gap-0.5">
                         <b className="flex items-start gap-1.5">{a.outcome === 'hold' || a.outcome === 'cancelled' ? <TriangleAlert className="mt-0.5 size-4 shrink-0 text-destructive" aria-hidden /> : <RefreshCw className="mt-0.5 size-4 shrink-0 text-warning" aria-hidden />}{tr(a.instruction)}</b>
                         <span className="text-sm">{formatDate(a.date, undefined, lang)} · {tr(periodLabel(a.period))} · {tr('Ward {ward} Bed {bed}', { ward: a.ward, bed: a.bed })} ({a.demoId}) · {tr(a.cause)}: {tr(a.change)}</span>

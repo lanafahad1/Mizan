@@ -93,7 +93,7 @@ export function WhyThisMeal({ ev, open = false, audience = 'staff', reviewNote =
   const title = t(ev.status === 'excluded' ? 'Why is this meal excluded?' : ev.status === 'review' ? 'Why this meal? · Needs admin review' : 'Why this meal?');
   const Icon = ev.status === 'excluded' ? ShieldX : ev.status === 'review' ? TriangleAlert : Info;
   return (
-    <Accordion defaultOpen={open} className={cn('rounded-[14px] border', ev.status === 'excluded' ? 'border-[#F3C9D3] bg-destructive-soft/40' : ev.status === 'review' ? 'border-[#F1DFB8] bg-warning-soft/50' : 'border-sage bg-mint/60')}
+    <Accordion defaultOpen={open} className={cn('rounded-[14px] border', ev.status === 'excluded' ? 'border-destructive-border bg-destructive-soft/40' : ev.status === 'review' ? 'border-warning-border bg-warning-soft/50' : 'border-sage bg-mint/60')}
       headClassName="px-3.5 py-2.5 font-display text-sm font-semibold text-heading"
       title={<span className="inline-flex items-center gap-2"><Icon className="size-4" aria-hidden />{title}</span>}>
       <div className="flex flex-col gap-3 px-3.5 pb-3.5">
@@ -120,7 +120,7 @@ export function MealRow({ m, ev = m.evaluation, actions, why = true, audience = 
   const portion = ev?.portion;
   const n = portion?.nutrition ?? m.nutrition;
   return (
-    <article className={cn('flex flex-col gap-3 rounded-[18px] border bg-card p-3 sm:flex-row sm:p-4', ev?.status === 'excluded' ? 'border-[#F3C9D3]' : ev?.status === 'review' ? 'border-[#F1DFB8]' : 'border-border')}>
+    <article className={cn('flex flex-col gap-3 rounded-[18px] border bg-card p-3 sm:flex-row sm:p-4', ev?.status === 'excluded' ? 'border-destructive-border' : ev?.status === 'review' ? 'border-warning-border' : 'border-border')}>
       <MealArt meal={m} className="aspect-[4/3] w-full shrink-0 self-start sm:w-36" />
       <div className="flex min-w-0 flex-1 flex-col gap-2.5">
         <div className="flex flex-wrap items-start justify-between gap-2">

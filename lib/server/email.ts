@@ -72,18 +72,18 @@ export function renderEmail(kind: 'verify' | 'reset', lang: Lang, url: string, u
   const font = lang === 'ar' ? "'IBM Plex Sans Arabic', 'Geeza Pro', Tahoma, Arial, sans-serif" : "Nunito, 'Segoe UI', Arial, sans-serif";
   const head = lang === 'ar' ? font : "Poppins, 'Segoe UI', Arial, sans-serif";
   const logo = `cid:${LOGO_CID}`;
-  const html = `<!doctype html><html lang="${lang}" dir="${dir}"><body style="margin:0;background:#EDE5E5;padding:24px 12px">
+  const html = `<!doctype html><html lang="${lang}" dir="${dir}"><body style="margin:0;background:#F3EFE8;padding:24px 12px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#FFF9F7;border:1px solid #F6C9D2;border-radius:16px;overflow:hidden" dir="${dir}">
-<tr><td style="background:#FFF1F4;padding:16px 24px;border-bottom:1px solid #FBE1E6"><img src="${logo}" width="40" height="40" alt="" style="vertical-align:middle;border:0"> <span dir="ltr" style="vertical-align:middle;font-family:${head};font-size:20px;font-weight:600;color:#3F5646">Care<span style="color:#7A3E50">Bite</span></span></td></tr>
-<tr><td style="padding:24px;font-family:${font};font-size:15px;line-height:1.6;color:#515151;text-align:${lang === 'ar' ? 'right' : 'left'}">
-<h1 style="margin:0 0 10px;font-family:${head};font-size:20px;color:#3F5646">${esc(m.heading)}</h1>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#FFFFFF;border:1px solid #E8E2D8;border-radius:16px;overflow:hidden" dir="${dir}">
+<tr><td style="background:#EEEDFA;padding:16px 24px;border-bottom:1px solid #DCD9F4"><img src="${logo}" width="40" height="40" alt="" style="vertical-align:middle;border:0"> <span dir="ltr" style="vertical-align:middle;font-family:${head};font-size:20px;font-weight:600;color:#1B1A3A">Care<span style="color:#3730A3">Bite</span></span></td></tr>
+<tr><td style="padding:24px;font-family:${font};font-size:15px;line-height:1.6;color:#1B1A3A;text-align:${lang === 'ar' ? 'right' : 'left'}">
+<h1 style="margin:0 0 10px;font-family:${head};font-size:20px;color:#1B1A3A">${esc(m.heading)}</h1>
 <p style="margin:0 0 18px">${esc(m.intro)}</p>
-<p style="margin:0 0 18px"><a href="${esc(url)}" style="display:inline-block;background:#526B59;color:#FFFFFF;text-decoration:none;border-radius:999px;padding:12px 24px;font-family:${head};font-size:15px">${esc(m.button)}</a></p>
-<p style="margin:0 0 14px;font-size:13px;color:#6B6666">${esc(m.note)}</p>
-<p style="margin:0;font-size:12px;color:#6B6666">${lang === 'ar' ? 'إذا لم يعمل الزر، فانسخ هذا الرابط:' : 'Button not working? Copy this link:'}<br><a href="${esc(url)}" dir="ltr" style="color:#526B59;word-break:break-all">${esc(url)}</a></p>
+<p style="margin:0 0 18px"><a href="${esc(url)}" style="display:inline-block;background:#3730A3;color:#FFFFFF;text-decoration:none;border-radius:999px;padding:12px 24px;font-family:${head};font-size:15px">${esc(m.button)}</a></p>
+<p style="margin:0 0 14px;font-size:13px;color:#615F74">${esc(m.note)}</p>
+<p style="margin:0;font-size:12px;color:#615F74">${lang === 'ar' ? 'إذا لم يعمل الزر، فانسخ هذا الرابط:' : 'Button not working? Copy this link:'}<br><a href="${esc(url)}" dir="ltr" style="color:#3730A3;word-break:break-all">${esc(url)}</a></p>
 </td></tr>
-<tr><td style="background:#FBE1E6;padding:14px 24px;font-family:${font};font-size:12px;line-height:1.5;color:#6B6666;text-align:${lang === 'ar' ? 'right' : 'left'}">${esc(FOOT[lang])}</td></tr>
+<tr><td style="background:#FBF8F3;padding:14px 24px;border-top:1px solid #E8E2D8;font-family:${font};font-size:12px;line-height:1.5;color:#615F74;text-align:${lang === 'ar' ? 'right' : 'left'}">${esc(FOOT[lang])}</td></tr>
 </table></td></tr></table></body></html>`;
   const text = `${m.heading}\n\n${m.intro}\n\n${m.button}: ${url}\n\n${m.note}\n\n${FOOT[lang]}`;
   return { subject: m.subject, html, text };

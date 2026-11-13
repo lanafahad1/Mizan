@@ -14,7 +14,7 @@ import type { IllustrationName } from '@/lib/illustrations';
 import { cn } from '@/lib/utils';
 import { useT } from '@/components/site/lang';
 import { ArabicName, SourceBadge } from './source-badge';
-import { amountText, firstServingKcal, fmt, foodName, servingText, tMsg, type Food, type RecentFood } from './types';
+import { amountText, firstServingKcal, fmt, foodName, previewNutrients, servingText, tMsg, type Food, type RecentFood } from './types';
 
 export type ShelfId = 'recent' | 'saudi' | 'groups' | 'ingredients' | 'supermarket' | 'mine';
 
@@ -52,7 +52,7 @@ export function useDebounced<T>(value: T, ms = 250) {
   return v;
 }
 
-const chip = 'inline-flex min-h-11 items-center gap-1.5 rounded-full border border-border bg-card px-3.5 font-display text-sm font-medium text-heading transition-colors hover:bg-mint aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground';
+const chip = 'inline-flex min-h-11 items-center gap-1.5 rounded-full border-[1.5px] border-input bg-card px-3.5 font-display text-sm font-medium text-foreground transition-colors hover:bg-secondary aria-pressed:border-primary aria-pressed:bg-secondary aria-pressed:text-secondary-foreground';
 
 // ------------------------------------------------------------------ step 1: the shelf tiles
 export function ShelfGrid({ onShelf }: { onShelf: (id: ShelfId) => void }) {
@@ -62,7 +62,7 @@ export function ShelfGrid({ onShelf }: { onShelf: (id: ShelfId) => void }) {
       {SHELVES.map((s) => (
         <li key={s.id}>
           <button type="button" onClick={() => onShelf(s.id)}
-            className="flex h-full min-h-32 w-full flex-col items-center gap-1.5 rounded-[18px] border border-border bg-background px-2 pb-3 pt-2.5 text-center transition-colors hover:border-pink hover:bg-blush focus-visible:bg-blush">
+            className="flex h-full min-h-32 w-full flex-col items-center gap-1.5 rounded-[18px] border border-border bg-background px-2 pb-3 pt-2.5 text-center transition-colors hover:border-sage hover:bg-secondary focus-visible:bg-secondary">
             <Illustration name={s.art} className="size-16" />
             <span className="font-display text-[.92rem] font-semibold leading-tight text-heading">{t(s.title)}</span>
             <span className="text-xs leading-snug text-muted-foreground">{t(s.line, s.vars)}</span>
@@ -74,37 +74,54 @@ export function ShelfGrid({ onShelf }: { onShelf: (id: ShelfId) => void }) {
 }
 
 // ------------------------------------------------------------------ rows
+/** The picture of a food in lists: its MOH group or the shelf it comes from. */
+function foodArt(f: Food): IllustrationName {
+  if (f.kind === 'moh-portion') return MOH_GROUPS.find((g) => g.id === f.group)?.art ?? 'shelf-groups';
+  if (f.kind === 'saudi-dish') return 'shelf-saudi';
+  if (f.kind === 'ingredient') return 'shelf-ingredients';
+  if (f.kind === 'packaged') return 'shelf-supermarket';
+  if (f.kind === 'custom') return 'shelf-my-foods';
+  if (f.kind === 'recipe') return 'ideas';
+  return 'log-food';
+}
+
+/** One food as a compact row card: picture, name, "kcal · grams · protein", then where the values come from. */
 export function FoodRow({ food: f, onPick, favorite }: { food: Food; onPick: () => void; favorite?: boolean }) {
   const { t, lang } = useT();
   const kcal = firstServingKcal(f);
   const s0 = f.servings[0];
   const serving = s0 ? servingText(s0.display, t, lang, s0.labelAr) : undefined;
+  const protein = s0 ? previewNutrients(f, { servingIndex: 0, quantity: 1 })?.protein ?? null : null;
+  const grams = s0?.g != null ? `${fmt(s0.g)} ${t('g')}` : serving;
+  const facts = [kcal == null ? '—' : t('{n} kcal', { n: fmt(kcal) }), grams, protein != null ? t('{n} g protein', { n: fmt(protein, 'protein') }) : null].filter(Boolean).join(' · ');
+  // The portion's name when the facts line only shows its grams ("1 medium").
+  const portion = s0?.g != null && serving && !/^100 g$/.test(s0.label) ? serving : null;
   return (
     <li>
-      <button type="button" onClick={onPick} className="flex min-h-14 w-full items-center gap-3 px-3.5 py-2.5 text-start hover:bg-background">
-        <span className="flex min-w-0 flex-1 flex-col gap-1">
-          <span className="font-semibold leading-snug">
-            {favorite ? <><Star aria-hidden className="me-1 inline size-3.5 fill-current align-[-2px] text-rose-ink" /><span className="sr-only">{t('Favourite')}: </span></> : null}
+      <button type="button" onClick={onPick}
+        className="grid min-h-14 w-full grid-cols-[56px_minmax(0,1fr)] items-center gap-3 rounded-[16px] border border-border bg-card p-2.5 text-start transition-colors hover:border-sage hover:bg-secondary/40 focus-visible:bg-secondary/40">
+        <span aria-hidden className="grid aspect-square w-full place-items-center rounded-[12px] bg-muted"><Illustration name={foodArt(f)} className="size-11" /></span>
+        <span className="flex min-w-0 flex-col gap-0.5">
+          <span className="font-display font-semibold leading-snug text-foreground">
+            {favorite ? <><Star aria-hidden className="me-1 inline size-3.5 fill-current align-[-2px] text-primary" /><span className="sr-only">{t('Favourite')}: </span></> : null}
             {foodName(f, lang)}
           </span>
-          {f.brand || f.nameAr ? (
-            <span className="flex flex-wrap gap-x-2 text-sm text-muted-foreground">
+          <span className="text-sm text-muted-foreground tabular">{facts}</span>
+          {f.brand || f.nameAr || portion ? (
+            <span className="flex flex-wrap gap-x-2 text-[.8rem] text-muted-foreground">
               {f.brand ? <span>{f.brand}</span> : null}
               {lang === 'ar' ? (f.nameAr ? <bdi dir="ltr" lang="en">{f.name}</bdi> : null) : <ArabicName>{f.nameAr}</ArabicName>}
+              {portion ? <span>{portion}</span> : null}
             </span>
           ) : null}
-          <span><SourceBadge basis={f.basis} sourceId={f.sourceId} className="text-[.72rem]" /></span>
-        </span>
-        <span className="flex shrink-0 flex-col items-end text-end">
-          <span className="font-display text-sm font-medium text-heading tabular">{kcal == null ? '—' : t('{n} kcal', { n: fmt(kcal) })}</span>
-          {serving ? <span className="max-w-[7.5rem] truncate text-xs text-muted-foreground">{serving}</span> : null}
+          <span className="mt-0.5"><SourceBadge basis={f.basis} sourceId={f.sourceId} className="text-[.72rem]" /></span>
         </span>
       </button>
     </li>
   );
 }
 
-const listBox = 'flex flex-col divide-y divide-border overflow-hidden rounded-[16px] border border-border bg-card';
+const listBox = 'm-0 flex list-none flex-col gap-2 p-0';
 
 function ListSkeleton() {
   const { t } = useT();
@@ -226,7 +243,7 @@ function RecentShelf({ onFood, favorites, recent }: ShelfProps) {
     <div className="flex flex-col gap-4">
       {favorites.size ? (
         <section aria-labelledby="sh-fav-h" className="flex flex-col gap-2">
-          <h4 id="sh-fav-h" className="flex items-center gap-1.5 text-sm"><Star aria-hidden className="size-4 fill-current text-rose-ink" />{t('Favourites')}</h4>
+          <h4 id="sh-fav-h" className="flex items-center gap-1.5 text-sm"><Star aria-hidden className="size-4 fill-current text-primary" />{t('Favourites')}</h4>
           {fav.error && !fav.data ? <LoadError error={fav.error} onRetry={() => fav.mutate()} />
             : !fav.data ? <ListSkeleton />
               : <ul className={listBox}>{favFoods.map((f) => <FoodRow key={f.id} food={f} favorite onPick={() => onFood(f)} />)}</ul>}
@@ -239,7 +256,8 @@ function RecentShelf({ onFood, favorites, recent }: ShelfProps) {
             {rest.map((r) => (
               <li key={r.foodId}>
                 <button type="button" onClick={() => openRecent(r)} disabled={opening != null}
-                  className="flex min-h-14 w-full items-center gap-3 px-3.5 py-2.5 text-start hover:bg-background disabled:opacity-60">
+                  className="flex min-h-14 w-full items-center gap-3 rounded-[16px] border border-border bg-card p-2.5 text-start transition-colors hover:border-sage hover:bg-secondary/40 disabled:opacity-60">
+                  <span aria-hidden className="grid size-14 shrink-0 place-items-center rounded-[12px] bg-muted"><Illustration name="shelf-recent" className="size-11" /></span>
                   <span className="flex min-w-0 flex-1 flex-col">
                     <span dir="auto" className={cn('truncate font-semibold', lang === 'ar' ? 'text-right' : 'text-left')}>{t(r.name)}</span>
                     <span className="truncate text-sm text-muted-foreground">{r.brand ? `${r.brand} · ` : ''}{t('Last time: {amount}', { amount: amountText(r.amountLabel, t, lang) })}</span>

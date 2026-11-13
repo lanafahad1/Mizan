@@ -55,7 +55,7 @@ export async function Pipeline({ steps, className, label }: { steps: { title: st
       {steps.map((s, i) => (
         <li key={s.title} className="relative grid grid-cols-[44px_minmax(0,1fr)] gap-4 pb-6 last:pb-0">
           {i < steps.length - 1 ? <span aria-hidden className="absolute bottom-0 start-[21px] top-11 w-0.5 bg-pink" /> : null}
-          <span aria-hidden className={cn('grid size-11 place-items-center rounded-full border-2 font-display font-semibold', s.safety ? 'border-heading bg-mint text-heading' : 'border-pink bg-card text-rose-ink')}>{i + 1}</span>
+          <span aria-hidden className={cn('grid size-11 place-items-center rounded-full border-2 font-display font-semibold', s.safety ? 'border-primary bg-mint text-heading' : 'border-pink bg-card text-rose-ink')}>{i + 1}</span>
           <div className="min-w-0 pt-1.5">
             <h3 className="mb-1 text-[1.05rem]">{s.title}{s.safety ? <span className="sr-only"> {t('(safety step)')}</span> : null}</h3>
             <p className="text-[.95rem] text-muted-foreground">{s.text}</p>

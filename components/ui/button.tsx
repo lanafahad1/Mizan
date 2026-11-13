@@ -7,14 +7,15 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary-hover shadow-soft',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-sage',
-        outline: 'border border-border bg-card text-heading hover:bg-mint',
-        ghost: 'text-heading hover:bg-mint',
-        soft: 'bg-rose text-rose-ink hover:bg-pink',
-        destructive: 'border border-destructive/30 bg-destructive-soft text-destructive hover:bg-destructive/15',
-        'destructive-solid': 'bg-destructive text-white hover:bg-destructive/90',
-        link: 'text-heading underline underline-offset-4 hover:text-sage-deep px-0',
+        // A · Pill: one solid indigo main action, a soft lavender second action, a quiet text action.
+        default: 'bg-primary text-primary-foreground font-semibold hover:bg-primary-hover',
+        secondary: 'bg-secondary text-secondary-foreground font-semibold hover:bg-secondary-hover',
+        outline: 'border border-border bg-card text-primary font-semibold hover:border-sage hover:bg-secondary',
+        ghost: 'bg-transparent text-primary font-semibold hover:bg-secondary',
+        soft: 'bg-secondary text-secondary-foreground font-semibold hover:bg-secondary-hover',
+        destructive: 'bg-destructive-soft text-destructive font-semibold hover:bg-destructive-border',
+        'destructive-solid': 'bg-destructive text-white font-semibold hover:bg-destructive/90',
+        link: 'text-primary underline underline-offset-4 hover:text-primary-hover px-0',
       },
       size: {
         sm: 'min-h-9 px-3.5 py-1.5 text-sm',

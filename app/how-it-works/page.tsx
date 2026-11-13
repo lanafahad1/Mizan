@@ -51,7 +51,7 @@ function Journey({ icon: Icon, tone, title, intro, steps, footer, t }: { icon: L
       <ol aria-label={t('{title} journey', { title: t(title) })} className="flex flex-1 flex-col gap-2.5 rounded-xl border border-border bg-card p-4">
         {steps.map((s, i) => (
           <li key={s.title} className="grid grid-cols-[32px_minmax(0,1fr)] items-start gap-3">
-            <span aria-hidden className={`grid size-8 place-items-center rounded-full border-2 font-display text-sm font-semibold ${s.safety ? 'border-heading bg-mint text-heading' : 'border-pink bg-card text-rose-ink'}`}>{i + 1}</span>
+            <span aria-hidden className={`grid size-8 place-items-center rounded-full border-2 font-display text-sm font-semibold ${s.safety ? 'border-primary bg-mint text-heading' : 'border-pink bg-card text-rose-ink'}`}>{i + 1}</span>
             <div className="min-w-0 pt-0.5">
               <h3 className="text-[1rem]">{t(s.title)}{s.safety ? <span className="sr-only"> {t('(safety step)')}</span> : null}</h3>
               <p className="text-[.92rem] text-muted-foreground">{t(s.text)}</p>

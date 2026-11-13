@@ -65,7 +65,6 @@ export const HEALTH: Record<string, string> = {
   'years': 'سنة',
   '{n} kcal': '{n} سعرة',
   '{n} ml': '{n} مل',
-  'of {n} kcal': 'من {n} سعرة',
   'kcal eaten': 'سعرة تناولتها',
 
   // ------------------------------------------------------------ meals
@@ -129,7 +128,6 @@ export const HEALTH: Record<string, string> = {
   'Care-team target': 'هدف الفريق الطبي',
   'Personal estimate': 'تقدير شخصي',
   '{n} kcal left': '{n} سعرة متبقية',
-  '{n} kcal over': '{n} سعرة زائدة',
   '{eaten} eaten · {target} target': 'تناولت {eaten} · الهدف {target}',
   '{n} kcal eaten': 'تناولت {n} سعرة',
   'Set your targets': 'حدّد أهدافك',

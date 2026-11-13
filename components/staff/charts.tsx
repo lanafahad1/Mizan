@@ -11,11 +11,11 @@ import { cn } from '@/lib/utils';
 import { useT } from '@/components/site/lang';
 import { formatDate } from '@/lib/format';
 
-/** Validated dataviz palette from the old stylesheet (sage single series, rose second series, sage ordinal ramp). */
+/** Dataviz palette (Mizan): indigo single series, deep sky second series, indigo ordinal ramp (light to dark). */
 export const VIZ = {
-  surface: '#FFFFFF', c1: '#4E7A5B', c2: '#B4546F',
-  o1: '#9FBFA6', o2: '#7FA88A', o3: '#4E7A5B', o4: '#2F4A38',
-  grid: '#EFE9E9', axis: '#DCD3D3', ink: '#515151', muted: '#6B6666', cross: '#BFB4B4',
+  surface: '#FFFFFF', c1: '#3730A3', c2: '#0B7BC0',
+  o1: '#C9C5F2', o2: '#9A93E6', o3: '#5B53C9', o4: '#2E2A86',
+  grid: '#EEE9E1', axis: '#DCD5CA', ink: '#1B1A3A', muted: '#615F74', cross: '#B9B3C9',
 };
 
 type TipLine = { label: string; value: string; color?: string };
@@ -369,7 +369,7 @@ export function StackedChart({ rows, series, unit }: { rows: { label: string; se
                 const el = (
                   <g key={s.key}>
                     <path d={d} fill={s.color} />
-                    {bw >= 22 ? <text x={ns(x + bw / 2)} y={ns(yy + 13)} textAnchor="middle" fontSize={11.5} fontWeight={800} fill={s.ink === 'light' ? '#FFFFFF' : '#1F2E24'}>{s.value}</text> : null}
+                    {bw >= 22 ? <text x={ns(x + bw / 2)} y={ns(yy + 13)} textAnchor="middle" fontSize={11.5} fontWeight={800} fill={s.ink === 'light' ? '#FFFFFF' : '#1B1A3A'}>{s.value}</text> : null}
                   </g>
                 );
                 x += full;

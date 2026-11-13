@@ -106,7 +106,7 @@ function SpaceHeader({ mode, space, headingRef, onChange }: { mode: Mode; space:
   const t = STEP_TEXT[mode][space];
   const Icon = s.icon;
   return (
-    <div className={cn('flex flex-col gap-2 rounded-[16px] border px-4 py-3', space === 'member' ? 'border-sage bg-mint' : 'border-rose bg-blush')}>
+    <div className={cn('flex flex-col gap-2 rounded-[16px] border px-4 py-3', space === 'member' ? 'border-sage bg-mint' : 'border-border bg-blush')}>
       <div className="flex items-center justify-between gap-3">
         <h2 ref={headingRef} tabIndex={-1} className="flex min-w-0 items-center gap-2 text-lg outline-none">
           <Icon aria-hidden className="size-5 shrink-0" />{tr(t.heading)}
@@ -187,7 +187,7 @@ export function AuthShell({ mode, next, initialSpace, accounts, initialHospitalT
 function DemoPanel({ title, intro, accounts, next }: { title: string; intro: React.ReactNode; accounts: DemoAccount[]; next: string | null }) {
   const { t } = useT();
   return (
-    <section aria-labelledby="demo-h" className="flex flex-col gap-4 rounded-xl border border-rose bg-blush p-5 sm:p-6">
+    <section aria-labelledby="demo-h" className="flex flex-col gap-4 rounded-xl border border-border bg-blush p-5 sm:p-6">
       <h2 id="demo-h" className="text-xl sm:text-[1.4rem]">{title}</h2>
       <p className="text-muted-foreground">{intro}</p>
       <DemoAccountList accounts={accounts} password={DEMO_PASSWORD} next={next} />

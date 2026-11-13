@@ -9,7 +9,7 @@ import { useT } from '@/components/site/lang';
 
 export type Ingredient = { id: string; name: string; allergens: string[] };
 type Tone = 'danger' | 'warn' | 'pink' | '';
-const TONE: Record<string, string> = { danger: 'bg-destructive-soft text-destructive border-[#F3C9D3]', warn: 'bg-warning-soft text-warning border-[#F1DFB8]', pink: 'bg-rose text-rose-ink border-rose', '': 'bg-mint text-sage-deep border-sage' };
+const TONE: Record<string, string> = { danger: 'bg-destructive-soft text-destructive border-destructive-border', warn: 'bg-warning-soft text-warning border-warning-border', pink: 'bg-rose text-rose-ink border-rose', '': 'bg-mint text-sage-deep border-sage' };
 
 function Token({ text, tone, onRemove, name, value }: { text: string; tone: Tone; onRemove: () => void; name: string; value: string }) {
   const { t } = useT();

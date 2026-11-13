@@ -110,7 +110,7 @@ export function MenuView({ initial, filters: start, today, canManage }: { initia
     return () => clearTimeout(timer);
   }, [qInput]);
 
-  const chip = 'inline-flex min-h-11 shrink-0 items-center rounded-full border px-4 font-display text-sm font-medium whitespace-nowrap transition-colors border-border bg-card text-heading hover:bg-mint aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground';
+  const chip = 'inline-flex min-h-11 shrink-0 items-center rounded-full border px-4 font-display text-sm font-medium whitespace-nowrap transition-colors border-input bg-card text-foreground hover:bg-secondary aria-pressed:border-primary aria-pressed:bg-secondary aria-pressed:text-secondary-foreground';
   // Chips scroll inside their own row on small phones and wrap on wider screens; the page never scrolls sideways.
   const rail = '-mx-3 flex gap-2 overflow-x-auto px-3 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden';
   const seg = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 font-display text-sm font-semibold text-heading transition-colors hover:bg-mint aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:hover:bg-primary [&_svg]:size-4';
