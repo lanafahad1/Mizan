@@ -60,7 +60,7 @@ export function ReadingDialog({ who, open, onClose, types, contexts, initialType
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{tr('Add a reading')}</DialogTitle>
-          <DialogDescription>{tr('We keep readings as a history only. CareBite doesn’t interpret blood pressure or blood sugar, so talk to your healthcare professional about them.')}</DialogDescription>
+          <DialogDescription>{tr('We keep readings as a history only. Mizan doesn’t interpret blood pressure or blood sugar, so talk to your healthcare professional about them.')}</DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} noValidate>
           <DialogBody className="flex flex-col gap-4">

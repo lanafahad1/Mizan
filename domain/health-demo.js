@@ -14,7 +14,7 @@ export function seedHealthDemo({ repo, service, today, patientIds = {} }) {
   const staff = { id: null, role: 'staff', name: 'Demo Staff Member', status: 'active' };
   const asPatient = (demoId) => ({ id: null, role: 'patient', name: demoId, status: 'active', patientId: patientIds[demoId] });
 
-  // ---- member: Sara, using CareBite on her own
+  // ---- member: Sara, using Mizan on her own
   const u = repo.getUserByUsername('sara.member');
   if (u) {
     repo.deleteHealthOwner(`m:${u.id}`);

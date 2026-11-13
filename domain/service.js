@@ -1,4 +1,4 @@
-// CareBite service layer for hospital nutrition. All business and safety rules
+// Mizan service layer for hospital nutrition. All business and safety rules
 // live here and are used by the Next.js server (Postgres snapshot repository,
 // domain/pg-store.js) and by the unit tests (in-memory repository). Every
 // permission and screening check runs here, never only in the UI.
@@ -112,7 +112,7 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
   const SCHEDULE_DAYS = 7;
   const scheduleWindow = () => ({ from: today(), to: addDays(today(), SCHEDULE_DAYS - 1) });
   const audit = (actor, patientId, action, detail) => repo.addAudit({
-    at: stamp(), actorId: actor?.id ?? null, actorRole: actor?.role ?? 'system', actorName: actor?.name ?? 'CareBite', patientId: patientId ?? null, action, detail,
+    at: stamp(), actorId: actor?.id ?? null, actorRole: actor?.role ?? 'system', actorName: actor?.name ?? 'Mizan', patientId: patientId ?? null, action, detail,
   });
   const outcomesOf = (patientId) => mealOutcomes(repo.listIntake({ patientId }));
   const menuIds = (date, period) => menuFor(menu(), date)[period];
@@ -620,7 +620,7 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
         reasons: reasonCounts(outcomes),
       },
       outcomeRule: OUTCOME_RULE,
-      notice: 'These are indicators from recorded meals. They show what was recorded, not why it happened, and they do not show that CareBite caused any change.',
+      notice: 'These are indicators from recorded meals. They show what was recorded, not why it happened, and they do not show that Mizan caused any change.',
     };
   }
 
@@ -699,7 +699,7 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
   function exportData(actor, user) {
     const out = {
       exportedAt: stamp(),
-      notice: 'This file contains information stored in CareBite. Keep it private.',
+      notice: 'This file contains information stored in Mizan. Keep it private.',
       account: { username: user.username, email: user.email, role: user.role, status: user.status ?? 'active', createdAt: user.createdAt },
     };
     if (actor.role === 'patient' && actor.patientId && repo.getPatient(actor.patientId)) {

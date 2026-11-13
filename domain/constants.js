@@ -6,7 +6,7 @@ export const ROLES = [
   { id: 'admin', label: 'Admin', staff: true, hint: 'Oversees the whole platform: staff access and roles, diet orders, allergies and restrictions, approving meals that need review, checking menu information and deleting records, plus every staff task. In a hospital, this is the clinical dietitian or nutrition lead.' },
   { id: 'staff', label: 'Staff', staff: true, hint: 'Runs the daily meal service: offers and confirms meals that pass screening, records choices, intake and admissions, prepares and delivers trays, keeps the menu up to date and answers patient requests. Cannot change clinical information or approve meals that need review.' },
   { id: 'patient', label: 'Patient', staff: false, hint: 'Sees their own meals and profile, picks meals, shares preferences, appetite and feedback, and sends requests.' },
-  { id: 'member', label: 'Member', staff: false, space: 'member', hint: 'Uses CareBite for everyday healthy living: a food diary, health readings, personal goals and meal ideas. Not linked to a hospital, and their data stays private.' },
+  { id: 'member', label: 'Member', staff: false, space: 'member', hint: 'Uses Mizan for everyday healthy living: a food diary, health readings, personal goals and meal ideas. Not linked to a hospital, and their data stays private.' },
 ];
 /** Roles an administrator can assign to an approved staff account. */
 export const ASSIGNABLE_STAFF_ROLES = ['staff', 'admin'];

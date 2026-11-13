@@ -42,7 +42,7 @@ function fieldError(field: string, message: string): never {
 export function authOptions(db: Pool, domain: Domain) {
   const baseURL = process.env.BETTER_AUTH_URL ?? 'http://localhost:3000';
   return {
-    appName: 'CareBite',
+    appName: 'Mizan',
     baseURL,
     secret: process.env.BETTER_AUTH_SECRET,
     database: db,
@@ -53,7 +53,7 @@ export function authOptions(db: Pool, domain: Domain) {
       minPasswordLength: 8,
       maxPasswordLength: 128,
       autoSignIn: true,
-      // Email confirmation is a reminder only: people can use CareBite before confirming.
+      // Email confirmation is a reminder only: people can use Mizan before confirming.
       requireEmailVerification: false,
       revokeSessionsOnPasswordReset: true,
       resetPasswordTokenExpiresIn: 60 * 60, // 1 hour, single use
@@ -141,7 +141,7 @@ export function authOptions(db: Pool, domain: Domain) {
         if (ctx.path === '/sign-up/email') {
           const pw = passwordProblem(String(body.password ?? ''), { username: String(body.username ?? ''), email: String(body.email ?? '') });
           if (pw) fieldError('password', pw);
-          if (!String(body.name ?? '').trim()) fieldError('name', 'Enter the name to show in CareBite.');
+          if (!String(body.name ?? '').trim()) fieldError('name', 'Enter the name to show in Mizan.');
           if (body.accountType === 'staff') {
             if (!['staff', 'admin'].includes(String(body.requestedRole ?? ''))) fieldError('requestedRole', 'Choose the access you are asking for.');
             if (!String(body.requestNote ?? '').trim()) fieldError('requestNote', 'Tell the admin your department or job title.');

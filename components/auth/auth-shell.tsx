@@ -11,7 +11,7 @@ import { RegisterForm } from './register-form';
 
 export const DEMO_PASSWORD = 'CareBite#2026';
 
-/** The two CareBite spaces. Member = personal lifestyle use; hospital = patients and hospital staff. */
+/** The two Mizan spaces. Member = personal lifestyle use; hospital = patients and hospital staff. */
 export type Space = 'member' | 'hospital';
 type Mode = 'login' | 'register';
 
@@ -93,7 +93,7 @@ function SpaceChoice({ headingRef, onChoose }: { headingRef: React.RefObject<HTM
         );
       })}
       <p className="text-sm text-muted-foreground">
-        {t('Work at a hospital and want CareBite for yourself too? Create a separate Member account. Your personal data stays private.')}
+        {t('Work at a hospital and want Mizan for yourself too? Create a separate Member account. Your personal data stays private.')}
       </p>
     </fieldset>
   );
@@ -155,10 +155,10 @@ export function AuthShell({ mode, next, initialSpace, accounts, initialHospitalT
         <AuthSwitch mode={mode} query={query} />
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 flex-col gap-2">
-            <span className="eyebrow">{isLogin ? t('Welcome back') : t('Join CareBite')}</span>
-            <h1 className="text-[1.75rem] leading-tight sm:text-[2.1rem]">{isLogin ? t('Log in to CareBite') : t('Create your CareBite account')}</h1>
+            <span className="eyebrow">{isLogin ? t('Welcome back') : t('Join Mizan')}</span>
+            <h1 className="text-[1.75rem] leading-tight sm:text-[2.1rem]">{isLogin ? t('Log in to Mizan') : t('Create your Mizan account')}</h1>
             {space === null ? (
-              <p className="text-muted-foreground">{isLogin ? t('First, tell us where you use CareBite.') : t('First, choose the kind of account you need.')}</p>
+              <p className="text-muted-foreground">{isLogin ? t('First, tell us where you use Mizan.') : t('First, choose the kind of account you need.')}</p>
             ) : null}
           </div>
           <Illustration name={isLogin ? 'login' : 'welcome'} className="-mt-1 h-[57px] w-16 sm:h-[85px] sm:w-24" />
@@ -175,7 +175,7 @@ export function AuthShell({ mode, next, initialSpace, accounts, initialHospitalT
         )}
         <p className="text-muted-foreground">
           {isLogin
-            ? <>{t('New to CareBite?')} <Link href={`/register${query}`} className="font-semibold">{t('Create an account')}</Link></>
+            ? <>{t('New to Mizan?')} <Link href={`/register${query}`} className="font-semibold">{t('Create an account')}</Link></>
             : <>{t('Already have an account?')} <Link href={`/login${query}`} className="font-semibold">{t('Log in')}</Link></>}
         </p>
       </section>

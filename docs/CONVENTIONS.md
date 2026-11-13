@@ -1,6 +1,6 @@
-# CareBite (Next.js) — conventions for contributors
+# Mizan (Next.js) — conventions for contributors
 
-CareBite supports healthy eating for obesity and chronic diseases (university Health Informatics
+Mizan supports healthy eating for obesity and chronic diseases (university Health Informatics
 project) with two spaces: **Member** (personal) and **Hospital care**. If `HANDOFF.md` is in the
 project folder (kept on the owner's computer only), read it first: it has the full picture.
 

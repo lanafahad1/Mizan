@@ -20,7 +20,7 @@ import { getT } from '@/lib/i18n/server';
 import type { T } from '@/lib/i18n';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const DESCRIPTION = 'Every diet CareBite applies, including weight management, with its exact logic and Saudi government source (MOH, SFDA, MEWA, GFSA): nutrient limits, allergy and review rules, intake flags, the 14 SFDA allergens and IDDSI texture levels.';
+const DESCRIPTION = 'Every diet Mizan applies, including weight management, with its exact logic and Saudi government source (MOH, SFDA, MEWA, GFSA): nutrient limits, allergy and review rules, intake flags, the 14 SFDA allergens and IDDSI texture levels.';
 export async function generateMetadata() {
   const t = await getT();
   return publicMetadata({ title: t('Diets & Screening Rules'), description: t(DESCRIPTION), path: '/diets' });
@@ -35,7 +35,7 @@ const REQUIRES: Record<string, string> = { potassiumMgPerDay: 'potassium limit',
 const pct = (period: string) => `${Math.round((MEAL_SHARE as Record<string, number>)[period] * 100)}%`;
 
 function SourceLinks({ ids, t }: { ids?: string[]; t: T }) {
-  if (!ids?.length) return <span className="text-sm text-muted-foreground">{t('CareBite safety design (no external threshold)')}</span>;
+  if (!ids?.length) return <span className="text-sm text-muted-foreground">{t('Mizan safety design (no external threshold)')}</span>;
   return (
     <ul className="flex flex-col gap-1 text-sm">
       {ids.map((id) => { const s = (SOURCES as any)[id]; return <li key={id}>{s.url ? <ExtLink href={s.url}>{t(s.title)}</ExtLink> : t(s.title)} · <span className="text-muted-foreground">{t(s.publisher)}</span></li>; })}
@@ -93,7 +93,7 @@ export default async function DietsPage() {
       <JsonLd data={ld} />
       <AboutNav current="/diets" />
       <PageHead eyebrow={t('Knowledge base · ruleset {version}', { version: RULESET_VERSION })} title={t('Diets & Screening Rules')}>
-        <p>{t('Here is every diet and rule CareBite uses, how it works and where it comes from. All food and health rules are based on Saudi government guidance (MOH, the Saudi National Diabetes Center, SFDA, MEWA and GFSA). Open a section to learn more.')}</p>
+        <p>{t('Here is every diet and rule Mizan uses, how it works and where it comes from. All food and health rules are based on Saudi government guidance (MOH, the Saudi National Diabetes Center, SFDA, MEWA and GFSA). Open a section to learn more.')}</p>
       </PageHead>
       <div className="container-page flex flex-col gap-6 pb-16">
         <nav aria-label={t('Diet categories')} className="flex flex-col gap-2">
@@ -118,10 +118,10 @@ export default async function DietsPage() {
               </div>
               <div className="flex flex-col gap-1.5 rounded-[16px] border border-border bg-card p-4">
                 <h3 className="text-[1.02rem]">{t('Shared across meals')}</h3>
-                <p className="text-sm">{t('Like other daily limits, the target is divided by meal: breakfast {breakfast}, lunch {lunch}, dinner {dinner}, snack {snack} (a CareBite prototype assumption).', { breakfast: pct('breakfast'), lunch: pct('lunch'), dinner: pct('dinner'), snack: pct('snack') })}</p>
+                <p className="text-sm">{t('Like other daily limits, the target is divided by meal: breakfast {breakfast}, lunch {lunch}, dinner {dinner}, snack {snack} (a Mizan prototype assumption).', { breakfast: pct('breakfast'), lunch: pct('lunch'), dinner: pct('dinner'), snack: pct('snack') })}</p>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground">{t('CareBite does not choose a calorie deficit itself. Energy can only be checked for dishes with nutrient values. Members can estimate their own needs with the')} <Link href="/tools/calculator">{t('calculator')}</Link>{t('.')}</p>
+            <p className="text-sm text-muted-foreground">{t('Mizan does not choose a calorie deficit itself. Energy can only be checked for dishes with nutrient values. Members can estimate their own needs with the')} <Link href="/tools/calculator">{t('calculator')}</Link>{t('.')}</p>
             <SourceLinks t={t} ids={['MOH-OBESITY', 'MOH-CALC', 'CAREBITE-ALLOC'].filter((id) => (SOURCES as any)[id])} />
           </Section>
 
@@ -192,7 +192,7 @@ export default async function DietsPage() {
                 </div>
               ))}
             </dl>
-            <p className="text-sm text-muted-foreground">{t('A CareBite prototype assumption; a hospital would set its own distribution.')}</p>
+            <p className="text-sm text-muted-foreground">{t('A Mizan prototype assumption; a hospital would set its own distribution.')}</p>
           </Section>
 
           <Section id="allergens" title={t('The 14 SFDA allergens')} intro={t('Every allergy record and meal label uses SFDA’s list of declarable allergens.')}>

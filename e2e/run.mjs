@@ -1,4 +1,4 @@
-// Cross-role end-to-end test for CareBite (run against a freshly seeded server):
+// Cross-role end-to-end test for Mizan (run against a freshly seeded server):
 //   npm run reset-db && npm run build && npm start    (in one terminal)
 //   npm run test:e2e                                   (in another)
 // Options: BASE_URL (default http://localhost:3000), CHROMIUM (browser path).

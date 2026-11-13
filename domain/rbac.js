@@ -1,4 +1,4 @@
-// Role-based access control: the single authorization policy for CareBite.
+// Role-based access control: the single authorization policy for Mizan.
 // Every server check (domain service, API routes, pages) asks `can(role,
 // permission)`; the UI only uses the same table to hide actions a role does
 // not have. Ownership ("a patient sees only their own record") is checked in
@@ -10,7 +10,7 @@
 //   staff   — runs daily meal service; no clinical edits, review approvals or access management
 //   patient — their own meals, profile, feedback and requests
 // Member space has one role:
-//   member  — a person using CareBite for their own lifestyle, with no hospital link.
+//   member  — a person using Mizan for their own lifestyle, with no hospital link.
 //             A member holds only the personal health permissions; member data is
 //             private and no hospital role can read it.
 

@@ -7,7 +7,7 @@ import { ForgotPasswordForm } from '@/components/auth/password-reset';
 
 export async function generateMetadata() {
   const t = await getT();
-  return pageMetadata({ title: t('Forgot your password?'), description: t('Get a link by email to choose a new CareBite password.'), path: '/forgot-password', noindex: true });
+  return pageMetadata({ title: t('Forgot your password?'), description: t('Get a link by email to choose a new Mizan password.'), path: '/forgot-password', noindex: true });
 }
 
 export default async function ForgotPasswordPage() {

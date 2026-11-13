@@ -7,7 +7,7 @@
 // estimated. Page numbers are the printed page numbers of each edition's
 // English text (recipe page and nutrient table page).
 //
-// CareBite links a hospital dish to an entry only when the kitchen prepares it
+// Mizan links a hospital dish to an entry only when the kitchen prepares it
 // to that standard recipe (see data/dishes.js).
 
 export const SFCT_META = {

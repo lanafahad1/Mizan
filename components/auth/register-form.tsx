@@ -160,7 +160,7 @@ export function RegisterForm({ next, space, initialType = 'patient', onSwitchSpa
           {errors.accountType ? <p role="alert" className="text-sm font-semibold text-destructive">{err('accountType')}</p> : null}
           {type === 'staff' ? (
             <p className="text-sm text-muted-foreground">
-              {t('Want to use CareBite for yourself too?')}{' '}
+              {t('Want to use Mizan for yourself too?')}{' '}
               {onSwitchSpace
                 ? <button type="button" onClick={() => onSwitchSpace('member')} className="cursor-pointer font-semibold text-heading underline underline-offset-4 hover:text-sage-deep">{t('Create a separate Member account')}</button>
                 : <Link href="/register?space=member" className="font-semibold">{t('Create a separate Member account')}</Link>}
@@ -186,7 +186,7 @@ export function RegisterForm({ next, space, initialType = 'patient', onSwitchSpa
       ) : (
         <>
           <Notice tone="warn" title={t('Demonstration access.')}>
-            {t('This sends an access request. It isn’t a working staff account until an admin approves it and assigns your role. CareBite doesn’t check identity; a real hospital would issue staff accounts through its own identity system.')}
+            {t('This sends an access request. It isn’t a working staff account until an admin approves it and assigns your role. Mizan doesn’t check identity; a real hospital would issue staff accounts through its own identity system.')}
           </Notice>
           <Field id="reg-name" label={t('Your full name')} error={err('name')} hint={t('The name your admin knows you by. It appears in the audit log next to the changes you make.')}>
             <Input name="name" value={v.name} onChange={set('name')} autoComplete="name" maxLength={40} />
@@ -225,7 +225,7 @@ export function RegisterForm({ next, space, initialType = 'patient', onSwitchSpa
             aria-invalid={errors.terms ? true : undefined} aria-describedby={errors.terms ? 'reg-terms-error' : undefined}
             className="mt-0.5 size-5 shrink-0 accent-[var(--color-primary)]"
           />
-          <span>{t('I have read the ')}<Link href="/privacy">{t('Privacy Policy')}</Link>{t(' and the ')}<Link href="/disclaimer">{t('Medical Disclaimer')}</Link>{t(type === 'member' ? ', and I understand CareBite is an educational project and its estimates are not medical advice.' : ', and I understand CareBite is an educational project using a fictional hospital.')}</span>
+          <span>{t('I have read the ')}<Link href="/privacy">{t('Privacy Policy')}</Link>{t(' and the ')}<Link href="/disclaimer">{t('Medical Disclaimer')}</Link>{t(type === 'member' ? ', and I understand Mizan is an educational project and its estimates are not medical advice.' : ', and I understand Mizan is an educational project using a fictional hospital.')}</span>
         </label>
         {errors.terms ? <p id="reg-terms-error" role="alert" className="text-sm font-semibold text-destructive">{err('terms')}</p> : null}
       </div>

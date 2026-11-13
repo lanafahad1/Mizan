@@ -94,7 +94,7 @@ export function WelcomeCard({ overview, activityLevels, firstMealHref, onClose }
       <div className="flex items-start gap-4">
         <Illustration name="welcome" className="size-20 max-sm:hidden" />
         <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <span className="eyebrow">{t('Welcome to CareBite')}</span>
+          <span className="eyebrow">{t('Welcome to Mizan')}</span>
           <h2 id="welcome-h" ref={headingRef} tabIndex={-1} className="text-xl outline-none sm:text-2xl">
             {step === 1 ? t('Let’s set you up in 3 short steps') : step === 2 ? t('Your daily target') : t('You’re all set')}
           </h2>

@@ -20,10 +20,10 @@ export default async function DisclaimerPage() {
           <Notice tone="rose" icon={<HeartPulse aria-hidden />}>{t(DISCLAIMER)}</Notice>
           <h2>{t('What this means for you')}</h2>
           <ul>
-            <li>{t('CareBite does not diagnose conditions, prescribe diets or recommend treatment. Admins define and review every diet order; CareBite supports their decisions.')}</li>
+            <li>{t('Mizan does not diagnose conditions, prescribe diets or recommend treatment. Admins define and review every diet order; Mizan supports their decisions.')}</li>
             <li>{t('Screening rules were checked against cited Saudi government guidance by the project team. They have not been clinically validated; a hospital dietetics department would need to review and approve them before real use.')}</li>
             <li>{t('Nutrition values come only from SFDA laboratory analysis of traditional dishes, where imported; the hospital’s own preparation may differ. Where no values are imported, none are shown or estimated.')}</li>
-            <li>{t('CareBite never labels a meal “allergy-safe”. The kitchen checks packaged ingredient labels.')}</li>
+            <li>{t('Mizan never labels a meal “allergy-safe”. The kitchen checks packaged ingredient labels.')}</li>
             <li>{t('Dashboard figures are indicators from recorded meals. They don’t show cause and effect.')}</li>
             <li>{t('All patients, staff and records in this demonstration are fictional.')}</li>
             <li>{t('In an emergency, such as a severe allergic reaction, alert clinical staff or emergency services immediately.')}</li>

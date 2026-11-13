@@ -5,7 +5,7 @@
 // (ODbL) v1.0 (https://opendatacommons.org/licenses/odbl/1-0/); attribution:
 // "Contains data from Open Food Facts, © Open Food Facts contributors". The
 // values are transcribed from product labels by volunteers, not verified by
-// CareBite, and recipes change: every product carries checkLabel: true and the
+// Mizan, and recipes change: every product carries checkLabel: true and the
 // label of the product actually bought wins.
 //
 // Selection (generated 2026-11-10): products tagged as sold in Saudi Arabia that

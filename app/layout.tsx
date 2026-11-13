@@ -12,7 +12,7 @@ import { getLang } from '@/lib/i18n/server';
 import { dirOf, makeT } from '@/lib/i18n';
 import { LangProvider } from '@/components/site/lang';
 
-const SITE_TITLE = `${SITE_NAME}: Care in every bite`;
+const SITE_TITLE = `${SITE_NAME}: Your plate, your balance`;
 
 const poppins = localFont({
   variable: '--font-poppins',

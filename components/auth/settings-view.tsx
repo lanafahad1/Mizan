@@ -55,7 +55,7 @@ function AccountDetails({ viewer, memberSince }: { viewer: Viewer; memberSince: 
     setFormError(null);
     const n = name.trim(); const u = username.trim(); const m = email.trim().toLowerCase();
     const errs: typeof errors = {};
-    if (!n) errs.name = 'Enter the name to show in CareBite.';
+    if (!n) errs.name = 'Enter the name to show in Mizan.';
     if (!viewer.isDemo) {
       if (!u) errs.username = 'Please choose a username.';
       else if (!USERNAME_RE.test(u)) errs.username = USERNAME_MSG;
@@ -261,10 +261,10 @@ function DataCard({ viewer }: { viewer: Viewer }) {
       </p>
       <div className="flex flex-col gap-2 sm:flex-row">
         {/* A plain link: the server answers with an attachment, so the browser downloads it. */}
-        <a href="/api/account/export" download="carebite-my-data.json" className={buttonVariants({ variant: 'outline' })}><Download aria-hidden />{t('Download my data')}</a>
+        <a href="/api/account/export" download="mizan-my-data.json" className={buttonVariants({ variant: 'outline' })}><Download aria-hidden />{t('Download my data')}</a>
         <Link href="/privacy" className={buttonVariants({ variant: 'ghost' })}>{t('Privacy Policy')}</Link>
       </div>
-      <Kv items={[[t('Where it’s kept'), t('On the CareBite server, in a Postgres database')]]} />
+      <Kv items={[[t('Where it’s kept'), t('On the Mizan server, in a Postgres database')]]} />
     </Card>
   );
 }

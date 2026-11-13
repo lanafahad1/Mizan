@@ -25,7 +25,7 @@ export async function generateMetadata() {
 const jsonLd = (t: (s: string) => string) => ({
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: t('CareBite BMI and calorie calculator'),
+  name: t('Mizan BMI and calorie calculator'),
   url: `${SITE_URL}${PATH}`,
   description: t(DESCRIPTION),
   applicationCategory: 'HealthApplication',
@@ -71,7 +71,7 @@ export default async function CalculatorPage() {
           </ul>
           <ul className="flex list-disc flex-col gap-1 ps-5 text-sm text-muted-foreground">
             <li>{t('For adults (18 or older). If you’re pregnant or breastfeeding, your care team sets your targets instead.')}</li>
-            <li>{t('MOH rounds BMI to a whole number; CareBite shows one decimal place.')}</li>
+            <li>{t('MOH rounds BMI to a whole number; Mizan shows one decimal place.')}</li>
             <li>{t('These are estimates only and don’t replace advice from a doctor or dietitian.')}</li>
           </ul>
         </section>

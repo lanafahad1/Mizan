@@ -50,7 +50,7 @@ export function NewPatientForm({ reference, blank }: { reference: any; blank: an
         <Link href="/patients" className="inline-flex items-center gap-1 text-sm"><ChevronLeft className="size-4 rtl:rotate-180" aria-hidden /> {t('Patient Overview')}</Link>
       </div>
       <PageHead space="staff" eyebrow={t('Admin')} title={t('New patient nutrition profile')} className="pt-3 sm:pt-4">
-        <p>{t('Start with the patient’s dietary requirements. CareBite screens the hospital menu against them first; preferences only rank the meals that pass.')}</p>
+        <p>{t('Start with the patient’s dietary requirements. Mizan screens the hospital menu against them first; preferences only rank the meals that pass.')}</p>
       </PageHead>
       <PageBody space="staff">
         <Notice tone="warn" title={t('Demonstration only')}>{t('Never enter real patient names, record numbers or health information. Use a CB-#### identifier.')}</Notice>

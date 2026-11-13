@@ -8,7 +8,7 @@
 //    when its version number changes.
 // 2. createSnapshotRepo() serves the domain from that snapshot, with the same
 //    interface and ordering as the in-memory test repository (and the SQLite
-//    version CareBite used before).
+//    version Mizan used before).
 // 3. A request that changes data runs in one transaction under a database-wide
 //    write lock (pg_advisory_xact_lock), so changes made on different server
 //    instances are applied one at a time. Only the records that changed are
@@ -16,7 +16,7 @@
 //
 // Accounts and sessions live in better-auth's "user", "session", "account",
 // "verification" and "rateLimit" tables (created by its migrations). The "user"
-// table carries CareBite's role, access status and patient link.
+// table carries Mizan's role, access status and patient link.
 
 import { createHash } from 'node:crypto';
 import { SFCT_LIBRARY } from '../data/sfct-dishes.js';
@@ -508,7 +508,7 @@ function entryToRows(e, id, createdAt) {
       kitchen_ack_by: c.kitchenAck?.by ?? null, kitchen_ack_at: c.kitchenAck?.at ?? null, kitchen_ack_stage: c.kitchenAck?.stage ?? null,
     })),
     events: (e.history ?? []).map((h, i) => ({
-      position: i, at: h.at, actor_name: h.by ?? 'CareBite', actor_role: h.role ?? 'system', action: h.action, status: h.status ?? null, meal_id: h.mealId ?? null,
+      position: i, at: h.at, actor_name: h.by ?? 'Mizan', actor_role: h.role ?? 'system', action: h.action, status: h.status ?? null, meal_id: h.mealId ?? null,
       meal_name: h.mealName ?? null, portion: h.portion ?? null, note: h.note ?? null,
     })),
   };
@@ -1042,7 +1042,7 @@ export async function saveChanges(client, repo) {
   const d = Object.fromEntries(['users', 'patients', 'entries', 'intake', 'requests', 'audit', 'health'].map((k) => [k, diff(snapshot[k], s[k])]));
   const ids = (keys) => keys.map(Number);
 
-  // Accounts: only the CareBite fields that changed; better-auth owns everything else.
+  // Accounts: only the Mizan fields that changed; better-auth owns everything else.
   for (const id of d.users.changed) {
     const before = snapshot.users.get(id);
     const u = s.users.get(id);

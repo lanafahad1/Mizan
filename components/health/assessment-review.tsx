@@ -95,7 +95,7 @@ export function AssessmentReview({ who, assessment, suggested }: { who: string; 
             <Button type="submit" disabled={busy}>{busy ? t('Saving…') : t('Approve plan')}</Button>
             <Button variant="outline" disabled={busy} onClick={() => void send('more-info')}>{t('Ask for more information')}</Button>
           </div>
-          <p className="text-xs text-muted-foreground">{t('Targets are set by the care team. CareBite does not prescribe; approving copies the targets to the patient’s health space.')}</p>
+          <p className="text-xs text-muted-foreground">{t('Targets are set by the care team. Mizan does not prescribe; approving copies the targets to the patient’s health space.')}</p>
         </form>
       ) : <p className="text-sm text-muted-foreground">{t('The patient has not sent this assessment yet.')}</p>}
     </div>

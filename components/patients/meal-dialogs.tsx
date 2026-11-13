@@ -155,7 +155,7 @@ export function ConfirmDialog({ a, open, finalFocus }: DialogProps<'confirm'>) {
       description={`${formatLongDate(c.date, lang)}. ${t(patientChose ? 'The patient chose a meal; you can confirm it or confirm a different one.' : 'Confirming directly records that the nutrition team chose this meal.')} ${t('You will be recorded as the confirming staff member.')}`}
       footer={<Footer form="cf-form" busy={busy} label={a.replace ? 'Replace and confirm' : 'Confirm meal'} busyLabel="Confirming…" disabled={!allowed.length} />}>
       {!list.length ? (
-        <Notice tone="warn" role="status" title={t('No meal passes screening for this period.')}>{t('CareBite does not relax the diet order or allergy rules. Arrange an alternative with the kitchen or review the diet order.')}</Notice>
+        <Notice tone="warn" role="status" title={t('No meal passes screening for this period.')}>{t('Mizan does not relax the diet order or allergy rules. Arrange an alternative with the kitchen or review the diet order.')}</Notice>
       ) : !allowed.length ? (
         <Notice tone="warn" role="status" title={t('Only an admin can confirm a meal for this period.')} icon={<Info aria-hidden />}>
           {t('Every meal that passes screening needs admin review for this patient. Ask an admin to confirm or replace it, or offer new options instead.')}

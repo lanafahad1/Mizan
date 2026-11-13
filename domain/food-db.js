@@ -1,4 +1,4 @@
-// CareBite food database: one searchable list of everything a person can log,
+// Mizan food database: one searchable list of everything a person can log,
 // MyFitnessPal-style. Pure and synchronous; persistence of custom foods is the
 // caller's job.
 //
@@ -12,7 +12,7 @@
 //                       Tables, laboratory values per 100 g (data/sfct-dishes.js).
 //   kind 'ingredient'   USDA-FDC   basis 'lab'           USDA SR Legacy values per
 //                       100 g of single ingredients (data/ingredient-nutrients.js).
-//   kind 'recipe'       USDA-FDC   basis 'calculated'    CareBite recipes the SFCT does
+//   kind 'recipe'       USDA-FDC   basis 'calculated'    Mizan recipes the SFCT does
 //                       not cover, calculated from ingredient grams × USDA values.
 //   kind 'packaged'     OFF        basis 'community'     Open Food Facts label data for
 //                       products sold in Saudi Arabia (data/packaged-foods.js, ODbL).

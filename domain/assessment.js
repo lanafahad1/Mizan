@@ -1,4 +1,4 @@
-// The CareBite Nutrition & Chronic Disease Assessment: an optional form that
+// The Mizan Nutrition & Chronic Disease Assessment: an optional form that
 // helps the care team (or a member, for themselves) understand health,
 // nutritional needs and food preferences. Every question is optional; most
 // offer "Not sure". The form collects information only: it does not diagnose

@@ -6,7 +6,7 @@
 //   daily energy = BMR × activity factor, rounded to whole kcal
 //   BMI = weight kg ÷ (height m)²
 // BMI categories follow MOH (and the Saudi obesity guideline, MOH-OBESITY).
-// MOH rounds BMI to a whole number; CareBite shows one decimal place.
+// MOH rounds BMI to a whole number; Mizan shows one decimal place.
 //
 // These are estimates for adults. They are not a prescription: in hospital the
 // care team sets the targets; a member's own targets are personal estimates.

@@ -1,5 +1,5 @@
 'use client';
-// Meal ideas (the first tab of Eat well): Saudi dishes (SFDA Saudi Food Composition Tables) and CareBite
+// Meal ideas (the first tab of Eat well): Saudi dishes (SFDA Saudi Food Composition Tables) and Mizan
 // recipes, already filtered on the server to avoid the person's allergens.
 // Here they are filtered by meal and sodium, searched, and sorted by how well
 // one serving fits the person's per-meal calorie share.
@@ -127,7 +127,7 @@ export function IdeasView({ kind, ideas, hidden, allergies, targetKcal, targetsB
   return (
     <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-3">
-          <p className="text-muted-foreground">{targetKcal ? t('Saudi dishes and CareBite recipes, with calories and nutrients for one serving. The best fits for your meals come first.') : t('Saudi dishes and CareBite recipes with calories and nutrients for one serving.')}</p>
+          <p className="text-muted-foreground">{targetKcal ? t('Saudi dishes and Mizan recipes, with calories and nutrients for one serving. The best fits for your meals come first.') : t('Saudi dishes and Mizan recipes with calories and nutrients for one serving.')}</p>
           {targetKcal ? (
             <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
               <Badge variant="mint"><Target aria-hidden />{t('Your daily target: {n} kcal', { n: n0(targetKcal) })}</Badge>
@@ -193,11 +193,11 @@ export function IdeasView({ kind, ideas, hidden, allergies, targetKcal, targetsB
           title={<span className="inline-flex items-center gap-2"><Info className="size-4" aria-hidden />{t('How ideas are chosen')}</span>}>
           <div className="flex flex-col gap-4 px-3.5 pb-3.5 text-sm">
             <ul className="m-0 flex list-disc flex-col gap-1.5 ps-5">
-              <li>{targetKcal ? t('Saudi dishes from the SFDA Saudi Food Composition Tables and CareBite recipes, with calories and nutrients for one serving, sorted by how well they fit your meals.') : t('Saudi dishes from the SFDA Saudi Food Composition Tables and CareBite recipes, with calories and nutrients for one serving, sorted by calories.')}</li>
+              <li>{targetKcal ? t('Saudi dishes from the SFDA Saudi Food Composition Tables and Mizan recipes, with calories and nutrients for one serving, sorted by how well they fit your meals.') : t('Saudi dishes from the SFDA Saudi Food Composition Tables and Mizan recipes, with calories and nutrients for one serving, sorted by calories.')}</li>
               {targetKcal ? (
                 <li>
                   {t('Your daily target: {n} kcal. Per meal: {list}.', { n: n0(targetKcal), list: MEALS.map((m) => t('{meal} ≈{n} kcal ({pct}%)', { meal: lang === 'ar' ? t(m.label) : m.label.toLowerCase(), n: n0(mealKcal(m.id) ?? 0), pct: Math.round((shares[m.id] ?? 0) * 100) })).join(t(', ')) })}
-                  {' '}{t('How we split calories across meals is CareBite’s own estimate, not Ministry of Health guidance.')}
+                  {' '}{t('How we split calories across meals is Mizan’s own estimate, not Ministry of Health guidance.')}
                 </li>
               ) : null}
               <li><b className="text-heading">{t('Lower sodium:')}</b> {t('sodium {text}. The Ministry of Health advises adults to have no more than {n} mg of sodium (5 g of salt) a day.', { text: sodiumText, n: n0(SODIUM_DAY_MG) })}</li>
@@ -284,7 +284,7 @@ function IdeaCard({ it, period, busy, onAdd, targetKcal, bySize }: { it: Scored;
               ? <span lang="en" dir="ltr" className="text-end text-muted-foreground">{it.name}</span>
               : <span lang="ar" dir="rtl" className="text-muted-foreground">{it.nameAr}</span>) : null}
             <span className="flex flex-wrap items-center gap-1.5 text-muted-foreground">
-              {sfct ? <><MapPin className="size-4 shrink-0" aria-hidden />{t('{region} region (Saudi Food Composition Tables)', { region: t(it.origin) })}</> : <>{t('CareBite recipe')}{it.origin ? ` · ${lang === 'ar' ? CUISINE_AR[it.origin] ?? t(it.origin) : it.origin}` : ''}</>}
+              {sfct ? <><MapPin className="size-4 shrink-0" aria-hidden />{t('{region} region (Saudi Food Composition Tables)', { region: t(it.origin) })}</> : <>{t('Mizan recipe')}{it.origin ? ` · ${lang === 'ar' ? CUISINE_AR[it.origin] ?? t(it.origin) : it.origin}` : ''}</>}
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-1.5">

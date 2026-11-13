@@ -21,7 +21,7 @@ import { getT, getLang } from '@/lib/i18n/server';
 import type { Lang, T } from '@/lib/i18n';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const DESCRIPTION = 'Where CareBite’s food, health and nutrition information comes from (Saudi MOH, SFDA, the Saudi National Diabetes Center, MEWA, GFSA and international sources), how it is used, and what the prototype cannot do.';
+const DESCRIPTION = 'Where Mizan’s food, health and nutrition information comes from (Saudi MOH, SFDA, the Saudi National Diabetes Center, MEWA, GFSA and international sources), how it is used, and what the prototype cannot do.';
 export async function generateMetadata() {
   const t = await getT();
   return publicMetadata({ title: t('Data Sources & Limitations'), description: t(DESCRIPTION), path: '/sources' });
@@ -32,8 +32,8 @@ type Group = { id: string; title: string; intro: string; icon: typeof Landmark; 
 
 const GROUPS: Group[] = [
   { id: 'src-saudi', title: 'Saudi government', intro: 'The basis of every health and food rule.', icon: Landmark, badge: 'mint', keep: (x) => Boolean(x.saudi) },
-  { id: 'src-intl', title: 'International', intro: 'Used only where no Saudi government equivalent was found.', icon: Globe, badge: 'rose', keep: (x) => !x.saudi && x.authority !== 'CareBite' },
-  { id: 'src-carebite', title: 'CareBite assumptions', intro: 'Documented prototype choices, not external guidance.', icon: FlaskConical, badge: 'outline', keep: (x) => x.authority === 'CareBite' },
+  { id: 'src-intl', title: 'International', intro: 'Used only where no Saudi government equivalent was found.', icon: Globe, badge: 'rose', keep: (x) => !x.saudi && x.authority !== 'Mizan' },
+  { id: 'src-carebite', title: 'Mizan assumptions', intro: 'Documented prototype choices, not external guidance.', icon: FlaskConical, badge: 'outline', keep: (x) => x.authority === 'Mizan' },
 ];
 
 /** First sentence (shown on the card) and the rest (in "More detail"). */
@@ -169,9 +169,9 @@ export default async function SourcesPage() {
             <ul className="flex list-disc flex-col gap-2 ps-5 text-[.95rem]">
               <li>{t(RULESET_REVIEW.clinicalValidation)}</li>
               <li>{t('BMI and calorie figures are estimates from the MOH calculator method, not a clinical assessment.')}</li>
-              <li>{t('Where no Saudi source sets a number (carbohydrate per meal, potassium, phosphorus, an energy target), the care team sets it. Meal shares, portion sizes, the protein ranking level and intake flags are CareBite prototype assumptions (ruleset {version}).', { version: RULESET_VERSION })}</li>
+              <li>{t('Where no Saudi source sets a number (carbohydrate per meal, potassium, phosphorus, an energy target), the care team sets it. Meal shares, portion sizes, the protein ranking level and intake flags are Mizan prototype assumptions (ruleset {version}).', { version: RULESET_VERSION })}</li>
               <li>{t('Packaged products vary by brand; check labels. Meals are never called “allergy-safe”.')}</li>
-              <li>{t('Alerts appear inside CareBite only: no text messages or pager alerts, and no connection to any hospital system (electronic health record, pharmacy or kitchen equipment). The only emails are account emails (email confirmation and password reset).')}</li>
+              <li>{t('Alerts appear inside Mizan only: no text messages or pager alerts, and no connection to any hospital system (electronic health record, pharmacy or kitchen equipment). The only emails are account emails (email confirmation and password reset).')}</li>
               <li>{t('Accounts are demonstration access: no identity is verified. All hospital patients, staff and records are fictional.')}</li>
             </ul>
           </Card>

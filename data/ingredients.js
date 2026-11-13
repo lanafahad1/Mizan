@@ -1,4 +1,4 @@
-// CareBite ingredient reference table.
+// Mizan ingredient reference table.
 //
 // Ingredients carry allergen, diet and local-production data. Their nutrient
 // values per 100 g are kept separately in data/ingredient-nutrients.js, taken
@@ -190,7 +190,7 @@ export const INGREDIENTS = [
   { id: 'olives', name: 'Black olives (canned)', group: 'pantry', labelCheck: true },
 
   // ---- Ingredients without verified nutrient data --------------------------
-  // These are kept on purpose: CareBite must show "data unavailable" rather
+  // These are kept on purpose: Mizan must show "data unavailable" rather
   // than guess, and must not pass sodium screening it cannot verify.
   { id: 'zaatar', name: "Za'atar spice blend", group: 'pantry', allergens: ['sesame'], labelCheck: true,
     note: "Za'atar blends usually contain sesame and often contain salt." },

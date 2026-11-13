@@ -1,4 +1,4 @@
-// The connected scenarios CareBite must support, run against the shared
+// The connected scenarios Mizan must support, run against the shared
 // service with an in-memory repository and the synthetic demonstration hospital.
 import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';

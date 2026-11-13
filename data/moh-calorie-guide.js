@@ -1,7 +1,7 @@
 // Saudi Ministry of Health, "Calorie Guide for Weight Loss, 1,200–2,200
 // calories" (دليل السعرات الحرارية لخفض الوزن), Live Well (عش بصحة) programme.
 // Arabic PDF linked from the MOH Food and Nutrition page "Food Calorie
-// Calculator for Weight Loss". Transcribed by the CareBite team from the
+// Calculator for Weight Loss". Transcribed by the Mizan team from the
 // published pages; nothing is added or estimated. Values marked null are not
 // stated by MOH.
 //

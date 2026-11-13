@@ -59,7 +59,7 @@ const round = (v, d) => (v == null ? null : Math.round(v * 10 ** d) / 10 ** d);
 const empty = (v = null) => Object.fromEntries(NUTRIENTS.map((n) => [n.key, v]));
 
 /**
- * Value per 100 g of an ingredient for one CareBite nutrient, from its USDA
+ * Value per 100 g of an ingredient for one Mizan nutrient, from its USDA
  * entry. availableCarbs = carbohydrate by difference − fibre (USDA's
  * carbohydrate includes fibre). addedSugar = the ingredient's total sugars when
  * the ingredient is flagged added_sugar (sugar, honey, syrups), otherwise 0.

@@ -1,4 +1,4 @@
-// Synthetic demonstration data for the fictional CareBite hospital. Every
+// Synthetic demonstration data for the fictional Mizan hospital. Every
 // patient, staff member and record here is invented. Identifiers use the
 // CB-#### demonstration format and are not medical record numbers.
 
@@ -17,7 +17,7 @@ const DEFAULT_REVIEW_NOTE = 'Reviewed by the admin against the diet order: no ad
 
 // Demonstration access only. These shared accounts let reviewers see each role.
 // Real hospital staff would be issued accounts through the hospital's identity
-// system after identity checks; CareBite does not verify anyone's identity.
+// system after identity checks; Mizan does not verify anyone's identity.
 export const DEMO_ACCOUNTS = [
   { username: 'admin.demo', email: 'admin@carebite.test', name: 'Demo Admin', role: 'admin', summary: 'Controls everything: staff access, diet orders and allergies, meals that need review, menu verification, plus every staff task.' },
   { username: 'staff.demo', email: 'staff@carebite.test', name: 'Demo Staff Member', role: 'staff', summary: 'Runs meal service: offers and confirms eligible meals, prepares and delivers trays, records intake, maintains the menu, answers requests.' },
@@ -121,8 +121,8 @@ export function seedCatalog(repo, at) {
   const verified = { status: 'verified', by: 'Demo Admin', at, note: 'Starting menu checked for the demonstration: ingredients, SFDA allergens and SFCT links.' };
   repo.replaceCatalog({
     ingredients: INGREDIENTS.map((i) => ({ ...i })),
-    dishes: DISHES.map((d) => ({ ...d, version: 1, updatedAt: at, updatedBy: 'CareBite seed' })),
-    meals: MEALS.map((m) => ({ ...m, available: true, active: true, infoReview: verified, version: 1, updatedAt: at, updatedBy: 'CareBite seed' })),
+    dishes: DISHES.map((d) => ({ ...d, version: 1, updatedAt: at, updatedBy: 'Mizan seed' })),
+    meals: MEALS.map((m) => ({ ...m, available: true, active: true, infoReview: verified, version: 1, updatedAt: at, updatedBy: 'Mizan seed' })),
     menu: { cycle: MENU_CYCLE.map((d) => ({ ...d })), dates: {} },
   });
 }

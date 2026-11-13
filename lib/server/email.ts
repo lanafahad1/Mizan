@@ -2,7 +2,7 @@
 // with an app password. Configuration lives only in environment variables:
 //   GMAIL_USER          the Gmail address that sends the emails
 //   GMAIL_APP_PASSWORD  a 16-character Google app password (needs 2-step verification)
-//   EMAIL_FROM_NAME     optional display name (default "CareBite")
+//   EMAIL_FROM_NAME     optional display name (default "Mizan")
 // Without them, no email is sent: the app says the feature is unavailable, and in
 // development the link is printed in the server log so it can still be tested.
 import 'server-only';
@@ -37,32 +37,32 @@ type Mail = { heading: string; intro: string; button: string; note: string; subj
 const TEXT: Record<'verify' | 'reset', Record<Lang, (name: string, username: string) => Mail>> = {
   verify: {
     en: (name) => ({
-      subject: 'Confirm your email for CareBite', heading: `Welcome to CareBite${name ? `, ${name}` : ''}`,
+      subject: 'Confirm your email for Mizan', heading: `Welcome to Mizan${name ? `, ${name}` : ''}`,
       intro: 'We’re glad you’re here. Confirm your email so we can help if you ever forget your password.',
-      button: 'Confirm my email', note: 'This link works for 1 hour. Didn’t sign up for CareBite? You can ignore this email.',
+      button: 'Confirm my email', note: 'This link works for 1 hour. Didn’t sign up for Mizan? You can ignore this email.',
     }),
     ar: (name) => ({
-      subject: 'أكّد بريدك الإلكتروني في كيربايت', heading: `أهلًا بك في كيربايت${name ? `، ${name}` : ''}`,
+      subject: 'أكّد بريدك الإلكتروني في ميزان', heading: `أهلًا بك في ميزان${name ? `، ${name}` : ''}`,
       intro: 'سعداء بانضمامك. أكّد بريدك الإلكتروني حتى نتمكن من مساعدتك إذا نسيت كلمة المرور.',
-      button: 'أكّد بريدي', note: 'الرابط صالح لمدة ساعة. إذا لم تسجّل في كيربايت، يمكنك تجاهل هذه الرسالة.',
+      button: 'أكّد بريدي', note: 'الرابط صالح لمدة ساعة. إذا لم تسجّل في ميزان، يمكنك تجاهل هذه الرسالة.',
     }),
   },
   reset: {
     en: (_n, username) => ({
-      subject: 'Reset your CareBite password', heading: 'Reset your password',
+      subject: 'Reset your Mizan password', heading: 'Reset your password',
       intro: `Someone asked to reset the password for @${username}. If it was you, choose a new one below.`,
       button: 'Choose a new password', note: 'This link works once, for 1 hour. Changing your password signs you out on your other devices. Didn’t ask for this? Ignore this email and your password stays the same.',
     }),
     ar: (_n, username) => ({
-      subject: 'إعادة تعيين كلمة المرور في كيربايت', heading: 'إعادة تعيين كلمة المرور',
+      subject: 'إعادة تعيين كلمة المرور في ميزان', heading: 'إعادة تعيين كلمة المرور',
       intro: `وصلنا طلب لإعادة تعيين كلمة المرور للحساب @${username}. إذا كان الطلب منك، فاختر كلمة مرور جديدة من الزر أدناه.`,
       button: 'اختر كلمة مرور جديدة', note: 'يعمل الرابط مرة واحدة ولمدة ساعة. عند تغيير كلمة المرور، سيُسجَّل خروجك من أجهزتك الأخرى. إذا لم تطلب ذلك، فتجاهل هذه الرسالة وستبقى كلمة المرور كما هي.',
     }),
   },
 };
 const FOOT: Record<Lang, string> = {
-  en: 'Care in every bite · A university Health Informatics project. You’re getting this because a CareBite account uses this address. CareBite will never ask for your password by email.',
-  ar: 'عناية في كل لقمة · مشروع جامعي في المعلوماتية الصحية. وصلتك هذه الرسالة لأن حسابًا في كيربايت يستخدم هذا البريد. لن يطلب كيربايت كلمة المرور عبر البريد أبدًا.',
+  en: 'Your plate, your balance · A university Health Informatics project. You’re getting this because a Mizan account uses this address. Mizan will never ask for your password by email.',
+  ar: 'طبقك، توازنك · مشروع جامعي في المعلوماتية الصحية. وصلتك هذه الرسالة لأن حسابًا في ميزان يستخدم هذا البريد. لن يطلب ميزان كلمة المرور عبر البريد أبدًا.',
 };
 
 /** Email HTML: one centred card, inline styles only (email clients ignore stylesheets), RTL for Arabic. */
@@ -75,7 +75,7 @@ export function renderEmail(kind: 'verify' | 'reset', lang: Lang, url: string, u
   const html = `<!doctype html><html lang="${lang}" dir="${dir}"><body style="margin:0;background:#F3EFE8;padding:24px 12px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#FFFFFF;border:1px solid #E8E2D8;border-radius:16px;overflow:hidden" dir="${dir}">
-<tr><td style="background:#EEEDFA;padding:16px 24px;border-bottom:1px solid #DCD9F4"><img src="${logo}" width="40" height="40" alt="" style="vertical-align:middle;border:0"> <span dir="ltr" style="vertical-align:middle;font-family:${head};font-size:20px;font-weight:600;color:#1B1A3A">Care<span style="color:#3730A3">Bite</span></span></td></tr>
+<tr><td style="background:#EEEDFA;padding:16px 24px;border-bottom:1px solid #DCD9F4"><img src="${logo}" width="40" height="40" alt="" style="vertical-align:middle;border:0"> <span dir="ltr" style="vertical-align:middle;font-family:${head};font-size:20px;font-weight:600;color:#1B1A3A">Mi<span style="color:#0B5A88">zan</span></span></td></tr>
 <tr><td style="padding:24px;font-family:${font};font-size:15px;line-height:1.6;color:#1B1A3A;text-align:${lang === 'ar' ? 'right' : 'left'}">
 <h1 style="margin:0 0 10px;font-family:${head};font-size:20px;color:#1B1A3A">${esc(m.heading)}</h1>
 <p style="margin:0 0 18px">${esc(m.intro)}</p>
@@ -101,6 +101,6 @@ export async function sendAccountEmail(kind: 'verify' | 'reset', to: string, url
   // .invalid, example.com/org/net): never try to deliver to them.
   if (/(\.(test|local|example|invalid|localhost)|(^|\.)example\.(com|org|net))$/i.test(to.split('@')[1] ?? '')) return false;
   await transport().sendMail({ from: { name: process.env.EMAIL_FROM_NAME || SITE_NAME, address: process.env.GMAIL_USER as string }, to, subject: mail.subject, html: mail.html, text: mail.text,
-    attachments: [{ filename: 'carebite.png', content: Buffer.from(EMAIL_LOGO_PNG_BASE64, 'base64'), cid: LOGO_CID, contentType: 'image/png' }] });
+    attachments: [{ filename: 'mizan.png', content: Buffer.from(EMAIL_LOGO_PNG_BASE64, 'base64'), cid: LOGO_CID, contentType: 'image/png' }] });
   return true;
 }

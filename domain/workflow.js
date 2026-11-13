@@ -32,7 +32,7 @@ export function createWorkflow(ctx) {
   const mealName = (id) => catalog().byId[id]?.name ?? id;
   function event(entry, actor, action, note = null) {
     entry.history = [...(entry.history ?? []), {
-      at: stamp(), by: actor?.name ?? 'CareBite', role: actor?.role ?? 'system', action, status: entry.status,
+      at: stamp(), by: actor?.name ?? 'Mizan', role: actor?.role ?? 'system', action, status: entry.status,
       mealId: entry.selectedMealId ?? null, mealName: entry.mealName ?? null, portion: entry.portion ?? null, note,
     }];
   }
@@ -151,8 +151,8 @@ export function createWorkflow(ctx) {
 
   function cancelEntryInternal(actor, entry, { cause, reason }) {
     const kitchenAffected = wasOnKitchenList(entry);
-    resolveChanges(entry, actor ?? { name: 'CareBite', role: 'system' }, `Cancelled: ${reason}`);
-    addChange(entry, { cause, change: reason, details: [], hold: false, kitchenAffected, reviewed: true, actor: actor ?? { name: 'CareBite', role: 'system' }, resolution: 'Meal cancelled' });
+    resolveChanges(entry, actor ?? { name: 'Mizan', role: 'system' }, `Cancelled: ${reason}`);
+    addChange(entry, { cause, change: reason, details: [], hold: false, kitchenAffected, reviewed: true, actor: actor ?? { name: 'Mizan', role: 'system' }, resolution: 'Meal cancelled' });
     entry.status = 'cancelled';
     entry.holdFrom = null;
     entry.cancelledReason = reason;

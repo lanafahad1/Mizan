@@ -9,7 +9,7 @@
 //             until an admin approves it and assigns the role.
 //             Choosing a job when asking does not grant anything. In a real
 //             deployment staff accounts come from the hospital's identity system
-//             after identity checks; CareBite does not verify identity.
+//             after identity checks; Mizan does not verify identity.
 
 import { validateAccount, isEmailIdentifier } from './routes.js';
 import { ServiceError } from './service.js';
@@ -98,7 +98,7 @@ export function createAccountApi({ repo, service, hashPassword, verifyPassword, 
     if (method === 'PATCH' && path === '/api/account') {
       const { username, email, errors } = validateAccount({ username: body.username ?? user.username, email: body.email ?? user.email });
       const name = body.name === undefined ? user.name : clean(body.name, 40);
-      if (!name) errors.name = 'Enter the name to show in CareBite.';
+      if (!name) errors.name = 'Enter the name to show in Mizan.';
       if (Object.keys(errors).length) fail(422, 'validation_failed', 'Please check the highlighted fields.', { errors });
       if (user.isDemo && (email !== user.email || username !== user.username)) fail(403, 'demo_account', 'The username and email of a shared demo account cannot be changed.');
       const byName = repo.getUserByUsername(username);
@@ -124,7 +124,7 @@ export function createAccountApi({ repo, service, hashPassword, verifyPassword, 
       return { status: 200, body: out(repo.getUserById(user.id)) };
     }
     if (method === 'GET' && path === '/api/account/export') {
-      return { status: 200, body: service.exportData(user, user), headers: { 'Content-Disposition': 'attachment; filename="carebite-my-data.json"' } };
+      return { status: 200, body: service.exportData(user, user), headers: { 'Content-Disposition': 'attachment; filename="mizan-my-data.json"' } };
     }
     if (method === 'POST' && path === '/api/account/reset-demo') {
       if (!(user.isDemo && user.role === 'admin')) fail(403, 'forbidden', 'Only the demo admin account can reset the demonstration hospital.');

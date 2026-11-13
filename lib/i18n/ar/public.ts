@@ -84,13 +84,13 @@ export const PUBLIC: Record<string, string> = {
   'This page didn’t load.': 'تعذّر تحميل هذه الصفحة.',
   'Something went wrong on our side. Your data is safe and hasn’t been changed.': 'حدث خطأ من جهتنا. بياناتك آمنة ولم تتغير. حاول مرة أخرى.',
   'This page isn’t available for your account': 'هذه الصفحة غير متاحة لحسابك',
-  'To keep things private, CareBite shows each person only what they need.': 'حفاظًا على الخصوصية، يعرض كيربايت لكل شخص ما يحتاجه فقط.',
+  'To keep things private, Mizan shows each person only what they need.': 'حفاظًا على الخصوصية، يعرض ميزان لكل شخص ما يحتاجه فقط.',
   '{role} accounts can’t open this page.': 'لا يمكن لحساب «{role}» فتح هذه الصفحة.',
 
   // ---- home
   '{site}: Nutrition for obesity & chronic disease': '{site}: تغذية لمرضى السمنة والأمراض المزمنة',
-  'CareBite supports healthy eating for obesity and chronic diseases (type 2 diabetes, high blood pressure, heart and kidney disease): a private food diary with calorie targets for members, and screened meals for hospital patients. Based on Saudi Ministry of Health and SFDA guidance. A university Health Informatics project.':
-    'يدعم كيربايت الغذاء الصحي لمرضى السمنة والأمراض المزمنة (السكري من النوع الثاني، وارتفاع ضغط الدم، وأمراض القلب والكلى): سجل طعام خاص للأعضاء مع أهداف للسعرات، ووجبات مفحوصة لمرضى المستشفى. يستند إلى إرشادات وزارة الصحة والهيئة العامة للغذاء والدواء. مشروع جامعي في المعلوماتية الصحية.',
+  'Mizan supports healthy eating for obesity and chronic diseases (type 2 diabetes, high blood pressure, heart and kidney disease): a private food diary with calorie targets for members, and screened meals for hospital patients. Based on Saudi Ministry of Health and SFDA guidance. A university Health Informatics project.':
+    'يدعم ميزان الغذاء الصحي لمرضى السمنة والأمراض المزمنة (السكري من النوع الثاني، وارتفاع ضغط الدم، وأمراض القلب والكلى): سجل طعام خاص للأعضاء مع أهداف للسعرات، ووجبات مفحوصة لمرضى المستشفى. يستند إلى إرشادات وزارة الصحة والهيئة العامة للغذاء والدواء. مشروع جامعي في المعلوماتية الصحية.',
   'Obesity & chronic disease nutrition': 'تغذية السمنة والأمراض المزمنة',
   'Healthy eating for a healthier <em>weight</em> and heart.': 'غذاء صحي من أجل <em>وزن</em> وقلب أصحّ.',
   'Everyday food choices for obesity, type 2 diabetes, high blood pressure, heart and kidney disease, at home and in hospital.':
@@ -120,7 +120,7 @@ export const PUBLIC: Record<string, string> = {
   'Find your BMI and how many calories you need each day, using the Ministry of Health method. No account needed.': 'اعرف مؤشر كتلة جسمك وعدد السعرات التي تحتاجها يوميًا بطريقة وزارة الصحة، دون حساب.',
 
   // ---- how it works
-  'How CareBite works. As a member, you keep a private food diary with calorie goals and health readings. In hospital, every meal is checked against the patient’s diet order, allergies and conditions before it is offered.': 'كيف يعمل كيربايت: في حسابك الشخصي تحتفظ بسجل طعام خاص فيه أهداف السعرات وقراءاتك الصحية. وفي المستشفى تُفحص كل وجبة وفق الحمية الموصوفة للمريض وحساسياته وحالاته الصحية قبل أن تُعرض عليه.',
+  'How Mizan works. As a member, you keep a private food diary with calorie goals and health readings. In hospital, every meal is checked against the patient’s diet order, allergies and conditions before it is offered.': 'كيف يعمل ميزان: في حسابك الشخصي تحتفظ بسجل طعام خاص فيه أهداف السعرات وقراءاتك الصحية. وفي المستشفى تُفحص كل وجبة وفق الحمية الموصوفة للمريض وحساسياته وحالاته الصحية قبل أن تُعرض عليه.',
   'Two spaces, one goal: healthier eating': 'مساحتان وهدف واحد: غذاء أصحّ',
   'At home, you’re in charge of your own food. In hospital, the care team plans each patient’s meals, and safety always comes first.': 'في المنزل، أنت من يدير طعامك. وفي المستشفى، يخطط الفريق الطبي وجبات كل مريض، والسلامة أولًا دائمًا.',
   'The two journeys': 'الرحلتان',
@@ -173,7 +173,7 @@ export const PUBLIC: Record<string, string> = {
   'The patient’s preferred portion, made smaller when appetite is low, and only from portions that pass every limit.': 'الحصة التي يفضّلها المريض، وتُصغَّر عند ضعف الشهية، ولا تُختار إلا من الحصص التي تجتاز كل الحدود.',
   'Explanation and kitchen instructions': 'الشرح وتعليمات المطبخ',
   '“Why This Meal?” for the team and the patient, and preparation instructions for the kitchen.': '«لماذا هذه الوجبة؟» للفريق وللمريض، وتعليمات التحضير للمطبخ.',
-  'How CareBite checks each hospital meal': 'كيف يفحص كيربايت كل وجبة في المستشفى',
+  'How Mizan checks each hospital meal': 'كيف يفحص ميزان كل وجبة في المستشفى',
   'A meal’s journey': 'رحلة الوجبة',
   'Options offered': 'عُرضت الخيارات',
   'Patient choice submitted': 'أُرسل اختيار المريض',
@@ -198,9 +198,9 @@ export const PUBLIC: Record<string, string> = {
   // ---- about
   'About the Project': 'عن المشروع',
   'About {site}': 'عن {site}',
-  'Meet CareBite, a university Health Informatics project that supports healthier eating for people living with obesity or a chronic disease in Saudi Arabia. It has a private member space and a hospital care space, both built on Saudi government guidance. Meet the developer.': 'تعرّف على كيربايت، مشروع جامعي في المعلوماتية الصحية يدعم الغذاء الصحي لمن يعيشون مع السمنة أو مرض مزمن في المملكة العربية السعودية. يضم مساحة شخصية خاصة ومساحة لرعاية المستشفى، وكلتاهما تستند إلى إرشادات الجهات الحكومية السعودية. تعرّف على المطوّرة.',
+  'Meet Mizan, a university Health Informatics project that supports healthier eating for people living with obesity or a chronic disease in Saudi Arabia. It has a private member space and a hospital care space, both built on Saudi government guidance. Meet the developer.': 'تعرّف على ميزان، مشروع جامعي في المعلوماتية الصحية يدعم الغذاء الصحي لمن يعيشون مع السمنة أو مرض مزمن في المملكة العربية السعودية. يضم مساحة شخصية خاصة ومساحة لرعاية المستشفى، وكلتاهما تستند إلى إرشادات الجهات الحكومية السعودية. تعرّف على المطوّرة.',
   'Healthier eating for people living with obesity and chronic disease': 'غذاء أصحّ لمن يعيشون مع السمنة والأمراض المزمنة',
-  'CareBite brings your health information, Saudi food data and documented dietary guidance together to help you eat better, at home and in hospital.': 'يجمع كيربايت معلوماتك الصحية وبيانات الأغذية السعودية والإرشادات الغذائية الموثّقة ليساعدك على غذاء أفضل، في المنزل وفي المستشفى.',
+  'Mizan brings your health information, Saudi food data and documented dietary guidance together to help you eat better, at home and in hospital.': 'يجمع ميزان معلوماتك الصحية وبيانات الأغذية السعودية والإرشادات الغذائية الموثّقة ليساعدك على غذاء أفضل، في المنزل وفي المستشفى.',
   'Our mission': 'رسالتنا',
   'To show how Health Informatics can link your health information with Saudi nutrition guidance and food data, so that people living with, or at risk of, obesity and chronic disease can eat more healthily.': 'أن نوضّح كيف تربط المعلوماتية الصحية معلوماتك الصحية بالإرشادات الغذائية السعودية وبيانات الأغذية، ليتمكّن من يعيشون مع السمنة والأمراض المزمنة، أو المعرّضون لها، من تناول غذاء أصحّ.',
   'For anyone looking after their own health, healthcare workers included: a food diary, goals for calories, protein, carbs and fat, health readings, a personal health assessment, meal ideas and a shopping list. It’s private: hospital staff can never see it.': 'لكل من يعتني بصحته، ومنهم العاملون في القطاع الصحي: سجل طعام، وأهداف للسعرات والبروتين والكربوهيدرات والدهون، وقراءات صحية، وتقييم صحي شخصي، وأفكار وجبات، وقائمة مشتريات. كل ذلك خاص، ولا يستطيع موظفو المستشفى رؤيته أبدًا.',
@@ -210,7 +210,7 @@ export const PUBLIC: Record<string, string> = {
   'A Health Informatics project on nutrition support for obesity and chronic diseases.': 'مشروع في المعلوماتية الصحية عن الدعم الغذائي لمرضى السمنة والأمراض المزمنة.',
   'More about the project': 'المزيد عن المشروع',
   'Why we focus on this': 'لماذا نركّز على ذلك',
-  'The Ministry of Health’s dietary guidelines advise cutting back on sugary, salty and fatty foods to lower the risk of obesity, diabetes and high blood pressure. CareBite turns that advice into simple tools you can use every day.': 'توصي الإرشادات الغذائية لوزارة الصحة بالتقليل من الأطعمة السكرية والمالحة والدهنية لخفض خطر السمنة والسكري وارتفاع ضغط الدم. ويحوّل كيربايت هذه التوصيات إلى أدوات بسيطة تستخدمها كل يوم.',
+  'The Ministry of Health’s dietary guidelines advise cutting back on sugary, salty and fatty foods to lower the risk of obesity, diabetes and high blood pressure. Mizan turns that advice into simple tools you can use every day.': 'توصي الإرشادات الغذائية لوزارة الصحة بالتقليل من الأطعمة السكرية والمالحة والدهنية لخفض خطر السمنة والسكري وارتفاع ضغط الدم. ويحوّل ميزان هذه التوصيات إلى أدوات بسيطة تستخدمها كل يوم.',
   'How the information connects: from three sources to one decision': 'كيف ترتبط المعلومات: من ثلاثة مصادر إلى قرار واحد',
   'Personal information:': 'المعلومات الشخصية:',
   'targets, food diary and readings for members; conditions, diet order and allergies for hospital patients.': 'الأهداف وسجل الطعام والقراءات للأعضاء؛ والحالات الصحية والحمية الموصوفة والحساسية لمرضى المستشفى.',
@@ -229,7 +229,7 @@ export const PUBLIC: Record<string, string> = {
   'Suggestions come with reasons; people and their care team decide.': 'تأتي الاقتراحات مع أسبابها، والقرار للشخص وللفريق الطبي.',
   'Learn': 'التعلّم',
   'Intake and feedback improve future suggestions.': 'تحسّن الكمية المتناولة والتقييمات الاقتراحات القادمة.',
-  'Intended benefits: what CareBite is built to help with': 'الفوائد المرجوّة: فيمَ صُمّم كيربايت ليساعد',
+  'Intended benefits: what Mizan is built to help with': 'الفوائد المرجوّة: فيمَ صُمّم ميزان ليساعد',
   'Healthier daily choices': 'اختيارات يومية أصحّ',
   'Clear daily goals and a simple food diary make Saudi dietary guidance easier to follow.': 'تجعل الأهداف اليومية الواضحة وسجل الطعام البسيط اتّباع الإرشادات الغذائية السعودية أسهل.',
   'Safer hospital meals': 'وجبات مستشفى أكثر أمانًا',
@@ -249,10 +249,10 @@ export const PUBLIC: Record<string, string> = {
   'Cite this project': 'استشهد بهذا المشروع',
 
   // ---- diets
-  'Every diet CareBite applies, including weight management, with its exact logic and Saudi government source (MOH, SFDA, MEWA, GFSA): nutrient limits, allergy and review rules, intake flags, the 14 SFDA allergens and IDDSI texture levels.':
-    'كل حمية يطبّقها كيربايت، ومنها إدارة الوزن، بمنطقها الدقيق ومصدرها الحكومي السعودي (وزارة الصحة، والهيئة العامة للغذاء والدواء، ووزارة البيئة والمياه والزراعة، والهيئة العامة للأمن الغذائي): حدود العناصر الغذائية، وقواعد الحساسية والمراجعة، وتنبيهات الكمية المتناولة، ومسببات الحساسية الأربع عشرة، ومستويات القوام وفق IDDSI.',
+  'Every diet Mizan applies, including weight management, with its exact logic and Saudi government source (MOH, SFDA, MEWA, GFSA): nutrient limits, allergy and review rules, intake flags, the 14 SFDA allergens and IDDSI texture levels.':
+    'كل حمية يطبّقها ميزان، ومنها إدارة الوزن، بمنطقها الدقيق ومصدرها الحكومي السعودي (وزارة الصحة، والهيئة العامة للغذاء والدواء، ووزارة البيئة والمياه والزراعة، والهيئة العامة للأمن الغذائي): حدود العناصر الغذائية، وقواعد الحساسية والمراجعة، وتنبيهات الكمية المتناولة، ومسببات الحساسية الأربع عشرة، ومستويات القوام وفق IDDSI.',
   'Diets & Screening Rules': 'الحميات وقواعد الفحص',
-  'CareBite safety design (no external threshold)': 'تصميم سلامة من كيربايت (دون حدّ خارجي)',
+  'Mizan safety design (no external threshold)': 'تصميم سلامة من ميزان (دون حدّ خارجي)',
   'ranking only': 'للترتيب فقط',
   'limit': 'حدّ',
   'Excludes': 'تستبعد',
@@ -264,7 +264,7 @@ export const PUBLIC: Record<string, string> = {
   'IDDSI texture level': 'مستوى القوام وفق IDDSI',
   'carbohydrate amount per meal': 'كمية الكربوهيدرات لكل وجبة',
   'Knowledge base · ruleset {version}': 'قاعدة المعرفة · إصدار القواعد {version}',
-  'Here is every diet and rule CareBite uses, how it works and where it comes from. All food and health rules are based on Saudi government guidance (MOH, the Saudi National Diabetes Center, SFDA, MEWA and GFSA). Open a section to learn more.': 'هنا كل حمية وقاعدة يستخدمها كيربايت، وطريقة عملها، ومصدرها. تستند جميع قواعد الغذاء والصحة إلى إرشادات الجهات الحكومية السعودية (وزارة الصحة، والمركز الوطني للسكري، والهيئة العامة للغذاء والدواء، ووزارة البيئة والمياه والزراعة، والهيئة العامة للأمن الغذائي). افتح أي قسم لمعرفة المزيد.',
+  'Here is every diet and rule Mizan uses, how it works and where it comes from. All food and health rules are based on Saudi government guidance (MOH, the Saudi National Diabetes Center, SFDA, MEWA and GFSA). Open a section to learn more.': 'هنا كل حمية وقاعدة يستخدمها ميزان، وطريقة عملها، ومصدرها. تستند جميع قواعد الغذاء والصحة إلى إرشادات الجهات الحكومية السعودية (وزارة الصحة، والمركز الوطني للسكري، والهيئة العامة للغذاء والدواء، ووزارة البيئة والمياه والزراعة، والهيئة العامة للأمن الغذائي). افتح أي قسم لمعرفة المزيد.',
   'Diet categories': 'فئات الحميات',
   'Governance.': 'الحوكمة.',
   'Reviewed by: {by} on {date}.': 'راجعها: {by} بتاريخ {date}.',
@@ -275,8 +275,8 @@ export const PUBLIC: Record<string, string> = {
   'A target from the MOH method': 'هدف بطريقة وزارة الصحة',
   'The daily energy need can be estimated with the MOH calculator method: the Mifflin-St Jeor equation × an activity level. The care team decides the target.': 'يمكن تقدير الاحتياج اليومي من الطاقة بطريقة حاسبة وزارة الصحة: معادلة ميفلين-سانت جيور × مستوى النشاط. ويحدّد الفريق الطبي الهدف.',
   'Shared across meals': 'موزّع على الوجبات',
-  'Like other daily limits, the target is divided by meal: breakfast {breakfast}, lunch {lunch}, dinner {dinner}, snack {snack} (a CareBite prototype assumption).': 'مثل باقي الحدود اليومية، يُقسَّم الهدف على الوجبات: الفطور {breakfast}، والغداء {lunch}، والعشاء {dinner}، والوجبة الخفيفة {snack} (افتراض في النموذج الأولي لكيربايت).',
-  'CareBite does not choose a calorie deficit itself. Energy can only be checked for dishes with nutrient values. Members can estimate their own needs with the': 'لا يختار كيربايت عجز السعرات بنفسه. ولا يمكن فحص الطاقة إلا للأطباق التي لها قيم غذائية. ويمكن للأعضاء تقدير احتياجاتهم باستخدام',
+  'Like other daily limits, the target is divided by meal: breakfast {breakfast}, lunch {lunch}, dinner {dinner}, snack {snack} (a Mizan prototype assumption).': 'مثل باقي الحدود اليومية، يُقسَّم الهدف على الوجبات: الفطور {breakfast}، والغداء {lunch}، والعشاء {dinner}، والوجبة الخفيفة {snack} (افتراض في النموذج الأولي لميزان).',
+  'Mizan does not choose a calorie deficit itself. Energy can only be checked for dishes with nutrient values. Members can estimate their own needs with the': 'لا يختار ميزان عجز السعرات بنفسه. ولا يمكن فحص الطاقة إلا للأطباق التي لها قيم غذائية. ويمكن للأعضاء تقدير احتياجاتهم باستخدام',
   'calculator': 'الحاسبة',
   'Hospital diet categories': 'فئات حميات المستشفى',
   '{n} categories': 'عدد الفئات: {n}',
@@ -303,7 +303,7 @@ export const PUBLIC: Record<string, string> = {
   'Prompts for a professional review from recorded meals. They never change a diet order.': 'تنبيهات لمراجعة مختص بناءً على الوجبات المسجّلة. ولا تغيّر الحمية الموصوفة أبدًا.',
   'Daily limits per meal': 'الحدود اليومية لكل وجبة',
   'To check one meal against a daily limit, the limit is shared across the day.': 'لفحص وجبة واحدة مقابل حدّ يومي، يُوزَّع الحد على وجبات اليوم.',
-  'A CareBite prototype assumption; a hospital would set its own distribution.': 'افتراض في النموذج الأولي لكيربايت؛ ويحدّد المستشفى توزيعه الخاص.',
+  'A Mizan prototype assumption; a hospital would set its own distribution.': 'افتراض في النموذج الأولي لميزان؛ ويحدّد المستشفى توزيعه الخاص.',
   'The 14 SFDA allergens': 'مسببات الحساسية الأربع عشرة المعتمدة من الهيئة العامة للغذاء والدواء',
   'Every allergy record and meal label uses SFDA’s list of declarable allergens.': 'يستخدم كل سجل حساسية وكل بطاقة وجبة قائمة الهيئة العامة للغذاء والدواء لمسببات الحساسية الواجب الإفصاح عنها.',
   'Meals are never called “allergy-safe”. Ingredients that may contain an allergen through cross-contact exclude the meal for a confirmed allergy, and the kitchen is told which labels to check.':
@@ -326,17 +326,17 @@ export const PUBLIC: Record<string, string> = {
   'Every source behind these rules and the project’s limitations are listed on': 'كل المصادر التي تستند إليها هذه القواعد وحدود المشروع مذكورة في صفحة',
 
   // ---- sources
-  'Where CareBite’s food, health and nutrition information comes from (Saudi MOH, SFDA, the Saudi National Diabetes Center, MEWA, GFSA and international sources), how it is used, and what the prototype cannot do.':
-    'من أين تأتي معلومات الغذاء والصحة والتغذية في كيربايت (وزارة الصحة، والهيئة العامة للغذاء والدواء، والمركز الوطني للسكري، ووزارة البيئة والمياه والزراعة، والهيئة العامة للأمن الغذائي، ومصادر دولية)، وكيف تُستخدم، وما الذي لا يستطيعه النموذج الأولي.',
+  'Where Mizan’s food, health and nutrition information comes from (Saudi MOH, SFDA, the Saudi National Diabetes Center, MEWA, GFSA and international sources), how it is used, and what the prototype cannot do.':
+    'من أين تأتي معلومات الغذاء والصحة والتغذية في ميزان (وزارة الصحة، والهيئة العامة للغذاء والدواء، والمركز الوطني للسكري، ووزارة البيئة والمياه والزراعة، والهيئة العامة للأمن الغذائي، ومصادر دولية)، وكيف تُستخدم، وما الذي لا يستطيعه النموذج الأولي.',
   'Data Sources & Limitations': 'مصادر البيانات وحدودها',
   'About & Sources': 'عن المشروع والمصادر',
   'Saudi government': 'الجهات الحكومية السعودية',
   'The basis of every health and food rule.': 'أساس كل قاعدة صحية وغذائية.',
   'International': 'مصادر دولية',
   'Used only where no Saudi government equivalent was found.': 'تُستخدم فقط عند عدم وجود مقابل من جهة حكومية سعودية.',
-  'CareBite assumptions': 'افتراضات كيربايت',
+  'Mizan assumptions': 'افتراضات ميزان',
   'Documented prototype choices, not external guidance.': 'اختيارات موثّقة في النموذج الأولي، وليست إرشادات خارجية.',
-  'CareBite': 'كيربايت',
+  'Mizan': 'ميزان',
   'More detail': 'تفاصيل أكثر',
   'Source ID:': 'رمز المصدر:',
   '{n} source': 'عدد المصادر: {n}',
@@ -372,36 +372,36 @@ export const PUBLIC: Record<string, string> = {
   'Limitations': 'الحدود',
   'What this prototype can’t do.': 'ما الذي لا يستطيعه هذا النموذج الأولي.',
   'BMI and calorie figures are estimates from the MOH calculator method, not a clinical assessment.': 'أرقام مؤشر كتلة الجسم والسعرات تقديرات بطريقة حاسبة وزارة الصحة، وليست تقييمًا سريريًا.',
-  'Where no Saudi source sets a number (carbohydrate per meal, potassium, phosphorus, an energy target), the care team sets it. Meal shares, portion sizes, the protein ranking level and intake flags are CareBite prototype assumptions (ruleset {version}).':
-    'عندما لا يحدّد مصدر سعودي رقمًا (الكربوهيدرات لكل وجبة، والبوتاسيوم، والفوسفور، وهدف الطاقة)، يحدّده الفريق الطبي. أما حصص الوجبات وأحجام الحصص ومستوى ترتيب البروتين وتنبيهات الكمية المتناولة فهي افتراضات في النموذج الأولي لكيربايت (إصدار القواعد {version}).',
+  'Where no Saudi source sets a number (carbohydrate per meal, potassium, phosphorus, an energy target), the care team sets it. Meal shares, portion sizes, the protein ranking level and intake flags are Mizan prototype assumptions (ruleset {version}).':
+    'عندما لا يحدّد مصدر سعودي رقمًا (الكربوهيدرات لكل وجبة، والبوتاسيوم، والفوسفور، وهدف الطاقة)، يحدّده الفريق الطبي. أما حصص الوجبات وأحجام الحصص ومستوى ترتيب البروتين وتنبيهات الكمية المتناولة فهي افتراضات في النموذج الأولي لميزان (إصدار القواعد {version}).',
   'Packaged products vary by brand; check labels. Meals are never called “allergy-safe”.': 'تختلف المنتجات المعبأة حسب العلامة التجارية؛ افحص الملصقات. ولا توصف الوجبات أبدًا بأنها «آمنة من الحساسية».',
-  'Alerts appear inside CareBite only: no emails, text messages or pager alerts, and no connection to any hospital system (electronic health record, pharmacy or kitchen equipment).':
-    'تظهر التنبيهات داخل كيربايت فقط: لا رسائل بريد إلكتروني ولا رسائل نصية ولا تنبيهات نداء، ولا اتصال بأي نظام في المستشفى (السجل الصحي الإلكتروني أو الصيدلية أو معدات المطبخ).',
+  'Alerts appear inside Mizan only: no emails, text messages or pager alerts, and no connection to any hospital system (electronic health record, pharmacy or kitchen equipment).':
+    'تظهر التنبيهات داخل ميزان فقط: لا رسائل بريد إلكتروني ولا رسائل نصية ولا تنبيهات نداء، ولا اتصال بأي نظام في المستشفى (السجل الصحي الإلكتروني أو الصيدلية أو معدات المطبخ).',
   'Accounts are demonstration access: no identity is verified. All hospital patients, staff and records are fictional.': 'الحسابات للدخول التجريبي فقط: لا يُتحقق من أي هوية. وجميع مرضى المستشفى وموظفيه وسجلاته افتراضية.',
   'How hospital intake and feedback are summarised': 'كيف تُلخَّص الكمية المتناولة والتقييمات في المستشفى',
   'No source can replace advice from a qualified healthcare professional.': 'لا يغني أي مصدر عن استشارة مختص رعاية صحية مؤهل.',
   'How to cite this project': 'كيف تستشهد بهذا المشروع',
 
   // ---- contact
-  'CareBite is a university Health Informatics project. Email the CareBite team with questions, feedback or bugs. CareBite is not a medical service.': 'كيربايت مشروع جامعي في المعلوماتية الصحية. راسل فريق كيربايت لأي سؤال أو ملاحظة أو مشكلة تقنية. كيربايت ليس خدمة طبية.',
+  'Mizan is a university Health Informatics project. Email the Mizan team with questions, feedback or bugs. Mizan is not a medical service.': 'ميزان مشروع جامعي في المعلوماتية الصحية. راسل فريق ميزان لأي سؤال أو ملاحظة أو مشكلة تقنية. ميزان ليس خدمة طبية.',
   'Contact the project team': 'تواصل مع فريق المشروع',
-  'CareBite was developed as a university Health Informatics project by:': 'طُوّر كيربايت مشروعًا جامعيًا في المعلوماتية الصحية، من إعداد:',
+  'Mizan was developed as a university Health Informatics project by:': 'طُوّر ميزان مشروعًا جامعيًا في المعلوماتية الصحية، من إعداد:',
   'How to reach the team': 'كيف تتواصل مع الفريق',
-  'The team has not published an email address, phone number or contact form on this site, so this page does not offer one and does not send messages. If you are reviewing CareBite as part of the university course, please contact the team through the course’s official channels (for example your course instructor or the course’s learning platform).':
-    'لم ينشر الفريق بريدًا إلكترونيًا أو رقم هاتف أو نموذج تواصل في هذا الموقع، لذلك لا توفّر هذه الصفحة أيًا منها ولا ترسل رسائل. إذا كنت تراجع كيربايت ضمن المقرر الجامعي، فتواصل مع الفريق عبر القنوات الرسمية للمقرر (مثل أستاذ المقرر أو منصة التعلّم الخاصة به).',
+  'The team has not published an email address, phone number or contact form on this site, so this page does not offer one and does not send messages. If you are reviewing Mizan as part of the university course, please contact the team through the course’s official channels (for example your course instructor or the course’s learning platform).':
+    'لم ينشر الفريق بريدًا إلكترونيًا أو رقم هاتف أو نموذج تواصل في هذا الموقع، لذلك لا توفّر هذه الصفحة أيًا منها ولا ترسل رسائل. إذا كنت تراجع ميزان ضمن المقرر الجامعي، فتواصل مع الفريق عبر القنوات الرسمية للمقرر (مثل أستاذ المقرر أو منصة التعلّم الخاصة به).',
   'Not a medical service': 'ليس خدمة طبية',
   'The team cannot provide medical or dietary advice. For health questions, contact a qualified healthcare professional. In an emergency, alert clinical staff or emergency services.':
     'لا يستطيع الفريق تقديم استشارات طبية أو غذائية. للأسئلة الصحية، تواصل مع مختص رعاية صحية مؤهل. وفي حالات الطوارئ، أبلغ الطاقم الطبي أو خدمات الطوارئ.',
   'Looking for the citation? You’ll find it on': 'تبحث عن الاقتباس؟ تجده في',
 
   // ---- privacy
-  'How CareBite, an academic demonstration built around a fictional hospital, handles information: what is stored and why, who can see what, how it is protected, your controls and the Saudi Personal Data Protection Law (PDPL).':
-    'كيف يتعامل كيربايت، وهو عرض أكاديمي مبني حول مستشفى افتراضي، مع المعلومات: ما الذي يُخزَّن ولماذا، ومن يرى ماذا، وكيف تُحمى، وما الخيارات المتاحة لك، ونظام حماية البيانات الشخصية السعودي.',
-  'How CareBite looks after your information': 'كيف يحافظ كيربايت على معلوماتك',
-  'CareBite is a university demonstration built around a fictional hospital. It shows how health information can be handled with privacy in mind. Please use made-up information only.': 'كيربايت عرض جامعي مبني حول مستشفى افتراضي، يوضّح كيف يمكن التعامل مع المعلومات الصحية مع مراعاة الخصوصية. نرجو استخدام معلومات تجريبية فقط.',
+  'How Mizan, an academic demonstration built around a fictional hospital, handles information: what is stored and why, who can see what, how it is protected, your controls and the Saudi Personal Data Protection Law (PDPL).':
+    'كيف يتعامل ميزان، وهو عرض أكاديمي مبني حول مستشفى افتراضي، مع المعلومات: ما الذي يُخزَّن ولماذا، ومن يرى ماذا، وكيف تُحمى، وما الخيارات المتاحة لك، ونظام حماية البيانات الشخصية السعودي.',
+  'How Mizan looks after your information': 'كيف يحافظ ميزان على معلوماتك',
+  'Mizan is a university demonstration built around a fictional hospital. It shows how health information can be handled with privacy in mind. Please use made-up information only.': 'ميزان عرض جامعي مبني حول مستشفى افتراضي، يوضّح كيف يمكن التعامل مع المعلومات الصحية مع مراعاة الخصوصية. نرجو استخدام معلومات تجريبية فقط.',
   'Who manages the information': 'من يدير المعلومات',
-  'CareBite is managed by the hospital. Patient nutrition records are created and maintained by the hospital nutrition team, which remains responsible for dietary oversight. Patients can link a personal account to take part in planning their own meals.':
-    'يدير المستشفى كيربايت. ينشئ فريق التغذية في المستشفى سجلات تغذية المرضى ويحدّثها، ويظل مسؤولًا عن الإشراف الغذائي. ويمكن للمرضى ربط حساب شخصي للمشاركة في تخطيط وجباتهم.',
+  'Mizan is managed by the hospital. Patient nutrition records are created and maintained by the hospital nutrition team, which remains responsible for dietary oversight. Patients can link a personal account to take part in planning their own meals.':
+    'يدير المستشفى ميزان. ينشئ فريق التغذية في المستشفى سجلات تغذية المرضى ويحدّثها، ويظل مسؤولًا عن الإشراف الغذائي. ويمكن للمرضى ربط حساب شخصي للمشاركة في تخطيط وجباتهم.',
   'What we store, and why': 'ما الذي نحفظه، ولماذا',
   'Accounts:': 'الحسابات:',
   'username, email, display name, role and a hashed password.': 'اسم المستخدم، والبريد الإلكتروني، والاسم الظاهر، والدور، وكلمة مرور مُجزّأة (مشفّرة).',
@@ -412,7 +412,7 @@ export const PUBLIC: Record<string, string> = {
   'offered options, selections and confirmations, appetite before meals, intake, reasons, satisfaction, weighed plate waste and requests to the nutrition team.':
     'الخيارات المعروضة، والاختيارات والتأكيدات، والشهية قبل الوجبات، والكمية المتناولة، والأسباب، والرضا، وهدر الأطباق الموزون، والطلبات المرسلة إلى فريق التغذية.',
   'who changed a patient’s record or meals, and when.': 'من غيّر سجل المريض أو وجباته، ومتى.',
-  'CareBite does not store real names, medical record numbers, national ID numbers, contact details or device identifiers.': 'لا يخزّن كيربايت الأسماء الحقيقية ولا أرقام السجلات الطبية ولا أرقام الهوية الوطنية ولا بيانات التواصل ولا معرّفات الأجهزة.',
+  'Mizan does not store real names, medical record numbers, national ID numbers, contact details or device identifiers.': 'لا يخزّن ميزان الأسماء الحقيقية ولا أرقام السجلات الطبية ولا أرقام الهوية الوطنية ولا بيانات التواصل ولا معرّفات الأجهزة.',
   'Who can see what': 'من يرى ماذا',
   '<b>Admins</b> control the whole platform. They see and edit full nutrition profiles, are the only role that can change diet orders, allergies and medical restrictions or approve meals that need review, and approve staff access and assign roles.':
     '<b>المشرفون</b> يتحكمون في المنصة كاملة. يرون الملفات الغذائية كاملة ويعدّلونها، وهم الدور الوحيد الذي يستطيع تغيير الحميات الموصوفة والحساسيات والقيود الطبية أو اعتماد الوجبات التي تحتاج مراجعة، ويعتمدون صلاحيات الموظفين ويعيّنون الأدوار.',
@@ -434,19 +434,19 @@ export const PUBLIC: Record<string, string> = {
     'عند خروج المريض، تُلغى وجباته القادمة ويُزال من قوائم الوجبات والمطبخ، لكن يحتفظ المستشفى بالوجبات السابقة والكميات المتناولة والطلبات للقراءة فقط. والخروج، وإلغاء ربط حساب المريض، وحذف السجل إجراءات منفصلة؛ ولا يستطيع حذف سجل تجريبي نهائيًا إلا المشرف.',
   'You can delete your personal account at any time. The hospital nutrition record is kept by the hospital nutrition team; an admin can delete a demonstration record.': 'يمكنك حذف حسابك الشخصي في أي وقت. ويحتفظ فريق التغذية في المستشفى بسجل التغذية؛ ويستطيع المشرف حذف السجل التجريبي.',
   'Saudi data protection': 'حماية البيانات في السعودية',
-  'Health information is sensitive personal data under the Saudi Personal Data Protection Law (PDPL), overseen by the Saudi Data & AI Authority (SDAIA). CareBite is designed around its principles: health data is used only for the purpose it was collected for (meal screening and preparation), access is limited to what each role needs, and every change is logged. A real deployment would also need the hospital’s own PDPL compliance review.':
-    'المعلومات الصحية بيانات شخصية حساسة بموجب نظام حماية البيانات الشخصية السعودي، الذي تشرف عليه الهيئة السعودية للبيانات والذكاء الاصطناعي (سدايا). صُمّم كيربايت حول مبادئه: تُستخدم البيانات الصحية فقط للغرض الذي جُمعت من أجله (فحص الوجبات وتحضيرها)، ويقتصر الوصول على ما يحتاجه كل دور، ويُسجَّل كل تغيير. ويتطلب أي تشغيل فعلي أيضًا مراجعة امتثال خاصة بالمستشفى لهذا النظام.',
+  'Health information is sensitive personal data under the Saudi Personal Data Protection Law (PDPL), overseen by the Saudi Data & AI Authority (SDAIA). Mizan is designed around its principles: health data is used only for the purpose it was collected for (meal screening and preparation), access is limited to what each role needs, and every change is logged. A real deployment would also need the hospital’s own PDPL compliance review.':
+    'المعلومات الصحية بيانات شخصية حساسة بموجب نظام حماية البيانات الشخصية السعودي، الذي تشرف عليه الهيئة السعودية للبيانات والذكاء الاصطناعي (سدايا). صُمّم ميزان حول مبادئه: تُستخدم البيانات الصحية فقط للغرض الذي جُمعت من أجله (فحص الوجبات وتحضيرها)، ويقتصر الوصول على ما يحتاجه كل دور، ويُسجَّل كل تغيير. ويتطلب أي تشغيل فعلي أيضًا مراجعة امتثال خاصة بالمستشفى لهذا النظام.',
 
   // ---- disclaimer
   'Medical Disclaimer': 'إخلاء المسؤولية الطبية',
   'Medical disclaimer': 'إخلاء المسؤولية الطبية',
   'What this means for you': 'ماذا يعني هذا لك',
-  'CareBite does not diagnose conditions, prescribe diets or recommend treatment. Admins define and review every diet order; CareBite supports their decisions.': 'لا يشخّص كيربايت الحالات الصحية، ولا يصف الحميات، ولا يوصي بعلاج. يحدّد المشرفون كل حمية موصوفة ويراجعونها، ويدعم كيربايت قراراتهم.',
+  'Mizan does not diagnose conditions, prescribe diets or recommend treatment. Admins define and review every diet order; Mizan supports their decisions.': 'لا يشخّص ميزان الحالات الصحية، ولا يصف الحميات، ولا يوصي بعلاج. يحدّد المشرفون كل حمية موصوفة ويراجعونها، ويدعم ميزان قراراتهم.',
   'Screening rules were checked against cited Saudi government guidance by the project team. They have not been clinically validated; a hospital dietetics department would need to review and approve them before real use.':
     'راجع فريق المشروع قواعد الفحص مقابل الإرشادات الحكومية السعودية المذكورة. ولم تُعتمد سريريًا؛ ويجب أن يراجعها قسم التغذية العلاجية في المستشفى ويعتمدها قبل أي استخدام فعلي.',
   'Nutrition values come only from SFDA laboratory analysis of traditional dishes, where imported; the hospital’s own preparation may differ. Where no values are imported, none are shown or estimated.':
     'تأتي القيم الغذائية فقط من التحليل المخبري للأطباق التقليدية من الهيئة العامة للغذاء والدواء، حيثما استُوردت؛ وقد يختلف تحضير المستشفى. وحيث لا توجد قيم مستوردة، لا تُعرض أي قيم ولا تُقدَّر.',
-  'CareBite never labels a meal “allergy-safe”. The kitchen checks packaged ingredient labels.': 'لا يصف كيربايت أي وجبة أبدًا بأنها «آمنة من الحساسية». ويفحص المطبخ ملصقات المكوّنات المعبأة.',
+  'Mizan never labels a meal “allergy-safe”. The kitchen checks packaged ingredient labels.': 'لا يصف ميزان أي وجبة أبدًا بأنها «آمنة من الحساسية». ويفحص المطبخ ملصقات المكوّنات المعبأة.',
   'Dashboard figures are indicators from recorded meals. They don’t show cause and effect.': 'أرقام لوحة المتابعة مؤشرات من الوجبات المسجّلة، ولا تُثبت علاقة السبب والنتيجة.',
   'All patients, staff and records in this demonstration are fictional.': 'جميع المرضى والموظفين والسجلات في هذا العرض افتراضية.',
   'In an emergency, such as a severe allergic reaction, alert clinical staff or emergency services immediately.': 'في حالات الطوارئ، مثل رد الفعل التحسسي الشديد، أبلغ الطاقم الطبي أو خدمات الطوارئ فورًا.',
@@ -485,8 +485,8 @@ export const PUBLIC: Record<string, string> = {
   'Halal:': 'الحلال:',
   'all meat and poultry are halal-certified, as overseen by the SFDA Saudi Halal Center.': 'جميع اللحوم والدواجن حاصلة على شهادة حلال، بإشراف المركز السعودي للحلال التابع للهيئة العامة للغذاء والدواء.',
   'Calories on menus:': 'السعرات في القوائم:',
-  'SFDA requires food service menus to show calories; CareBite shows energy first wherever SFDA values exist. “≥” marks a partial total for a complete meal where one component has no SFDA values.':
-    'تُلزم الهيئة العامة للغذاء والدواء قوائم خدمات الطعام بعرض السعرات؛ ويعرض كيربايت الطاقة أولًا حيثما وُجدت قيم الهيئة. وتدل علامة «≥» على مجموع جزئي لوجبة كاملة أحد مكوّناتها ليس له قيم من الهيئة.',
+  'SFDA requires food service menus to show calories; Mizan shows energy first wherever SFDA values exist. “≥” marks a partial total for a complete meal where one component has no SFDA values.':
+    'تُلزم الهيئة العامة للغذاء والدواء قوائم خدمات الطعام بعرض السعرات؛ ويعرض ميزان الطاقة أولًا حيثما وُجدت قيم الهيئة. وتدل علامة «≥» على مجموع جزئي لوجبة كاملة أحد مكوّناتها ليس له قيم من الهيئة.',
   'Diet compatibility:': 'الملاءمة للحمية:',
   'each meal is screened against the documented rules with default limits. “Depends on limits” means potassium and phosphorus limits are set per patient. Patient-specific screening happens on each patient’s profile.':
     'تُفحص كل وجبة مقابل القواعد الموثّقة بالحدود الافتراضية. وتعني «تعتمد على الحدود» أن حدود البوتاسيوم والفوسفور تُحدَّد لكل مريض. ويجري الفحص الخاص بكل مريض في ملفه.',
@@ -576,7 +576,7 @@ export const PUBLIC: Record<string, string> = {
   'none of the 14 declarable allergens': 'لا شيء من مسببات الحساسية الأربع عشرة الواجب الإفصاح عنها',
   'May contain:': 'قد يحتوي على:',
   'The kitchen checks labels of: {list}.': 'يفحص المطبخ ملصقات: {list}.',
-  'Worked out from every component’s ingredients. CareBite never labels a meal “allergy-safe”.': 'مستخلصة من مكوّنات كل جزء من الوجبة. ولا يصف كيربايت أي وجبة أبدًا بأنها «آمنة من الحساسية».',
+  'Worked out from every component’s ingredients. Mizan never labels a meal “allergy-safe”.': 'مستخلصة من مكوّنات كل جزء من الوجبة. ولا يصف ميزان أي وجبة أبدًا بأنها «آمنة من الحساسية».',
   'Sources and limitations': 'المصادر والحدود',
   'SFCT:': 'جداول تركيب الأغذية:',
   'p. {page}': 'ص {page}',
@@ -589,7 +589,7 @@ export const PUBLIC: Record<string, string> = {
   'BMI & Calorie Calculator (Saudi MOH method)': 'حاسبة مؤشر كتلة الجسم والسعرات (طريقة وزارة الصحة)',
   'Free BMI, waist and daily calorie calculator for adults, using the Saudi Ministry of Health method (Mifflin-St Jeor × activity level), with suggested daily targets and the nearest MOH meal plan. Runs in your browser.':
     'حاسبة مجانية للبالغين لمؤشر كتلة الجسم ومحيط الخصر والسعرات اليومية، بطريقة وزارة الصحة (ميفلين-سانت جيور × مستوى النشاط)، مع أهداف يومية مقترحة وأقرب خطة وجبات من وزارة الصحة. تعمل في متصفحك.',
-  'CareBite BMI and calorie calculator': 'حاسبة كيربايت لمؤشر كتلة الجسم والسعرات',
+  'Mizan BMI and calorie calculator': 'حاسبة ميزان لمؤشر كتلة الجسم والسعرات',
   'Saudi Ministry of Health calorie & BMI calculators': 'حاسبات السعرات ومؤشر كتلة الجسم من وزارة الصحة',
   'Calorie Guide for Weight Loss, 1,200–2,200 calories': 'دليل السعرات الحرارية لخفض الوزن، من 1,200 إلى 2,200 سعرة',
   'Ministry of Health (MOH), Saudi Arabia · Live Well programme': 'وزارة الصحة، المملكة العربية السعودية · برنامج عِش بصحة',
@@ -603,7 +603,7 @@ export const PUBLIC: Record<string, string> = {
   '{publisher}. Meal plans from 1,200 to 2,200 kcal, food-group portions, waist circumference risk levels and added sugar advice.': '{publisher}. خطط وجبات من 1,200 إلى 2,200 سعرة، وحصص المجموعات الغذائية، ومستويات خطر محيط الخصر، ونصائح السكر المضاف.',
   'Sodium: up to 2,000 mg a day for an adult.': 'الصوديوم: حتى 2,000 ملجم في اليوم للبالغ.',
   'For adults (18 or older). If you’re pregnant or breastfeeding, your care team sets your targets instead.': 'للبالغين (18 سنة فأكثر). إذا كنتِ حاملًا أو مرضعة، فالفريق الطبي يحدّد أهدافك.',
-  'MOH rounds BMI to a whole number; CareBite shows one decimal place.': 'تقرّب وزارة الصحة مؤشر كتلة الجسم إلى عدد صحيح؛ ويعرضه كيربايت بمنزلة عشرية واحدة.',
+  'MOH rounds BMI to a whole number; Mizan shows one decimal place.': 'تقرّب وزارة الصحة مؤشر كتلة الجسم إلى عدد صحيح؛ ويعرضه ميزان بمنزلة عشرية واحدة.',
   'These are estimates only and don’t replace advice from a doctor or dietitian.': 'هذه تقديرات فقط ولا تغني عن استشارة الطبيب أو أخصائي التغذية.',
   'Track it every day': 'تابعها كل يوم',
   'Create a free member account to keep a private food diary, your readings and your own goals.': 'أنشئ حسابًا شخصيًا مجانيًا لتحتفظ بسجل طعام خاص وقراءاتك وأهدافك.',
@@ -638,7 +638,7 @@ export const PUBLIC: Record<string, string> = {
   'kg/m²': 'كجم/م²',
   'The adult BMI categories do not apply under 18.': 'فئات مؤشر كتلة الجسم للبالغين لا تنطبق على من هم دون 18 سنة.',
   'BMI is read differently during pregnancy and breastfeeding. Ask your care team.': 'يُفسَّر مؤشر كتلة الجسم بشكل مختلف أثناء الحمل والرضاعة. استشيري الفريق الطبي.',
-  'MOH rounds BMI to a whole number ({n}); CareBite shows one decimal.': 'تقرّب وزارة الصحة مؤشر كتلة الجسم إلى عدد صحيح ({n})؛ ويعرضه كيربايت بمنزلة عشرية واحدة.',
+  'MOH rounds BMI to a whole number ({n}); Mizan shows one decimal.': 'تقرّب وزارة الصحة مؤشر كتلة الجسم إلى عدد صحيح ({n})؛ ويعرضه ميزان بمنزلة عشرية واحدة.',
   'We couldn’t work out your BMI from these values. Check them and try again.': 'تعذّر حساب مؤشر كتلة الجسم من هذه القيم. راجعها وحاول مرة أخرى.',
   'Waist circumference': 'محيط الخصر',
   '{n} cm': '{n} سم',
@@ -754,10 +754,10 @@ export const PUBLIC: Record<string, string> = {
   'See {meal}': 'اعرض {meal}',
   'Nutrition comes from SFDA Saudi Food Composition Table laboratory values for dishes prepared to the SFCT standard recipe; other recipes are calculated from USDA ingredient values and labelled. Missing values are never estimated.':
     'تأتي القيم الغذائية من القيم المخبرية في جداول تركيب الأغذية السعودية الصادرة عن الهيئة العامة للغذاء والدواء للأطباق المحضّرة وفق وصفتها القياسية، وتُحسب الوصفات الأخرى من قيم مكوّناتها في قاعدة USDA مع الإشارة إلى ذلك. ولا تُقدَّر أي قيمة ناقصة أبدًا.',
-  '{site}: Care in every bite': '{site}: عناية في كل لقمة',
-  'Care in <em>every bite</em>.': 'عناية في <em>كل لقمة</em>.',
+  '{site}: Your plate, your balance': '{site}: طبقك، توازنك',
+  'Your plate, <em>your balance</em>.': 'طبقك، <em>توازنك</em>.',
   'Track, plan and enjoy food that fits you, at home or in hospital.': 'سجّل طعامك، وخطّط وجباتك، واستمتع بغذاء يناسبك، في المنزل أو في المستشفى.',
-  'Care in every bite. Log what you eat, know your daily calories and plan meals you enjoy, at home or in hospital. Built on guidance from the Saudi Ministry of Health and SFDA. A university Health Informatics project.': 'عناية في كل لقمة. سجّل طعامك، واعرف سعراتك اليومية، وخطّط لوجبات تحبها، في المنزل أو في المستشفى. يستند إلى إرشادات وزارة الصحة السعودية والهيئة العامة للغذاء والدواء. مشروع جامعي في المعلوماتية الصحية.',
+  'Your plate, your balance. Log what you eat, know your daily calories and plan meals you enjoy, at home or in hospital. Built on guidance from the Saudi Ministry of Health and SFDA. A university Health Informatics project.': 'طبقك، توازنك. سجّل طعامك، واعرف سعراتك اليومية، وخطّط لوجبات تحبها، في المنزل أو في المستشفى. يستند إلى إرشادات وزارة الصحة السعودية والهيئة العامة للغذاء والدواء. مشروع جامعي في المعلوماتية الصحية.',
 
   // public menu: period chips that jump to sections, "Show all N" per period
   'Jump to a meal period': 'انتقل إلى فترة وجبة',

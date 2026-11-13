@@ -5,7 +5,7 @@ import { ResetPasswordForm } from '@/components/auth/password-reset';
 
 export async function generateMetadata() {
   const t = await getT();
-  return pageMetadata({ title: t('Choose a new password'), description: t('Choose a new CareBite password.'), path: '/reset-password', noindex: true });
+  return pageMetadata({ title: t('Choose a new password'), description: t('Choose a new Mizan password.'), path: '/reset-password', noindex: true });
 }
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };

@@ -213,7 +213,7 @@ export function CalculatorView() {
                   </p>
                   {adult ? <BmiScale activeId={category?.id ?? null} /> : <p className="text-sm">{t('The adult BMI categories do not apply under 18.')}</p>}
                   {pregnant ? <p className="text-sm">{t('BMI is read differently during pregnancy and breastfeeding. Ask your care team.')}</p> : null}
-                  <p className="text-xs text-muted-foreground">{t('MOH rounds BMI to a whole number ({n}); CareBite shows one decimal.', { n: Math.round(bmiValue) })}</p>
+                  <p className="text-xs text-muted-foreground">{t('MOH rounds BMI to a whole number ({n}); Mizan shows one decimal.', { n: Math.round(bmiValue) })}</p>
                   <SourceRef id="MOH-CALC" />
                 </>
               ) : <p className="text-sm">{t('We couldn’t work out your BMI from these values. Check them and try again.')}</p>}

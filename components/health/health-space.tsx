@@ -223,7 +223,7 @@ function Readings({ o, who, reference, onAdd }: { o: Overview; who: string; refe
           })}
         </ul>
       ) : null}
-      <p className="text-[.7rem] leading-snug text-muted-foreground">{o.self ? tr('Your readings are a record to share with your healthcare professional. CareBite doesn’t diagnose or send alerts.') : tr('Readings are a record for the patient and the care team. CareBite does not diagnose or give alerts.')}</p>
+      <p className="text-[.7rem] leading-snug text-muted-foreground">{o.self ? tr('Your readings are a record to share with your healthcare professional. Mizan doesn’t diagnose or send alerts.') : tr('Readings are a record for the patient and the care team. Mizan does not diagnose or give alerts.')}</p>
     </Card>
   );
 }

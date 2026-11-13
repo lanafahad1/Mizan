@@ -1,5 +1,5 @@
 // The server runtime: one Postgres database (Neon in production) shared by the
-// CareBite domain and better-auth. The connection pool, the auth instance and the
+// Mizan domain and better-auth. The connection pool, the auth instance and the
 // menu catalogue cache are created once per server instance (and kept across dev
 // reloads); every request works on its own snapshot of the data (domain/pg-store.js).
 import 'server-only';

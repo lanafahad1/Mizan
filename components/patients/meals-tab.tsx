@@ -250,7 +250,7 @@ function PeriodCard({ per }: { per: Per }) {
       {per.npo ? <Notice tone="info">{t('Nothing by mouth (NPO). No meals are recommended, offered or sent to the kitchen.')}</Notice> : null}
       {sc?.noSuitable && !['confirmed', 'prepared', 'delivered'].includes(s) ? (
         <Notice tone="danger" title={t('No suitable option on this menu.')} icon={<ShieldX aria-hidden />}>
-          <p>{t('No meal passes screening for this patient. CareBite does not relax the diet order or allergy rules. Arrange an alternative with the kitchen (menu management can add a meal for this date) or review the diet order.')}</p>
+          <p>{t('No meal passes screening for this patient. Mizan does not relax the diet order or allergy rules. Arrange an alternative with the kitchen (menu management can add a meal for this date) or review the diet order.')}</p>
           {day.editable && c.can('request:create') ? (
             <Button variant="outline" size="sm" className="mt-2" onClick={(ev) => c.open({ kind: 'request', prefill: { type: 'alternative', date, period: per.period, message: 'No menu option passes screening. Kitchen alternative needed (requirements not relaxed).' } }, { from: ev.currentTarget, fallback: `h-${per.period}` })}>
               <MessageSquare aria-hidden />{t('Record a request for an alternative')}

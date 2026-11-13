@@ -1,4 +1,4 @@
-// Meal ideas data (server only): Saudi dishes (SFDA SFCT) and CareBite recipes
+// Meal ideas data (server only): Saudi dishes (SFDA SFCT) and Mizan recipes
 // with values for one serving, minus foods with the person's allergens. Used by
 // Eat well (Meal ideas tab) and by Home (one idea for the next meal).
 import 'server-only';
@@ -18,7 +18,7 @@ const MAX_IDEAS = 200;
 
 type Food = (typeof FOODS)[number] & Record<string, unknown>;
 
-/** Saudi dishes (SFDA SFCT) and CareBite recipes, with values per serving, minus foods with the person's allergens. Pure. */
+/** Saudi dishes (SFDA SFCT) and Mizan recipes, with values per serving, minus foods with the person's allergens. Pure. */
 export function buildIdeas(allergies: string[]): { ideas: Idea[]; hidden: number } {
   const avoid = new Set(allergies);
   let hidden = 0;

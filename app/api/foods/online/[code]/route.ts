@@ -1,4 +1,4 @@
-// Online barcode fallback: when a barcode is not in CareBite's own food list,
+// Online barcode fallback: when a barcode is not in Mizan's own food list,
 // look the product up on Open Food Facts (community data, ODbL) from the server.
 // Nothing is saved here: the browser shows the values and the person confirms
 // "Save to my foods", which goes through POST /api/health/me/foods.

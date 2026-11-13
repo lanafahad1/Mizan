@@ -230,7 +230,7 @@ export function MenuView({ initial, filters: start, today, canManage }: { initia
               <li><b>{t('Nutrition:')}</b> {t(m.nutritionNote)} {t('Values are for one standard serving. A small portion is half of it, and a large one is one and a half.')}</li>
               <li><b>{t('Allergens:')}</b> {t('from ingredient data, using the 14 allergens SFDA requires food services to declare (SFDA.FD 56). Packaged products vary by brand, so the kitchen checks labels.')}</li>
               <li><b>{t('Halal:')}</b> {t('all meat and poultry are halal-certified, as overseen by the SFDA Saudi Halal Center.')}</li>
-              <li><b>{t('Calories on menus:')}</b> {t('SFDA requires food service menus to show calories; CareBite shows energy first wherever SFDA values exist. “≥” marks a partial total for a complete meal where one component has no SFDA values.')}</li>
+              <li><b>{t('Calories on menus:')}</b> {t('SFDA requires food service menus to show calories; Mizan shows energy first wherever SFDA values exist. “≥” marks a partial total for a complete meal where one component has no SFDA values.')}</li>
               <li><b>{t('Diet compatibility:')}</b> {t('each meal is screened against the documented rules with default limits. “Depends on limits” means potassium and phosphorus limits are set per patient. Patient-specific screening happens on each patient’s profile.')}</li>
               <li><b>{t('Texture:')}</b> {t('no IDDSI texture level is recorded for menu items, so texture-modified diets always need admin review.')}</li>
               <li><b>{t('Local produce:')}</b> {t('marked when an ingredient group has national self-sufficiency data (MEWA, GASTAT 2024).')}</li>

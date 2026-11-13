@@ -1,21 +1,21 @@
-// CareBite knowledge base: documented hospital diet categories and the
+// Mizan knowledge base: documented hospital diet categories and the
 // screening rules behind them (the MedicalDietaryRules entity).
 //
-// CareBite is used in Saudi Arabia, so every food and health rule is based on
+// Mizan is used in Saudi Arabia, so every food and health rule is based on
 // Saudi government guidance (MOH, SFDA, MEWA, GFSA, the Saudi National
-// Diabetes Center). Where no Saudi government source sets a number, CareBite
+// Diabetes Center). Where no Saudi government source sets a number, Mizan
 // does not invent one: the admin sets the value in the diet order, or the
 // rule is marked as a documented prototype assumption.
 //
 // Governance: rules run only when status === 'active'. Every rule names its
 // source(s), the exact logic applied and its review state. The rules were
-// checked against the cited guidance by the CareBite project team. They have
+// checked against the cited guidance by the Mizan project team. They have
 // NOT been clinically validated; in a real hospital the dietetics department
 // would review and approve every rule and threshold.
 
 export const RULESET_VERSION = '4.0.0';
 export const RULESET_REVIEW = {
-  reviewedBy: 'CareBite project team (academic review against cited sources)',
+  reviewedBy: 'Mizan project team (academic review against cited sources)',
   reviewedOn: '2026-10-19',
   clinicalValidation: 'Not clinically validated. A hospital dietetics department must review and approve these rules before real use.',
 };
@@ -42,7 +42,7 @@ export const SOURCES = {
     title: 'Saudi Food Composition Tables, first edition (released 25 June 2026)',
     publisher: 'Saudi Food & Drug Authority (SFDA), National Nutrition Committee',
     url: 'https://www.sfda.gov.sa/en/news/19089',
-    summary: 'Laboratory-analysed nutrient values per 100 g (and per full recipe) for traditional dishes from the 13 regions of the Kingdom, with each standard recipe. CareBite uses it first for Saudi dishes: a hospital dish is linked to an SFCT entry only when it is prepared to that recipe. Other dishes use values calculated from their ingredients (USDA FoodData Central). A dish with neither has no nutrient values, and diets with nutrient limits need admin review for it.',
+    summary: 'Laboratory-analysed nutrient values per 100 g (and per full recipe) for traditional dishes from the 13 regions of the Kingdom, with each standard recipe. Mizan uses it first for Saudi dishes: a hospital dish is linked to an SFCT entry only when it is prepared to that recipe. Other dishes use values calculated from their ingredients (USDA FoodData Central). A dish with neither has no nutrient values, and diets with nutrient limits need admin review for it.',
     links: [
       { label: 'Saudi Food Composition Tables (English PDF)', url: 'https://www.sfda.gov.sa/sites/default/files/2026-04/SFCT-E.pdf' },
       { label: 'جداول تركيب الأغذية السعودية (Arabic PDF)', url: 'https://www.sfda.gov.sa/sites/default/files/2026-04/SFCT-A.pdf' },
@@ -75,7 +75,7 @@ export const SOURCES = {
     title: 'Calorie and nutrition information on restaurant and café menus',
     publisher: 'Saudi Food & Drug Authority (SFDA), as reported by Gulf News',
     url: 'https://gulfnews.com/world/gulf/saudi/saudi-arabia-to-enforce-new-food-labelling-rules-from-july-1-1.500169964',
-    summary: 'SFDA requires food service menus, printed and digital, to show calories, with indicators for salty and caffeinated items. CareBite shows each dish’s energy first wherever SFDA dish values exist.',
+    summary: 'SFDA requires food service menus, printed and digital, to show calories, with indicators for salty and caffeinated items. Mizan shows each dish’s energy first wherever SFDA dish values exist.',
   },
   // ---- Ministry of Health (MOH) and the Saudi National Diabetes Center
   'MOH-SALT': {
@@ -135,7 +135,7 @@ export const SOURCES = {
     title: 'Saudi Diabetes Clinical Practice Guidelines (first edition, 2021)',
     publisher: 'Saudi National Diabetes Center and Saudi Health Council',
     url: 'https://www.moh.gov.sa/Ministry/MediaCenter/Publications/Documents/Saudi-Diabetes-Clinical-Practice-Guidelines.pdf',
-    summary: 'The national clinical practice guideline for diabetes care, including assessment, goal setting and a treatment plan for each patient. In CareBite the carbohydrate amount per meal is set by the admin for each patient, not by a fixed default.',
+    summary: 'The national clinical practice guideline for diabetes care, including assessment, goal setting and a treatment plan for each patient. In Mizan the carbohydrate amount per meal is set by the admin for each patient, not by a fixed default.',
   },
   'MOH-KIDNEY': {
     authority: 'MOH', saudi: true,
@@ -172,7 +172,7 @@ export const SOURCES = {
     title: 'National Program to Reduce Food Loss and Waste, and the SAGO field study of food waste in Saudi Arabia',
     publisher: 'Saudi Grains Organization (SAGO, now GFSA), as reported by Arab News',
     url: 'https://www.arabnews.com/node/1654461',
-    summary: 'SAGO (now GFSA) launched the National Program to Reduce Food Loss and Waste in 2018. Its field study estimated that 33.1% of targeted food commodities, about 4.06 million tonnes a year worth about SR 40 billion, are wasted. CareBite records reported leftovers and weighed plate waste to support hospital food-waste reduction.',
+    summary: 'SAGO (now GFSA) launched the National Program to Reduce Food Loss and Waste in 2018. Its field study estimated that 33.1% of targeted food commodities, about 4.06 million tonnes a year worth about SR 40 billion, are wasted. Mizan records reported leftovers and weighed plate waste to support hospital food-waste reduction.',
     links: [{ label: 'National Program to Reduce Food Loss and Waste (Saudipedia)', url: 'https://saudipedia.com/en/article/509/economy-and-business/economic-affairs/the-national-program-to-reduce-food-loss-and-waste' }],
   },
   // ---- International framework (no Saudi government equivalent found)
@@ -188,7 +188,7 @@ export const SOURCES = {
     title: 'FoodData Central, SR Legacy (April 2018)',
     publisher: 'U.S. Department of Agriculture, Agricultural Research Service',
     url: 'https://fdc.nal.usda.gov/',
-    summary: 'Public-domain nutrient values per 100 g of single foods. The SFDA Saudi Food Composition Tables cover Saudi dishes only, so CareBite uses these values for the ingredients of its international recipes and adds them up by recipe weight. These dish values are calculated from ingredients, not laboratory-analysed.',
+    summary: 'Public-domain nutrient values per 100 g of single foods. The SFDA Saudi Food Composition Tables cover Saudi dishes only, so Mizan uses these values for the ingredients of its international recipes and adds them up by recipe weight. These dish values are calculated from ingredients, not laboratory-analysed.',
   },
   'OFF': {
     authority: 'Open Food Facts', saudi: false,
@@ -198,25 +198,25 @@ export const SOURCES = {
     summary: 'Supermarket products and their nutrition labels, entered by volunteers and not verified. Used only because no Saudi government product database is published. Always check the product’s own label. Contains data from Open Food Facts, © Open Food Facts contributors, under the Open Database Licence (ODbL) v1.0.',
     links: [{ label: 'Open Database Licence (ODbL) v1.0', url: 'https://opendatacommons.org/licenses/odbl/1-0/' }],
   },
-  // ---- CareBite prototype assumptions (documented, not external guidance)
+  // ---- Mizan prototype assumptions (documented, not external guidance)
   'CAREBITE-ALLOC': {
-    authority: 'CareBite', saudi: false,
-    title: 'CareBite meal-share allocation (prototype assumption)',
-    publisher: 'CareBite project team',
+    authority: 'Mizan', saudi: false,
+    title: 'Mizan meal-share allocation (prototype assumption)',
+    publisher: 'Mizan project team',
     url: null,
     summary: 'To screen one meal against a daily limit, the daily amount is divided by meal period: breakfast 25%, lunch 30%, dinner 30%, snack 15%. A snack’s carbohydrate allowance is one-third of the per-meal amount.',
   },
   'CAREBITE-FLAGS': {
-    authority: 'CareBite', saudi: false,
-    title: 'CareBite intake review prompts (prototype thresholds)',
-    publisher: 'CareBite project team',
+    authority: 'Mizan', saudi: false,
+    title: 'Mizan intake review prompts (prototype thresholds)',
+    publisher: 'Mizan project team',
     url: null,
     summary: 'Thresholds chosen by the project team to prompt a nutrition team review of recorded intake. They are not a validated malnutrition screening tool; a hospital would apply its own nutrition screening and escalation policy.',
   },
   'CAREBITE-PORTIONS': {
-    authority: 'CareBite', saudi: false,
+    authority: 'Mizan', saudi: false,
     title: 'Demonstration kitchen portion sizes',
-    publisher: 'CareBite project team',
+    publisher: 'Mizan project team',
     url: null,
     summary: 'Small = ½ standard serving, regular = 1 standard serving, large = 1½ standard servings. Each portion is screened separately.',
   },
@@ -227,7 +227,7 @@ export const MEAL_SHARE = { breakfast: 0.25, lunch: 0.3, dinner: 0.3, snack: 0.1
 
 /**
  * Documented hospital diet categories. A diet order combines one or more.
- * `support` says how completely CareBite can screen the category, so that
+ * `support` says how completely Mizan can screen the category, so that
  * cases needing professional review are visible instead of looking automatic.
  *   ingredient – screened from ingredient data alone
  *   nutrient   – nutrient limits screened where every dish has values (SFCT, or calculated from ingredients); meals without them need review
@@ -251,7 +251,7 @@ export const DIET_CATEGORIES = [
   { id: 'vegetarian', code: 'VEG', label: 'Vegetarian', plain: 'Vegetarian diet', rules: ['DIET-VEGETARIAN'], support: 'ingredient',
     description: 'No meat, poultry, fish or shellfish, based on ingredient data.' },
   { id: 'high-protein', code: 'HPHE', label: 'High-protein, high-energy', plain: 'High-protein, high-energy diet', rules: ['DIET-HP-RANK'], support: 'ranking',
-    description: 'Ranking and portion preference only: meals with at least 20 g of protein per portion are listed first (a CareBite prototype level, not a Saudi standard), and larger permitted portions are suggested when appetite allows. Energy and protein targets are set and monitored by the admin.' },
+    description: 'Ranking and portion preference only: meals with at least 20 g of protein per portion are listed first (a Mizan prototype level, not a Saudi standard), and larger permitted portions are suggested when appetite allows. Energy and protein targets are set and monitored by the admin.' },
   { id: 'texture-modified', code: 'TXT', label: 'Texture-modified (IDDSI level)', plain: 'Texture-modified diet (soft or minced)', rules: ['DIET-TEXTURE'], requires: ['textureLevel'], support: 'review',
     description: 'Menu items have no recorded texture level, so every meal needs admin review and kitchen preparation to the prescribed IDDSI level.' },
   // Retired in ruleset 4.0: not offered for new diet orders.
@@ -292,7 +292,7 @@ export const MEDICAL_RULES = [
   { ...base, id: 'DIET-P', kind: 'limit', nutrient: 'phosphorus', unit: 'mg', method: 'daily-allocation', param: 'phosphorusMgPerDay', required: true,
     title: 'Phosphorus limit per meal', logic: 'Phosphorus in the portion must not exceed the meal-period share of the admin’s daily limit.', sources: ['MOH-KIDNEY', 'CAREBITE-ALLOC'] },
   { ...base, id: 'DIET-HP-RANK', kind: 'rank', nutrient: 'protein', unit: 'g', min: 20, points: 8,
-    title: 'Protein preference', logic: 'Rank meals higher when the portion provides at least 20 g of protein (CareBite prototype threshold). Ranking only.', sources: [] },
+    title: 'Protein preference', logic: 'Rank meals higher when the portion provides at least 20 g of protein (Mizan prototype threshold). Ranking only.', sources: [] },
   { ...base, id: 'SFDA-SALT-RANK', kind: 'rank-limit', nutrient: 'sodium', unit: 'mg', dailyLimit: 2000, points: 4, everyone: true,
     title: 'Lower-salt preference (MOH and SFDA)', logic: 'For every patient, rank meals higher when sodium in the portion is within the meal-period share of 2,000 mg (5 g of salt) a day. Ranking only.', sources: ['MOH-SALT', 'SFDA-SALT', 'CAREBITE-ALLOC'] },
 ];

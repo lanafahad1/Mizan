@@ -10,7 +10,7 @@ import { safeNext } from '@/components/auth/nav';
 
 export async function generateMetadata() {
   const t = await getT();
-  return pageMetadata({ title: t('Log in'), description: t('Log in to CareBite as a member or for hospital care, with your username or email.'), path: '/login', noindex: true });
+  return pageMetadata({ title: t('Log in'), description: t('Log in to Mizan as a member or for hospital care, with your username or email.'), path: '/login', noindex: true });
 }
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };

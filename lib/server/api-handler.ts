@@ -84,7 +84,7 @@ export async function handleApi(req: NextRequest, segments: string[]) {
     const body = method === 'GET' || method === 'HEAD' ? {} : await readBody(req);
     const account = await accountRoute(method, path, actor, body);
     if (account !== undefined) {
-      const extra: Record<string, string> = path === '/api/account/export' ? { 'Content-Disposition': 'attachment; filename="carebite-my-data.json"' } : {};
+      const extra: Record<string, string> = path === '/api/account/export' ? { 'Content-Disposition': 'attachment; filename="mizan-my-data.json"' } : {};
       return json(account, 200, extra);
     }
     const match = matchRoute(ROUTES, method, path);

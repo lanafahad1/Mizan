@@ -47,7 +47,7 @@ export const MEMBER: Record<string, string> = {
   'Tip of the day': 'نصيحة اليوم',
   'Saudi Ministry of Health, Calorie Guide for Weight Loss': 'وزارة الصحة السعودية، دليل السعرات الحرارية لخفض الوزن',
   'Meal ideas': 'أفكار وجبات',
-  'Browse Saudi dishes and CareBite recipes, with the calories for one serving.': 'تصفّح أطباقًا سعودية ووصفات كيربايت، مع سعرات الحصة الواحدة.',
+  'Browse Saudi dishes and Mizan recipes, with the calories for one serving.': 'تصفّح أطباقًا سعودية ووصفات ميزان، مع سعرات الحصة الواحدة.',
   'See meal ideas': 'اعرض أفكار الوجبات',
   'An idea for your {meal}': 'فكرة لوجبة {meal}',
   'More ideas': 'أفكار أكثر',
@@ -94,7 +94,7 @@ export const MEMBER: Record<string, string> = {
   'Weight change': 'تغيّر الوزن',
 
   // welcome (onboarding)
-  'Welcome to CareBite': 'أهلًا بك في كيربايت',
+  'Welcome to Mizan': 'أهلًا بك في ميزان',
   'Let’s set you up in 3 short steps': 'لنجهّز حسابك في 3 خطوات قصيرة',
   'About you': 'عنك',
   'Your daily target': 'هدفك اليومي',

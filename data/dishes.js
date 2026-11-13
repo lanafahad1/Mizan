@@ -1,4 +1,4 @@
-// CareBite hospital dishes: the components meals are built from.
+// Mizan hospital dishes: the components meals are built from.
 //
 // Every ingredient line is in grams per standard portion; allergens and diet
 // attributes are worked out from the ingredients (data/ingredients.js).

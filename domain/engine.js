@@ -1,4 +1,4 @@
-// CareBite transparent rule-based recommendation engine (hospital version).
+// Mizan transparent rule-based recommendation engine (hospital version).
 //
 // Order of operations (safety first):
 //   1. Diet order status (NPO), allergies, intolerances, diet categories and

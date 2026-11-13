@@ -65,8 +65,8 @@ export const COMMON: Record<string, string> = {
   'Fictional hospital and made-up data only': 'مستشفى افتراضي وبيانات تجريبية فقط',
   'Project Development Team:': 'فريق تطوير المشروع:',
   // the exact medical disclaimer, in clear standard Arabic
-  'CareBite is an educational Health Informatics project designed to demonstrate personalized nutritional decision support. It does not diagnose medical conditions, replace professional medical advice, or guarantee clinical outcomes. Meal suggestions depend on the available data and reviewed dietary rules. Users with complex medical conditions, prescribed diets, or uncertain allergy information should consult a qualified healthcare professional.':
-    'كيربايت مشروع تعليمي في المعلوماتية الصحية، صُمّم لعرض دعم القرار الغذائي المخصّص. لا يشخّص الحالات الطبية، ولا يغني عن الاستشارة الطبية المتخصصة، ولا يضمن نتائج علاجية. تعتمد اقتراحات الوجبات على البيانات المتاحة والقواعد الغذائية المراجَعة. على من لديهم حالات طبية معقّدة أو حميات موصوفة أو معلومات حساسية غير مؤكدة استشارة مختص رعاية صحية مؤهل.',
+  'Mizan is an educational Health Informatics project designed to demonstrate personalized nutritional decision support. It does not diagnose medical conditions, replace professional medical advice, or guarantee clinical outcomes. Meal suggestions depend on the available data and reviewed dietary rules. Users with complex medical conditions, prescribed diets, or uncertain allergy information should consult a qualified healthcare professional.':
+    'ميزان مشروع تعليمي في المعلوماتية الصحية، صُمّم لعرض دعم القرار الغذائي المخصّص. لا يشخّص الحالات الطبية، ولا يغني عن الاستشارة الطبية المتخصصة، ولا يضمن نتائج علاجية. تعتمد اقتراحات الوجبات على البيانات المتاحة والقواعد الغذائية المراجَعة. على من لديهم حالات طبية معقّدة أو حميات موصوفة أو معلومات حساسية غير مؤكدة استشارة مختص رعاية صحية مؤهل.',
   // common actions
   'Save': 'احفظ',
   'Saving…': 'جارٍ الحفظ…',
@@ -102,12 +102,12 @@ export const COMMON: Record<string, string> = {
   'Developed by': 'تطوير:',
   'Website developed by': 'تطوير الموقع:',
   'Website designed and developed by': 'تصميم الموقع وتطويره:',
-  'Care in every bite. Keep a private food diary at home, and get meals checked for you in hospital, guided by Saudi government sources (MOH, SFDA).': 'عناية في كل لقمة. سجّل طعامك في سجل خاص بك في المنزل، ونراجع لك وجباتك في المستشفى، استنادًا إلى المصادر الحكومية السعودية (وزارة الصحة، والهيئة العامة للغذاء والدواء).',
+  'Your plate, your balance. Keep a private food diary at home, and get meals checked for you in hospital, guided by Saudi government sources (MOH, SFDA).': 'طبقك، توازنك. سجّل طعامك في سجل خاص بك في المنزل، ونراجع لك وجباتك في المستشفى، استنادًا إلى المصادر الحكومية السعودية (وزارة الصحة، والهيئة العامة للغذاء والدواء).',
   'Meet the developer': 'تعرّف على المطوّرة',
   'Website design and development': 'تصميم الموقع وتطويره',
   'Get in touch': 'تواصل معنا',
-  'CareBite was designed and developed as a university Health Informatics project by:': 'كيربايت مشروع جامعي في المعلوماتية الصحية، صمّمته وطوّرته:',
+  'Mizan was designed and developed as a university Health Informatics project by:': 'ميزان مشروع جامعي في المعلوماتية الصحية، صمّمته وطوّرته:',
   'Email': 'البريد الإلكتروني',
   'Write in with questions about the project, feedback or bugs you spot. Please don’t include health information: email isn’t a secure place for medical details.': 'راسلنا بأسئلتك عن المشروع أو ملاحظاتك أو أي خطأ تلاحظه. نرجو ألا ترسل معلومات صحية، فالبريد الإلكتروني ليس مكانًا آمنًا للتفاصيل الطبية.',
-  'CareBite cannot provide medical or dietary advice. For health questions, contact a qualified healthcare professional. In an emergency, alert clinical staff or emergency services.': 'لا يقدّم كيربايت نصائح طبية أو غذائية. للأسئلة الصحية تواصل مع مختص رعاية صحية مؤهل، وفي الطوارئ أبلغ الطاقم الطبي أو خدمات الطوارئ.',
+  'Mizan cannot provide medical or dietary advice. For health questions, contact a qualified healthcare professional. In an emergency, alert clinical staff or emergency services.': 'لا يقدّم ميزان نصائح طبية أو غذائية. للأسئلة الصحية تواصل مع مختص رعاية صحية مؤهل، وفي الطوارئ أبلغ الطاقم الطبي أو خدمات الطوارئ.',
 };

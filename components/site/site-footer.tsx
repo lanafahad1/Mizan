@@ -29,7 +29,7 @@ export async function SiteFooter() {
             </span>
           ))}
           {/* Own line on phones (no dangling dot), same line from the sm breakpoint. */}
-          <span className="inline-flex basis-full items-center justify-center gap-1 sm:basis-auto"><span aria-hidden className="max-sm:hidden">·</span><span className="px-1.5">© {year} CareBite · {t('Developed by')} {developer}</span></span>
+          <span className="inline-flex basis-full items-center justify-center gap-1 sm:basis-auto"><span aria-hidden className="max-sm:hidden">·</span><span className="px-1.5">© {year} Mizan · {t('Developed by')} {developer}</span></span>
         </nav>
       </footer>
     );
@@ -39,7 +39,7 @@ export async function SiteFooter() {
       <div className="container-page grid gap-10 py-12 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div className="flex flex-col gap-4">
           <Logo />
-          <p className="text-muted-foreground">{t('Care in every bite. Keep a private food diary at home, and get meals checked for you in hospital, guided by Saudi government sources (MOH, SFDA).')}</p>
+          <p className="text-muted-foreground">{t('Your plate, your balance. Keep a private food diary at home, and get meals checked for you in hospital, guided by Saudi government sources (MOH, SFDA).')}</p>
           <p className="rounded-[16px] border border-border bg-card p-4 text-sm text-muted-foreground"><b className="text-heading">{t('Medical disclaimer.')}</b> {t(DISCLAIMER)}</p>
         </div>
         {COLS.map(([title, links]) => (
@@ -52,7 +52,7 @@ export async function SiteFooter() {
         ))}
       </div>
       <div className="container-page flex flex-col gap-1 border-t border-border pt-5 text-sm text-muted-foreground">
-        <span>© {year} CareBite · {t('A university Health Informatics project')} · {t('Fictional hospital and made-up data only')}</span>
+        <span>© {year} Mizan · {t('A university Health Informatics project')} · {t('Fictional hospital and made-up data only')}</span>
         <span>{t('Website developed by')} {developer}</span>
       </div>
     </footer>

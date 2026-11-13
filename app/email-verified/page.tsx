@@ -9,7 +9,7 @@ import { Illustration } from '@/components/illustrations/illustration';
 
 export async function generateMetadata() {
   const t = await getT();
-  return pageMetadata({ title: t('Email confirmed'), description: t('Your CareBite email is confirmed.'), path: '/email-verified', noindex: true });
+  return pageMetadata({ title: t('Email confirmed'), description: t('Your Mizan email is confirmed.'), path: '/email-verified', noindex: true });
 }
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };

@@ -1,6 +1,10 @@
-# CareBite
+# Mizan (ميزان)
 
-**CareBite** supports healthy eating for **obesity and chronic diseases** (obesity, type 2 diabetes, high blood pressure, heart and kidney disease). It is a university Health Informatics project with two spaces:
+*Your plate, your balance.* («طبقك، توازنك.»)
+
+**Live:** https://mizan-sa.vercel.app
+
+**Mizan** supports healthy eating for **obesity and chronic diseases** (obesity, type 2 diabetes, high blood pressure, heart and kidney disease). It is a university Health Informatics project with two spaces:
 
 - **Member** — anyone, including healthcare workers, managing their own lifestyle: a food diary with calories and macros for Saudi dishes, single ingredients and supermarket products (search, grams, barcode), the MOH BMI and calorie calculator, personal targets, weight / blood pressure / blood sugar readings, an optional assessment, meal ideas and an MOH meal plan with a shopping list. **Private: no hospital role can see it.**
 - **Hospital care** — patients, staff and admins: meals screened against each patient's diet order, conditions and allergies, followed from the offer to the tray; a care-team assessment with daily targets and review dates; and a home plan at discharge. Recording plate waste is kept as a secondary benefit (less food wasted).
@@ -9,12 +13,12 @@ Every food value and health rule cites its source, **Saudi government first**: t
 
 **Designed and developed by:** Lana Fahad Alhari (لانا فهد الحريّ)
 
-> **Medical disclaimer.** CareBite is an educational Health Informatics project designed to demonstrate personalized nutritional decision support. It does not diagnose medical conditions, replace professional medical advice, or guarantee clinical outcomes. Meal suggestions depend on the available data and reviewed dietary rules. Users with complex medical conditions, prescribed diets, or uncertain allergy information should consult a qualified healthcare professional.
+> **Medical disclaimer.** Mizan is an educational Health Informatics project designed to demonstrate personalized nutritional decision support. It does not diagnose medical conditions, replace professional medical advice, or guarantee clinical outcomes. Meal suggestions depend on the available data and reviewed dietary rules. Users with complex medical conditions, prescribed diets, or uncertain allergy information should consult a qualified healthcare professional.
 
 All patients, staff and records in this project are fictional (synthetic demonstration data).
 
 <p align="center">
-  <img src="docs/screenshots/home-desktop.png" alt="CareBite home page" width="720">
+  <img src="docs/screenshots/home-desktop.png" alt="Mizan home page" width="720">
 </p>
 
 <p align="center">
@@ -27,7 +31,7 @@ All patients, staff and records in this project are fictional (synthetic demonst
 
 ## Why: obesity and chronic diseases
 
-MOH reports that about 20% of adults in Saudi Arabia live with obesity (MOH national survey, 2019, cited in the MOH Calorie Guide for Weight Loss), and obesity raises the risk of type 2 diabetes, high blood pressure and heart disease. CareBite helps people eat to a target they understand:
+MOH reports that about 20% of adults in Saudi Arabia live with obesity (MOH national survey, 2019, cited in the MOH Calorie Guide for Weight Loss), and obesity raises the risk of type 2 diabetes, high blood pressure and heart disease. Mizan helps people eat to a target they understand:
 
 1. **Know your numbers.** BMI, MOH waist risk levels and daily energy needs with the MOH method (Mifflin-St Jeor × activity).
 2. **Track what you eat.** Calories, carbohydrate, protein, fat, sugar and sodium for every food, with the source of each value.
@@ -36,7 +40,7 @@ MOH reports that about 20% of adults in Saudi Arabia live with obesity (MOH nati
 
 ## Less food waste (secondary)
 
-Hospital meals that do not fit a patient (wrong diet, an allergen, a disliked food, too large a portion for a poor appetite) are refused or left on the plate. CareBite addresses this at each step:
+Hospital meals that do not fit a patient (wrong diet, an allergen, a disliked food, too large a portion for a poor appetite) are refused or left on the plate. Mizan addresses this at each step:
 
 1. **Screening first.** Meals that conflict with the diet order or allergies are excluded before anything is offered, and meals with incomplete information go to an admin for review. Preferences never bring back an excluded meal.
 2. **Choice within safe options.** Patients choose from approved options on their phone. Ranking uses their preferences, past feedback and appetite.
@@ -70,7 +74,7 @@ The meal workflow is **Options offered → Patient choice submitted → Confirme
 - **Next.js 16** (App Router, React 19, TypeScript). Pages are server components; client components use **SWR**, starting from the server-fetched data.
 - **better-auth**: email or username with a password and **server-side sessions**. No JWT, and no external auth provider.
 - **Postgres** ([Neon](https://neon.tech) in production) through `pg`, shared by the domain and better-auth. Each request reads one consistent snapshot of the data; every change is saved in one transaction under a write lock, so several server instances can share the database safely.
-- **Tailwind CSS v4** with **shadcn-style components** on **Base UI**, using the CareBite palette.
+- **Tailwind CSS v4** with **shadcn-style components** on **Base UI**, using the Mizan palette.
 - **Motion** from [transitions.dev](https://transitions.dev) CSS transitions, installed with its CLI (`npx transitions-dev add --free`).
 - The **domain layer** (`domain/`) is plain JavaScript and holds the screening engine, the meal workflow, menu management and RBAC.
 
@@ -79,8 +83,8 @@ The meal workflow is **Options offered → Patient choice submitted → Confirme
 Requirements: **Node.js 22 or newer** and a **Postgres database**: a free [Neon](https://neon.tech) database (a development branch works well), or Postgres installed locally.
 
 ```bash
-git clone https://github.com/lanafahad1/CareBite.git
-cd CareBite
+git clone https://github.com/lanafahad1/Mizan.git
+cd Mizan
 npm install
 cp .env.example .env.local
 # edit .env.local:
@@ -103,11 +107,11 @@ On first start the tables are created in that database and seeded with:
 | `npm test` | Domain, RBAC and password-policy tests (34). The 8 Postgres tests also run when `TEST_DATABASE_URL` points to a disposable database (its tables are dropped). |
 | `npm run test:e2e` | Cross-role browser test, 64 checks. Run it against a freshly seeded server; set `CHROMIUM=/path/to/chrome` if Playwright's browser is not installed. |
 | `npm run typecheck` | TypeScript check. |
-| `npm run reset-db -- --yes` | Delete every CareBite table in the `DATABASE_URL` database; the next start creates and seeds them again. To reset only the demonstration hospital, sign in as `admin.demo` and use the reset in Settings. |
+| `npm run reset-db -- --yes` | Delete every Mizan table in the `DATABASE_URL` database; the next start creates and seeds them again. To reset only the demonstration hospital, sign in as `admin.demo` and use the reset in Settings. |
 
 ### Account emails (optional)
 
-Email confirmation and "Forgot password?" emails are sent through Gmail with an app password. Set `GMAIL_USER`, `GMAIL_APP_PASSWORD` (and optionally `EMAIL_FROM_NAME`) in `.env.local` or in Vercel → Settings → Environment Variables (see `.env.example`). Recipients see **CareBite &lt;GMAIL_USER&gt;**. Without these settings no email is sent: the reset page says it isn't set up, and in development the link is printed in the server log. Demo accounts never receive emails and can't be reset.
+Email confirmation and "Forgot password?" emails are sent through Gmail with an app password. Set `GMAIL_USER`, `GMAIL_APP_PASSWORD` (and optionally `EMAIL_FROM_NAME`) in `.env.local` or in Vercel → Settings → Environment Variables (see `.env.example`). Recipients see **Mizan &lt;GMAIL_USER&gt;**. Without these settings no email is sent: the reset page says it isn't set up, and in development the link is printed in the server log. Demo accounts never receive emails and can't be reset.
 
 ### Demo accounts (demonstration access only)
 
@@ -222,7 +226,7 @@ The full list of sources is on the site's **Data sources & limitations** page.
   - no notifications outside the app;
   - no connection to hospital systems (EHR, admission, pharmacy).
 - **Not clinically validated.** The rules follow cited Saudi guidance but have not been validated; a hospital dietetics department would need to review them.
-- **Readings are not interpreted.** Blood pressure and blood sugar are a history only; CareBite gives no alerts or medical advice.
+- **Readings are not interpreted.** Blood pressure and blood sugar are a history only; Mizan gives no alerts or medical advice.
 - **Targets are not prescriptions.** Members' targets are personal estimates; patients' targets come from the care team.
 - **Data gaps:**
   - USDA and Open Food Facts values are not Saudi laboratory values; packaged-product allergens come from community tags and must be checked on the label;

@@ -166,7 +166,7 @@ function IdeaCard({ idea }: { idea: HomeIdea }) {
     return (
       <section aria-labelledby="idea-h" className="flex flex-col items-start gap-2 rounded-[20px] border border-border bg-card p-4 sm:p-5">
         <h2 id="idea-h" className="text-base sm:text-lg">{t('Meal ideas')}</h2>
-        <p className="m-0 text-sm text-muted-foreground">{t('Browse Saudi dishes and CareBite recipes, with the calories for one serving.')}</p>
+        <p className="m-0 text-sm text-muted-foreground">{t('Browse Saudi dishes and Mizan recipes, with the calories for one serving.')}</p>
         <Link href="/eat-well?tab=ideas" className={buttonVariants({ variant: 'outline' })}>{t('See meal ideas')}</Link>
       </section>
     );

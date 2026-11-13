@@ -1,4 +1,4 @@
-// Nutrient values for the CareBite ingredient table (data/ingredients.js).
+// Nutrient values for the Mizan ingredient table (data/ingredients.js).
 //
 // Source: USDA FoodData Central, SR Legacy (April 2018 release), public domain
 // (https://fdc.nal.usda.gov). Each ingredient was matched by hand to the

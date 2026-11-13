@@ -244,7 +244,7 @@ export default async function MealPage({ params, searchParams }: Props) {
             <p><b className="text-heading">{t('Contains:')}</b> {m.allergens.contains.length ? list(m.allergens.contains.map((a: string) => allergenName(a, t))) : t('none of the 14 declarable allergens')}</p>
             {m.allergens.mayContain.length ? <p><b className="text-heading">{t('May contain:')}</b> {list(m.allergens.mayContain.map((a: string) => allergenName(a, t)))}</p> : null}
             {m.allergens.labelCheck.length ? <p className="text-sm">{t('The kitchen checks labels of: {list}.', { list: list(m.allergens.labelCheck.map((x: string) => t(x))) })}</p> : null}
-            <p className="text-sm text-muted-foreground">{t('Worked out from every component’s ingredients. CareBite never labels a meal “allergy-safe”.')}</p>
+            <p className="text-sm text-muted-foreground">{t('Worked out from every component’s ingredients. Mizan never labels a meal “allergy-safe”.')}</p>
           </Panel>
 
           <Panel tone="blush">

@@ -408,7 +408,7 @@ function ShoppingList({ planKcal, items, idPrefix = '', print = false }: { planK
   return (
     <Section id={`${idPrefix}shop-h`} title={t('Shopping list for 7 days')} icon={ShoppingBasket} className="print:border-0 print:p-0 print:shadow-none"
       action={<Button variant="outline" size="sm" onClick={() => window.print()} className={cn('print:hidden', print && 'hidden')}><Printer aria-hidden />{t('Print')}</Button>}>
-      <p className="hidden font-display text-heading print:block">{t('CareBite · MOH {n} kcal meal plan · 7 days', { n: n0(planKcal) })}</p>
+      <p className="hidden font-display text-heading print:block">{t('Mizan · MOH {n} kcal meal plan · 7 days', { n: n0(planKcal) })}</p>
       <p className="text-sm text-muted-foreground">
         {t('Everything in the Ministry of Health example for your {n} kcal plan, for 7 days. If you swap a portion for another food from the portion guide, buy that food instead.', { n: n0(planKcal) })}
       </p>
@@ -438,7 +438,7 @@ function ShoppingList({ planKcal, items, idPrefix = '', print = false }: { planK
           );
         })}
       </div>
-      <p className="text-sm text-muted-foreground">{t('Rice is measured cooked, as in the Ministry of Health’s portion guide. Amounts are the Ministry of Health portions × 7, and CareBite adds nothing else.')}</p>
+      <p className="text-sm text-muted-foreground">{t('Rice is measured cooked, as in the Ministry of Health’s portion guide. Amounts are the Ministry of Health portions × 7, and Mizan adds nothing else.')}</p>
       <MohSource />
     </Section>
 

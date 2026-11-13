@@ -14,7 +14,7 @@ import { SITE_URL } from '@/lib/site';
 import { getT, getLang } from '@/lib/i18n/server';
 import type { T } from '@/lib/i18n';
 
-const DESCRIPTION = 'How CareBite works. As a member, you keep a private food diary with calorie goals and health readings. In hospital, every meal is checked against the patient’s diet order, allergies and conditions before it is offered.';
+const DESCRIPTION = 'How Mizan works. As a member, you keep a private food diary with calorie goals and health readings. In hospital, every meal is checked against the patient’s diet order, allergies and conditions before it is offered.';
 export async function generateMetadata() {
   const t = await getT();
   return publicMetadata({ title: t('How It Works'), description: t(DESCRIPTION), path: '/how-it-works' });
@@ -84,7 +84,7 @@ export default async function HowItWorks() {
     { title: 'Explanation and kitchen instructions', text: '“Why This Meal?” for the team and the patient, and preparation instructions for the kitchen.' },
   ];
   const howTo = {
-    '@context': 'https://schema.org', '@type': 'HowTo', name: t('How CareBite checks each hospital meal'), url: `${SITE_URL}/how-it-works`,
+    '@context': 'https://schema.org', '@type': 'HowTo', name: t('How Mizan checks each hospital meal'), url: `${SITE_URL}/how-it-works`,
     description: t(DESCRIPTION),
     step: screening.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, name: t(s.title), text: t(s.text) })),
   };

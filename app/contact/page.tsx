@@ -7,7 +7,7 @@ import { Notice } from '@/components/ui/notice';
 import { JsonLd } from '@/components/public/json-ld';
 import { getT } from '@/lib/i18n/server';
 
-const DESCRIPTION = 'CareBite is a university Health Informatics project. Email the CareBite team with questions, feedback or bugs. CareBite is not a medical service.';
+const DESCRIPTION = 'Mizan is a university Health Informatics project. Email the Mizan team with questions, feedback or bugs. Mizan is not a medical service.';
 export async function generateMetadata() {
   const t = await getT();
   return publicMetadata({ title: t('Contact'), description: t(DESCRIPTION), path: '/contact' });
@@ -21,7 +21,7 @@ export default async function ContactPage() {
       <JsonLd data={ld} />
       <AboutNav current="/contact" />
       <PageHead eyebrow={t('Contact')} title={t('Get in touch')} narrow>
-        <p>{t('CareBite was designed and developed as a university Health Informatics project by:')}</p>
+        <p>{t('Mizan was designed and developed as a university Health Informatics project by:')}</p>
       </PageHead>
       <div className="container-page container-narrow pb-16">
         <div className="prose-cb">
@@ -31,7 +31,7 @@ export default async function ContactPage() {
           <h2>{t('Email')}</h2>
           <p><a href={`mailto:${CONTACT_EMAIL}`} dir="ltr" className="font-display font-medium">{CONTACT_EMAIL}</a></p>
           <p>{t('Write in with questions about the project, feedback or bugs you spot. Please don’t include health information: email isn’t a secure place for medical details.')}</p>
-          <Notice title={t('Not a medical service')}>{t('CareBite cannot provide medical or dietary advice. For health questions, contact a qualified healthcare professional. In an emergency, alert clinical staff or emergency services.')}</Notice>
+          <Notice title={t('Not a medical service')}>{t('Mizan cannot provide medical or dietary advice. For health questions, contact a qualified healthcare professional. In an emergency, alert clinical staff or emergency services.')}</Notice>
           <p className="text-sm text-muted-foreground">{t('Looking for the citation? You’ll find it on')} <Link href="/sources">{t('Data sources & limitations')}</Link>{t('.')}</p>
         </div>
       </div>

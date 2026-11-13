@@ -7,7 +7,7 @@ export async function generateMetadata() {
   const t = await getT();
   return publicMetadata({
     title: t('Privacy Policy'),
-    description: t('How CareBite, an academic demonstration built around a fictional hospital, handles information: what is stored and why, who can see what, how it is protected, your controls and the Saudi Personal Data Protection Law (PDPL).'),
+    description: t('How Mizan, an academic demonstration built around a fictional hospital, handles information: what is stored and why, who can see what, how it is protected, your controls and the Saudi Personal Data Protection Law (PDPL).'),
     path: '/privacy',
   });
 }
@@ -18,21 +18,21 @@ export default async function PrivacyPage() {
   const bold = (key: string) => { const [a, b, c] = t(key).split(/<\/?b>/); return <>{a}<b>{b}</b>{c}</>; };
   return (
     <>
-      <PageHead eyebrow={t('Privacy Policy')} title={t('How CareBite looks after your information')} narrow>
-        <p>{t('CareBite is a university demonstration built around a fictional hospital. It shows how health information can be handled with privacy in mind. Please use made-up information only.')}</p>
+      <PageHead eyebrow={t('Privacy Policy')} title={t('How Mizan looks after your information')} narrow>
+        <p>{t('Mizan is a university demonstration built around a fictional hospital. It shows how health information can be handled with privacy in mind. Please use made-up information only.')}</p>
       </PageHead>
       <div className="container-page container-narrow pb-16">
         <div className="prose-cb">
           <h2>{t('Who manages the information')}</h2>
-          <p>{t('CareBite is managed by the hospital. Patient nutrition records are created and maintained by the hospital nutrition team, which remains responsible for dietary oversight. Patients can link a personal account to take part in planning their own meals.')}</p>
+          <p>{t('Mizan is managed by the hospital. Patient nutrition records are created and maintained by the hospital nutrition team, which remains responsible for dietary oversight. Patients can link a personal account to take part in planning their own meals.')}</p>
           <h2>{t('What we store, and why')}</h2>
           <ul>
             <li><b>{t('Accounts:')}</b> {t('username, email, display name, role and a hashed password.')}</li>
-            <li><b>{t('Account emails:')}</b> {t('your email is used only to confirm it and to send a password-reset link when you ask for one. CareBite sends no newsletters or marketing, and never asks for your password by email.')}</li>
+            <li><b>{t('Account emails:')}</b> {t('your email is used only to confirm it and to send a password-reset link when you ask for one. Mizan sends no newsletters or marketing, and never asks for your password by email.')}</li>
             <li><b>{t('Patient nutrition profile:')}</b> {t('a demonstration identifier (CB-####), ward and bed, age range, relevant conditions, the prescribed diet order, allergies and intolerances (recorded separately), medically required exclusions, food preferences and appetite. Used only to screen, rank and prepare meals.')}</li>
             <li><b>{t('Meals and feedback:')}</b> {t('offered options, selections and confirmations, appetite before meals, intake, reasons, satisfaction, weighed plate waste and requests to the nutrition team.')}</li>
             <li><b>{t('Audit log:')}</b> {t('who changed a patient’s record or meals, and when.')}</li>
-            <li>{t('CareBite does not store real names, medical record numbers, national ID numbers, contact details or device identifiers.')}</li>
+            <li>{t('Mizan does not store real names, medical record numbers, national ID numbers, contact details or device identifiers.')}</li>
           </ul>
           <h2>{t('Who can see what')}</h2>
           <ul>
@@ -55,7 +55,7 @@ export default async function PrivacyPage() {
             <li>{t('You can delete your personal account at any time. The hospital nutrition record is kept by the hospital nutrition team; an admin can delete a demonstration record.')}</li>
           </ul>
           <h2>{t('Saudi data protection')}</h2>
-          <p>{t('Health information is sensitive personal data under the Saudi Personal Data Protection Law (PDPL), overseen by the Saudi Data & AI Authority (SDAIA). CareBite is designed around its principles: health data is used only for the purpose it was collected for (meal screening and preparation), access is limited to what each role needs, and every change is logged. A real deployment would also need the hospital’s own PDPL compliance review.')}</p>
+          <p>{t('Health information is sensitive personal data under the Saudi Personal Data Protection Law (PDPL), overseen by the Saudi Data & AI Authority (SDAIA). Mizan is designed around its principles: health data is used only for the purpose it was collected for (meal screening and preparation), access is limited to what each role needs, and every change is logged. A real deployment would also need the hospital’s own PDPL compliance review.')}</p>
         </div>
       </div>
     </>

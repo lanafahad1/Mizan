@@ -1,5 +1,5 @@
 'use client';
-// Find a product by its barcode. Lookup order: CareBite's own food list
+// Find a product by its barcode. Lookup order: Mizan's own food list
 // (/api/foods/barcode/:code) → Open Food Facts through our server
 // (/api/foods/online/:code) → the person adds it from the pack label.
 // "Scan with camera" appears only where the browser has BarcodeDetector; no

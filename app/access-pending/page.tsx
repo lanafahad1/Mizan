@@ -39,11 +39,11 @@ export default async function AccessPendingPage() {
       {declined ? (
         <p className="text-[1.05rem]">
           {viewer.decisionNote
-            ? t('An admin declined this request: “{note}” If you think this is a mistake, contact your department’s CareBite admin.', { note: viewer.decisionNote })
-            : t('An admin declined this request. If you think this is a mistake, contact your department’s CareBite admin.')}
+            ? t('An admin declined this request: “{note}” If you think this is a mistake, contact your department’s Mizan admin.', { note: viewer.decisionNote })
+            : t('An admin declined this request. If you think this is a mistake, contact your department’s Mizan admin.')}
         </p>
       ) : deactivated ? (
-        <p className="text-[1.05rem]">{t('This account has been deactivated by an admin. If you think this is a mistake, contact your department’s CareBite admin.')}</p>
+        <p className="text-[1.05rem]">{t('This account has been deactivated by an admin. If you think this is a mistake, contact your department’s Mizan admin.')}</p>
       ) : (
         <div className="flex flex-col gap-2">
           <p className="text-[1.05rem]">{t(waitingText, { name: viewer.name })}</p>
@@ -51,7 +51,7 @@ export default async function AccessPendingPage() {
         </div>
       )}
       <Notice title={t('Demonstration access.')}>
-        {t('In this demo, the demo admin (admin.demo) approves requests. CareBite doesn’t check identity; a real hospital would issue staff accounts through its own identity system.')}
+        {t('In this demo, the demo admin (admin.demo) approves requests. Mizan doesn’t check identity; a real hospital would issue staff accounts through its own identity system.')}
       </Notice>
       <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         <AccessPendingActions waiting={!declined && !deactivated} />

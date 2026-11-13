@@ -1,4 +1,4 @@
-// Delete every CareBite table (hospital data, menu, accounts and sessions) in the
+// Delete every Mizan table (hospital data, menu, accounts and sessions) in the
 // Postgres database at DATABASE_URL, so the next server start creates and seeds
 // them again. It cannot be undone, so it asks for --yes. To reset only the
 // demonstration hospital, sign in as admin.demo and use the reset in Settings.
@@ -12,7 +12,7 @@ if (!url) {
 const { host, pathname } = new URL(url);
 const target = `database "${decodeURIComponent(pathname.slice(1))}" on ${host}`;
 if (!process.argv.includes('--yes')) {
-  console.log(`This deletes all CareBite data and accounts in ${target}.\nTo continue, run: npm run reset-db -- --yes`);
+  console.log(`This deletes all Mizan data and accounts in ${target}.\nTo continue, run: npm run reset-db -- --yes`);
   process.exit(1);
 }
 const TABLES = [
@@ -26,7 +26,7 @@ const client = new pg.Client({ connectionString: url });
 await client.connect();
 try {
   await client.query(`DROP TABLE IF EXISTS ${TABLES.join(', ')} CASCADE`);
-  console.log(`Deleted the CareBite tables in ${target}. Start the server (npm run dev or npm start) to re-create and seed them.`);
+  console.log(`Deleted the Mizan tables in ${target}. Start the server (npm run dev or npm start) to re-create and seed them.`);
 } finally {
   await client.end();
 }

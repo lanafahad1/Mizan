@@ -16,7 +16,7 @@ import { getT } from '@/lib/i18n/server';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT();
-  const HOME_TITLE = t('{site}: Care in every bite', { site: SITE_NAME });
+  const HOME_TITLE = t('{site}: Your plate, your balance', { site: SITE_NAME });
   const base = publicMetadata({ description: t(SITE_DESCRIPTION), path: '/' });
   return { ...base, title: { absolute: HOME_TITLE }, openGraph: { ...base.openGraph, title: HOME_TITLE }, twitter: { ...base.twitter, title: HOME_TITLE } };
 }
@@ -28,7 +28,7 @@ const FEATURES: [IllustrationName, string, string][] = [
   ['hospital', 'Hospital care', 'Every meal is checked against the patient’s diet order, allergies and conditions, and patients leave with a plan for eating at home.'],
 ];
 
-/** Saudi government bodies behind CareBite's health and food rules. */
+/** Saudi government bodies behind Mizan's health and food rules. */
 const SOURCE_BADGES = ['MOH', 'SFDA', 'Saudi National Diabetes Center', 'GFSA'];
 
 function Space({ icon: Icon, tone, title, who, children, action }: { icon: LucideIcon; tone: 'mint' | 'blush'; title: string; who: string; children: React.ReactNode; action: React.ReactNode }) {
@@ -51,7 +51,7 @@ export default async function Home() {
   const actor = await getActor();
   const t = await getT();
   // One sentence with the highlighted word marked, so Arabic word order can differ.
-  const hero = t('Care in <em>every bite</em>.').split(/<\/?em>/);
+  const hero = t('Your plate, <em>your balance</em>.').split(/<\/?em>/);
 
   return (
     <>

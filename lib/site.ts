@@ -1,7 +1,7 @@
 // Site-wide constants (safe for client and server).
-export const SITE_NAME = 'CareBite';
+export const SITE_NAME = 'Mizan';
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? process.env.BETTER_AUTH_URL ?? 'http://localhost:3000').replace(/\/$/, '');
-export const SITE_DESCRIPTION = 'Care in every bite. Log what you eat, know your daily calories and plan meals you enjoy, at home or in hospital. Built on guidance from the Saudi Ministry of Health and SFDA. A university Health Informatics project.';
+export const SITE_DESCRIPTION = 'Your plate, your balance. Log what you eat, know your daily calories and plan meals you enjoy, at home or in hospital. Built on guidance from the Saudi Ministry of Health and SFDA. A university Health Informatics project.';
 
 /** Credited on the site: the developer only (owner's decision, 2026-11-10). */
 export const TEAM = ['Lana Fahad Alhari'];
@@ -9,9 +9,9 @@ export const TEAM = ['Lana Fahad Alhari'];
 /** The website's developer (credited on every page). */
 export const DEVELOPER = { en: 'Lana Fahad Alhari', ar: 'لانا فهد الحريّ' };
 /** The project's public contact address (also the sender of account emails). */
-export const CONTACT_EMAIL = 'carebite.team@gmail.com';
+export const CONTACT_EMAIL = 'mizan.careteam@gmail.com';
 
-export const DISCLAIMER = 'CareBite is an educational Health Informatics project designed to demonstrate personalized nutritional decision support. It does not diagnose medical conditions, replace professional medical advice, or guarantee clinical outcomes. Meal suggestions depend on the available data and reviewed dietary rules. Users with complex medical conditions, prescribed diets, or uncertain allergy information should consult a qualified healthcare professional.';
+export const DISCLAIMER = 'Mizan is an educational Health Informatics project designed to demonstrate personalized nutritional decision support. It does not diagnose medical conditions, replace professional medical advice, or guarantee clinical outcomes. Meal suggestions depend on the available data and reviewed dietary rules. Users with complex medical conditions, prescribed diets, or uncertain allergy information should consult a qualified healthcare professional.';
 
 export type NavItem = { href: string; label: string; permission?: string };
 
@@ -67,4 +67,4 @@ export const ABOUT_NAV: NavItem[] = [
   { href: '/contact', label: 'Contact' },
 ];
 
-export const CITATION = 'Alhari, L. F. (2026). CareBite: Care in every bite [University Health Informatics project].';
+export const CITATION = 'Alhari, L. F. (2026). Mizan: Your plate, your balance [University Health Informatics project].';

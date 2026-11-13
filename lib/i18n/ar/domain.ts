@@ -19,7 +19,7 @@ const CONSTANTS: Dict = {
   "Oversees the whole platform: staff access and roles, diet orders, allergies and restrictions, approving meals that need review, checking menu information and deleting records, plus every staff task. In a hospital, this is the clinical dietitian or nutrition lead.": "يشرف على المنصة كاملة: صلاحيات الموظفين وأدوارهم، والأوامر الغذائية، والحساسية والقيود، واعتماد الوجبات التي تحتاج مراجعة، والتحقق من معلومات القائمة وحذف السجلات، إضافة إلى كل مهام الموظفين. في المستشفى يكون هذا الدور لأخصائي التغذية العلاجية أو مسؤول التغذية.",
   "Runs the daily meal service: offers and confirms meals that pass screening, records choices, intake and admissions, prepares and delivers trays, keeps the menu up to date and answers patient requests. Cannot change clinical information or approve meals that need review.": "يدير خدمة الوجبات اليومية: يعرض الوجبات التي تجتاز الفحص ويؤكدها، ويسجّل الاختيارات وكمية الأكل والتنويم، ويجهّز الصواني ويسلّمها، ويحدّث القائمة ويرد على طلبات المرضى. لا يمكنه تغيير المعلومات السريرية أو اعتماد الوجبات التي تحتاج مراجعة.",
   "Sees their own meals and profile, picks meals, shares preferences, appetite and feedback, and sends requests.": "يطّلع على وجباته وملفه، ويختار وجباته، ويشارك تفضيلاته وشهيته وملاحظاته، ويرسل الطلبات.",
-  "Uses CareBite for everyday healthy living: a food diary, health readings, personal goals and meal ideas. Not linked to a hospital, and their data stays private.": "يستخدم كيربايت لحياة صحية يومية: سجل الطعام، والقراءات الصحية، والأهداف الشخصية، وأفكار الوجبات. غير مرتبط بمستشفى، وتبقى بياناته خاصة.",
+  "Uses Mizan for everyday healthy living: a food diary, health readings, personal goals and meal ideas. Not linked to a hospital, and their data stays private.": "يستخدم ميزان لحياة صحية يومية: سجل الطعام، والقراءات الصحية، والأهداف الشخصية، وأفكار الوجبات. غير مرتبط بمستشفى، وتبقى بياناته خاصة.",
   // account status
   "Active": "نشط",
   "Waiting for admin approval": "بانتظار موافقة المشرف",
@@ -238,7 +238,7 @@ const CONSTANTS: Dict = {
 const RULES: Dict = {
   // ---------------------------------------------------------------- domain/rules.js
   // ruleset review
-  "CareBite project team (academic review against cited sources)": "فريق مشروع كيربايت (مراجعة أكاديمية مقابل المصادر المذكورة)",
+  "Mizan project team (academic review against cited sources)": "فريق مشروع ميزان (مراجعة أكاديمية مقابل المصادر المذكورة)",
   "Not clinically validated. A hospital dietetics department must review and approve these rules before real use.":
     "لم يُتحقَّق منها سريريًا. يجب أن يراجع قسم التغذية في المستشفى هذه القواعد ويعتمدها قبل الاستخدام الفعلي.",
   // publishers
@@ -257,7 +257,7 @@ const RULES: Dict = {
   "International Dysphagia Diet Standardisation Initiative (Saudi Arabia IDDSI Reference Group)": "المبادرة الدولية لتوحيد أنظمة غذاء عسر البلع (IDDSI) (المجموعة المرجعية لـ IDDSI في السعودية)",
   "U.S. Department of Agriculture, Agricultural Research Service": "وزارة الزراعة الأمريكية (USDA)، دائرة البحوث الزراعية",
   "Open Food Facts contributors (community database)": "مساهمو Open Food Facts (قاعدة بيانات مجتمعية)",
-  "CareBite project team": "فريق مشروع كيربايت",
+  "Mizan project team": "فريق مشروع ميزان",
   "Saudi National Diabetes Center": "المركز الوطني للسكري",
   // source titles
   "Allergen disclosure for non-prepacked food, SFDA.FD 56 (14 allergens), as described in “Responses of consumers with food allergy to the new allergen-labelling legislation in Saudi Arabia”, Public Health Nutrition":
@@ -284,16 +284,16 @@ const RULES: Dict = {
   "The IDDSI Framework, and its implementation in Saudi Arabia": "إطار IDDSI وتطبيقه في المملكة العربية السعودية",
   "FoodData Central, SR Legacy (April 2018)": "FoodData Central، قاعدة SR Legacy (أبريل 2018)",
   "Open Food Facts (products sold in Saudi Arabia)": "Open Food Facts (منتجات تُباع في المملكة العربية السعودية)",
-  "CareBite meal-share allocation (prototype assumption)": "توزيع حصص الوجبات في كيربايت (افتراض للنموذج الأولي)",
-  "CareBite intake review prompts (prototype thresholds)": "تنبيهات مراجعة كمية الأكل في كيربايت (حدود للنموذج الأولي)",
+  "Mizan meal-share allocation (prototype assumption)": "توزيع حصص الوجبات في ميزان (افتراض للنموذج الأولي)",
+  "Mizan intake review prompts (prototype thresholds)": "تنبيهات مراجعة كمية الأكل في ميزان (حدود للنموذج الأولي)",
   "Demonstration kitchen portion sizes": "أحجام الحصص في المطبخ التجريبي",
   // source summaries
   "Food establishments selling non-prepacked food must disclose 14 allergens: cereals containing gluten, crustaceans, molluscs, eggs, fish, peanuts, soy, milk, tree nuts, celery, mustard, sesame, lupin and sulphites (above 10 mg/kg or 10 mg/L).":
     "يجب على المنشآت الغذائية التي تبيع أغذية غير معبأة مسبقًا الإفصاح عن 14 مسببًا للحساسية: الحبوب المحتوية على الغلوتين، والقشريات، والرخويات، والبيض، والسمك، والفول السوداني، والصويا، والحليب، والمكسرات الشجرية، والكرفس، والخردل، والسمسم، والترمس، والكبريتيت (أكثر من 10 ملجم/كجم أو 10 ملجم/لتر).",
   "SFDA urges reducing salt intake toward no more than 5 g of salt a day (about 2,000 mg of sodium), choosing low-sodium or no-added-salt products, and flavouring food with lemon, vinegar, herbs and spices.":
     "تحثّ الهيئة العامة للغذاء والدواء على خفض استهلاك الملح إلى ما لا يزيد على 5 جم ملح يوميًا (نحو 2,000 ملجم صوديوم)، واختيار المنتجات قليلة الصوديوم أو غير المضاف إليها ملح، وتنكيه الطعام بالليمون والخل والأعشاب والبهارات.",
-  "Laboratory-analysed nutrient values per 100 g (and per full recipe) for traditional dishes from the 13 regions of the Kingdom, with each standard recipe. CareBite uses it first for Saudi dishes: a hospital dish is linked to an SFCT entry only when it is prepared to that recipe. Other dishes use values calculated from their ingredients (USDA FoodData Central). A dish with neither has no nutrient values, and diets with nutrient limits need admin review for it.":
-    "قيم غذائية محلّلة مخبريًا لكل 100 جم (ولكل وصفة كاملة) لأطباق تقليدية من مناطق المملكة الثلاث عشرة، مع الوصفة القياسية لكل طبق. يعتمد عليه كيربايت أولًا للأطباق السعودية: يُربط طبق المستشفى بمدخل في الجداول فقط عندما يُحضَّر وفق تلك الوصفة. أما الأطباق الأخرى فتُحسب قيمها من مكوّناتها (بيانات FoodData Central من وزارة الزراعة الأمريكية). والطبق الذي لا يتوفر له أيٌّ منهما ليس له قيم غذائية، والحميات ذات الحدود الغذائية تحتاج مراجعة المشرف له.",
+  "Laboratory-analysed nutrient values per 100 g (and per full recipe) for traditional dishes from the 13 regions of the Kingdom, with each standard recipe. Mizan uses it first for Saudi dishes: a hospital dish is linked to an SFCT entry only when it is prepared to that recipe. Other dishes use values calculated from their ingredients (USDA FoodData Central). A dish with neither has no nutrient values, and diets with nutrient limits need admin review for it.":
+    "قيم غذائية محلّلة مخبريًا لكل 100 جم (ولكل وصفة كاملة) لأطباق تقليدية من مناطق المملكة الثلاث عشرة، مع الوصفة القياسية لكل طبق. يعتمد عليه ميزان أولًا للأطباق السعودية: يُربط طبق المستشفى بمدخل في الجداول فقط عندما يُحضَّر وفق تلك الوصفة. أما الأطباق الأخرى فتُحسب قيمها من مكوّناتها (بيانات FoodData Central من وزارة الزراعة الأمريكية). والطبق الذي لا يتوفر له أيٌّ منهما ليس له قيم غذائية، والحميات ذات الحدود الغذائية تحتاج مراجعة المشرف له.",
   "Saudi Food Composition Tables (English PDF)": "جداول تركيب الأغذية السعودية (ملف PDF بالإنجليزية)",
   "جداول تركيب الأغذية السعودية (Arabic PDF)": "جداول تركيب الأغذية السعودية (ملف PDF بالعربية)",
   "Sets the conditions for nutrition claims. A food may be called “high in fibre” when it provides at least 6 g of fibre per 100 g or at least 3 g per 100 kcal.":
@@ -303,8 +303,8 @@ const RULES: Dict = {
   "The SFDA’s Comprehensive Approach to Health (PDF)": "النهج الشامل للهيئة العامة للغذاء والدواء نحو الصحة (PDF)",
   "The Saudi Halal Center, part of SFDA, ensures that livestock slaughter and the storage of meat and poultry in the Kingdom follow Islamic Sharia, and grants halal certificates to food establishments.":
     "يتحقق المركز السعودي للحلال، التابع للهيئة العامة للغذاء والدواء، من أن ذبح المواشي وتخزين اللحوم والدواجن في المملكة يتوافقان مع الشريعة الإسلامية، ويمنح شهادات الحلال للمنشآت الغذائية.",
-  "SFDA requires food service menus, printed and digital, to show calories, with indicators for salty and caffeinated items. CareBite shows each dish’s energy first wherever SFDA dish values exist.":
-    "تُلزم الهيئة العامة للغذاء والدواء قوائم الطعام المطبوعة والرقمية بعرض السعرات الحرارية، مع مؤشرات للأصناف المالحة والمحتوية على الكافيين. يعرض كيربايت طاقة كل طبق أولًا حيثما توجد قيم الهيئة للطبق.",
+  "SFDA requires food service menus, printed and digital, to show calories, with indicators for salty and caffeinated items. Mizan shows each dish’s energy first wherever SFDA dish values exist.":
+    "تُلزم الهيئة العامة للغذاء والدواء قوائم الطعام المطبوعة والرقمية بعرض السعرات الحرارية، مع مؤشرات للأصناف المالحة والمحتوية على الكافيين. يعرض ميزان طاقة كل طبق أولًا حيثما توجد قيم الهيئة للطبق.",
   "Daily salt intake for an adult should not exceed one teaspoon: 5 g of salt, equivalent to 2 g (2,000 mg) of sodium. Excess salt raises the risk of hypertension, heart attack and stroke.":
     "يجب ألا يتجاوز استهلاك البالغ اليومي من الملح ملعقة صغيرة واحدة: 5 جم ملح، أي ما يعادل 2 جم (2,000 ملجم) صوديوم. الإفراط في الملح يرفع خطر ارتفاع ضغط الدم والنوبات القلبية والسكتة الدماغية.",
   "National dietary guidelines on the kinds and amounts of food to eat. They promote nutrient-rich foods and discourage sugary, salty and fatty foods to reduce the risk of obesity, diabetes and hypertension.":
@@ -322,8 +322,8 @@ const RULES: Dict = {
   "A diabetic diet sets appropriate calories with suitable food alternatives and a regular meal schedule. People with diabetes are advised not to add sugar to food, and to favour complex carbohydrates such as brown bread and brown rice.":
     "يحدد النظام الغذائي لمريض السكري سعرات مناسبة مع بدائل غذائية ملائمة وجدول وجبات منتظم. يُنصح مرضى السكري بعدم إضافة السكر إلى الطعام، وبتفضيل الكربوهيدرات المعقدة مثل الخبز الأسمر والأرز البني.",
   "MOH advice on complex carbohydrates": "نصائح وزارة الصحة حول الكربوهيدرات المعقدة",
-  "The national clinical practice guideline for diabetes care, including assessment, goal setting and a treatment plan for each patient. In CareBite the carbohydrate amount per meal is set by the admin for each patient, not by a fixed default.":
-    "الدليل الوطني للممارسة السريرية في رعاية مرضى السكري، ويشمل التقييم وتحديد الأهداف وخطة علاج لكل مريض. في كيربايت يحدد المشرف كمية الكربوهيدرات لكل وجبة لكل مريض، وليس بقيمة افتراضية ثابتة.",
+  "The national clinical practice guideline for diabetes care, including assessment, goal setting and a treatment plan for each patient. In Mizan the carbohydrate amount per meal is set by the admin for each patient, not by a fixed default.":
+    "الدليل الوطني للممارسة السريرية في رعاية مرضى السكري، ويشمل التقييم وتحديد الأهداف وخطة علاج لكل مريض. في ميزان يحدد المشرف كمية الكربوهيدرات لكل وجبة لكل مريض، وليس بقيمة افتراضية ثابتة.",
   "People with kidney disease should reduce salt, and depending on the stage of the disease may also need to reduce potassium, phosphorus and protein. Salt substitutes high in potassium should be avoided unless a nutritionist approves.":
     "على مرضى الكلى تقليل الملح، وقد يحتاجون أيضًا بحسب مرحلة المرض إلى تقليل البوتاسيوم والفوسفور والبروتين. ويجب تجنّب بدائل الملح الغنية بالبوتاسيوم إلا بموافقة أخصائي التغذية.",
   "MOH supplies gluten-free products for patients with coeliac disease through hospitals in every region, because a strict gluten-free diet is the treatment.":
@@ -332,13 +332,13 @@ const RULES: Dict = {
     "تشجّع وزارة البيئة والمياه والزراعة المنتجات الزراعية المحلية. وتسجّل المملكة اكتفاءً ذاتيًا يزيد على 100% في التمور ومنتجات الألبان وبيض المائدة (الهيئة العامة للإحصاء، 2024).",
   "GFSA, formerly the Saudi Grains Organization (SAGO), is chaired by the Minister of Environment, Water and Agriculture. Its tasks include reviewing the national food security strategy and preparing implementation plans, strategic food storage, and an early warning system for food security.":
     "الهيئة العامة للأمن الغذائي، المؤسسة العامة للحبوب سابقًا، يرأس مجلس إدارتها وزير البيئة والمياه والزراعة. ومن مهامها مراجعة الاستراتيجية الوطنية للأمن الغذائي وإعداد خطط تنفيذها، والتخزين الاستراتيجي للغذاء، ونظام إنذار مبكر للأمن الغذائي.",
-  "SAGO (now GFSA) launched the National Program to Reduce Food Loss and Waste in 2018. Its field study estimated that 33.1% of targeted food commodities, about 4.06 million tonnes a year worth about SR 40 billion, are wasted. CareBite records reported leftovers and weighed plate waste to support hospital food-waste reduction.":
-    "أطلقت المؤسسة العامة للحبوب (الهيئة العامة للأمن الغذائي حاليًا) البرنامج الوطني للحد من الفقد والهدر في الغذاء عام 2018. وقدّرت دراستها الميدانية أن 33.1% من السلع الغذائية المستهدفة تُهدر، أي نحو 4.06 مليون طن سنويًا بقيمة تقارب 40 مليار ريال. يسجّل كيربايت بقايا الطعام المُبلَّغ عنها وهدر الأطباق الموزون لدعم خفض هدر الغذاء في المستشفى.",
+  "SAGO (now GFSA) launched the National Program to Reduce Food Loss and Waste in 2018. Its field study estimated that 33.1% of targeted food commodities, about 4.06 million tonnes a year worth about SR 40 billion, are wasted. Mizan records reported leftovers and weighed plate waste to support hospital food-waste reduction.":
+    "أطلقت المؤسسة العامة للحبوب (الهيئة العامة للأمن الغذائي حاليًا) البرنامج الوطني للحد من الفقد والهدر في الغذاء عام 2018. وقدّرت دراستها الميدانية أن 33.1% من السلع الغذائية المستهدفة تُهدر، أي نحو 4.06 مليون طن سنويًا بقيمة تقارب 40 مليار ريال. يسجّل ميزان بقايا الطعام المُبلَّغ عنها وهدر الأطباق الموزون لدعم خفض هدر الغذاء في المستشفى.",
   "National Program to Reduce Food Loss and Waste (Saudipedia)": "البرنامج الوطني للحد من الفقد والهدر في الغذاء (سعوديبيديا)",
   "A standard set of levels for texture-modified foods. No Saudi government texture standard was found; the Saudi Arabia IDDSI Reference Group promotes IDDSI across Saudi public and private healthcare. The texture level is set by the care team.":
     "مجموعة مستويات قياسية للأغذية معدّلة القوام. لم يُعثر على معيار حكومي سعودي للقوام؛ وتعمل المجموعة المرجعية لـ IDDSI في السعودية على نشر IDDSI في القطاعين الصحيين العام والخاص. يحدد الفريق الطبي مستوى القوام.",
-  "Public-domain nutrient values per 100 g of single foods. The SFDA Saudi Food Composition Tables cover Saudi dishes only, so CareBite uses these values for the ingredients of its international recipes and adds them up by recipe weight. These dish values are calculated from ingredients, not laboratory-analysed.":
-    "قيم غذائية متاحة للعموم لكل 100 جم من الأغذية المفردة. تغطي جداول تركيب الأغذية السعودية الأطباق السعودية فقط، لذا يستخدم كيربايت هذه القيم لمكونات وصفاته العالمية ويجمعها حسب وزن الوصفة. قيم هذه الأطباق محسوبة من المكونات وليست محلّلة مخبريًا.",
+  "Public-domain nutrient values per 100 g of single foods. The SFDA Saudi Food Composition Tables cover Saudi dishes only, so Mizan uses these values for the ingredients of its international recipes and adds them up by recipe weight. These dish values are calculated from ingredients, not laboratory-analysed.":
+    "قيم غذائية متاحة للعموم لكل 100 جم من الأغذية المفردة. تغطي جداول تركيب الأغذية السعودية الأطباق السعودية فقط، لذا يستخدم ميزان هذه القيم لمكونات وصفاته العالمية ويجمعها حسب وزن الوصفة. قيم هذه الأطباق محسوبة من المكونات وليست محلّلة مخبريًا.",
   "Supermarket products and their nutrition labels, entered by volunteers and not verified. Used only because no Saudi government product database is published. Always check the product’s own label. Contains data from Open Food Facts, © Open Food Facts contributors, under the Open Database Licence (ODbL) v1.0.":
     "منتجات السوبرماركت وملصقاتها الغذائية، أدخلها متطوعون ولم يُتحقَّق منها. تُستخدم فقط لعدم وجود قاعدة بيانات حكومية سعودية منشورة للمنتجات. تحقّق دائمًا من ملصق المنتج نفسه. تحتوي على بيانات من Open Food Facts، © مساهمو Open Food Facts، بموجب رخصة قاعدة البيانات المفتوحة (ODbL) الإصدار 1.0.",
   "Open Database Licence (ODbL) v1.0": "رخصة قاعدة البيانات المفتوحة (ODbL) الإصدار 1.0",
@@ -383,8 +383,8 @@ const RULES: Dict = {
   "No cereals containing gluten (wheat, barley, rye, oats; SFDA allergen list) and no ingredient with a gluten cross-contact risk. MOH provides gluten-free diets through hospitals.":
     "بدون حبوب تحتوي على الغلوتين (القمح والشعير والجاودار والشوفان؛ قائمة مسببات الحساسية لدى الهيئة العامة للغذاء والدواء) وبدون أي مكوّن فيه خطر تلامس متبادل مع الغلوتين. توفّر وزارة الصحة الغذاء الخالي من الغلوتين عبر المستشفيات.",
   "No meat, poultry, fish or shellfish, based on ingredient data.": "بدون لحوم أو دواجن أو أسماك أو قشريات ورخويات، بناءً على بيانات المكونات.",
-  "Ranking and portion preference only: meals with at least 20 g of protein per portion are listed first (a CareBite prototype level, not a Saudi standard), and larger permitted portions are suggested when appetite allows. Energy and protein targets are set and monitored by the admin.":
-    "للترتيب وتفضيل الحصة فقط: تُعرض أولًا الوجبات التي تحتوي على 20 جم بروتين على الأقل في الحصة (مستوى للنموذج الأولي في كيربايت، وليس معيارًا سعوديًا)، وتُقترح الحصص الأكبر المسموح بها عندما تسمح الشهية. يحدد المشرف أهداف الطاقة والبروتين ويتابعها.",
+  "Ranking and portion preference only: meals with at least 20 g of protein per portion are listed first (a Mizan prototype level, not a Saudi standard), and larger permitted portions are suggested when appetite allows. Energy and protein targets are set and monitored by the admin.":
+    "للترتيب وتفضيل الحصة فقط: تُعرض أولًا الوجبات التي تحتوي على 20 جم بروتين على الأقل في الحصة (مستوى للنموذج الأولي في ميزان، وليس معيارًا سعوديًا)، وتُقترح الحصص الأكبر المسموح بها عندما تسمح الشهية. يحدد المشرف أهداف الطاقة والبروتين ويتابعها.",
   "Menu items have no recorded texture level, so every meal needs admin review and kitchen preparation to the prescribed IDDSI level.":
     "أصناف القائمة ليس لها مستوى قوام مسجّل، لذا تحتاج كل وجبة مراجعة المشرف وتحضيرًا في المطبخ وفق مستوى IDDSI الموصوف.",
   "Recorded as a lactose intolerance on the patient’s allergy record instead, which applies the same ingredient screening. Keeping both caused duplicate entries.":
@@ -418,8 +418,8 @@ const RULES: Dict = {
   "Phosphorus limit per meal": "حد الفوسفور لكل وجبة",
   "Phosphorus in the portion must not exceed the meal-period share of the admin’s daily limit.": "يجب ألا يتجاوز الفوسفور في الحصة نصيب فترة الوجبة من الحد اليومي الذي يحدده المشرف.",
   "Protein preference": "تفضيل البروتين",
-  "Rank meals higher when the portion provides at least 20 g of protein (CareBite prototype threshold). Ranking only.":
-    "تُرتَّب الوجبات أعلى عندما توفّر الحصة 20 جم بروتين على الأقل (حد للنموذج الأولي في كيربايت). للترتيب فقط.",
+  "Rank meals higher when the portion provides at least 20 g of protein (Mizan prototype threshold). Ranking only.":
+    "تُرتَّب الوجبات أعلى عندما توفّر الحصة 20 جم بروتين على الأقل (حد للنموذج الأولي في ميزان). للترتيب فقط.",
   "Lower-salt preference (MOH and SFDA)": "تفضيل الأقل ملحًا (وزارة الصحة والهيئة العامة للغذاء والدواء)",
   "For every patient, rank meals higher when sodium in the portion is within the meal-period share of 2,000 mg (5 g of salt) a day. Ranking only.":
     "لكل مريض، تُرتَّب الوجبات أعلى عندما يكون الصوديوم في الحصة ضمن نصيب فترة الوجبة من 2,000 ملجم (5 جم ملح) يوميًا. للترتيب فقط.",
@@ -647,7 +647,7 @@ const MESSAGES: Dict = {
   "Accepted or refused, and the estimated amount eaten: the staff observation when recorded, otherwise the patient’s report.": "القبول أو الرفض والكمية المقدّرة المأكولة: ملاحظة الموظف إذا سُجّلت، وإلا فإفادة المريض.",
   "Satisfaction: the patient’s own rating when given, otherwise a rating staff recorded on the patient’s behalf.": "الرضا: تقييم المريض نفسه إذا أعطاه، وإلا فالتقييم الذي سجّله الموظف نيابةً عنه.",
   "Measured food waste: weighed by staff only. It is never derived from the estimated amount eaten.": "هدر الطعام المقيس: يزنه الموظفون فقط، ولا يُستنتج أبدًا من الكمية المقدّرة المأكولة.",
-  "These are indicators from recorded meals. They show what was recorded, not why it happened, and they do not show that CareBite caused any change.": "هذه مؤشرات من الوجبات المسجّلة. تبيّن ما سُجّل، لا سبب حدوثه، ولا تثبت أن كيربايت تسبب في أي تغيير.",
+  "These are indicators from recorded meals. They show what was recorded, not why it happened, and they do not show that Mizan caused any change.": "هذه مؤشرات من الوجبات المسجّلة. تبيّن ما سُجّل، لا سبب حدوثه، ولا تثبت أن ميزان تسبب في أي تغيير.",
 
   // ---------------------------------------------------------------- domain/workflow.js (exact texts)
   "The diet order changed to nothing by mouth (NPO).": "تغيّر الأمر الغذائي إلى لا شيء عن طريق الفم (NPO).",
@@ -803,7 +803,7 @@ const MESSAGES: Dict = {
   "Give a short reason for declining.": "اكتب سببًا مختصرًا للرفض.",
   "Approve this request with a role instead.": "وافق على هذا الطلب مع تحديد دور بدلًا من ذلك.",
   "Unknown decision.": "قرار غير معروف.",
-  "This file contains information stored in CareBite. Keep it private.": "يحتوي هذا الملف على معلومات محفوظة في كيربايت. حافظ على سريته.",
+  "This file contains information stored in Mizan. Keep it private.": "يحتوي هذا الملف على معلومات محفوظة في ميزان. حافظ على سريته.",
 
   // ---------------------------------------------------------------- domain/menu-admin.js (exact texts)
   "Nutrition comes from SFDA laboratory analysis of the standard recipe for each dish. The kitchen prepares these dishes to that recipe, but real portions and preparation can vary.":
@@ -880,7 +880,7 @@ const MESSAGES: Dict = {
   "The username, email or password is incorrect.": "اسم المستخدم أو البريد الإلكتروني أو كلمة المرور غير صحيحة.",
   "This account has been deactivated by an admin.": "أوقف المشرف هذا الحساب.",
   "Demo account not found.": "الحساب التجريبي غير موجود.",
-  "Enter the name to show in CareBite.": "اكتب الاسم الذي تريد أن يظهر في كيربايت.",
+  "Enter the name to show in Mizan.": "اكتب الاسم الذي تريد أن يظهر في ميزان.",
   "The username and email of a shared demo account cannot be changed.": "لا يمكن تغيير اسم المستخدم والبريد الإلكتروني لحساب تجريبي مشترك.",
   "That username is already taken.": "اسم المستخدم هذا مستخدم بالفعل.",
   "This username is already taken.": "اسم المستخدم هذا مستخدم بالفعل.",

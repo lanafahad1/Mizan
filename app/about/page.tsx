@@ -12,7 +12,7 @@ import { Citation } from '@/components/public/citation';
 import { JsonLd } from '@/components/public/json-ld';
 import { getT } from '@/lib/i18n/server';
 
-const DESCRIPTION = 'Meet CareBite, a university Health Informatics project that supports healthier eating for people living with obesity or a chronic disease in Saudi Arabia. It has a private member space and a hospital care space, both built on Saudi government guidance. Meet the developer.';
+const DESCRIPTION = 'Meet Mizan, a university Health Informatics project that supports healthier eating for people living with obesity or a chronic disease in Saudi Arabia. It has a private member space and a hospital care space, both built on Saudi government guidance. Meet the developer.';
 export async function generateMetadata() {
   const t = await getT();
   return publicMetadata({ title: t('About the Project'), description: t(DESCRIPTION), path: '/about' });
@@ -43,7 +43,7 @@ export default async function AboutPage() {
           <div className="flex flex-col gap-4">
             <span className="eyebrow">{t('About the project')}</span>
             <h1 className="text-[2rem] leading-tight sm:text-[2.6rem]">{t('Healthier eating for people living with obesity and chronic disease')}</h1>
-            <p className="text-[1.1rem]">{t('CareBite brings your health information, Saudi food data and documented dietary guidance together to help you eat better, at home and in hospital.')}</p>
+            <p className="text-[1.1rem]">{t('Mizan brings your health information, Saudi food data and documented dietary guidance together to help you eat better, at home and in hospital.')}</p>
           </div>
           <span className="mx-auto hidden w-40 sm:block md:w-48" dangerouslySetInnerHTML={{ __html: botanical('w-full h-auto') }} />
         </div>
@@ -77,7 +77,7 @@ export default async function AboutPage() {
           <h2 id="more-h" className="text-[1.4rem] leading-tight sm:text-[1.7rem]">{t('More about the project')}</h2>
 
           <Details title={t('Why we focus on this')}>
-            <p>{t('The Ministry of Health’s dietary guidelines advise cutting back on sugary, salty and fatty foods to lower the risk of obesity, diabetes and high blood pressure. CareBite turns that advice into simple tools you can use every day.')}</p>
+            <p>{t('The Ministry of Health’s dietary guidelines advise cutting back on sugary, salty and fatty foods to lower the risk of obesity, diabetes and high blood pressure. Mizan turns that advice into simple tools you can use every day.')}</p>
           </Details>
 
           <Details title={t('How the information connects: from three sources to one decision')}>
@@ -97,7 +97,7 @@ export default async function AboutPage() {
             </div>
           </Details>
 
-          <Details title={t('Intended benefits: what CareBite is built to help with')}>
+          <Details title={t('Intended benefits: what Mizan is built to help with')}>
             <div className="grid gap-3 md:grid-cols-3">
               <Benefit icon={Target} title={t('Healthier daily choices')}>{t('Clear daily goals and a simple food diary make Saudi dietary guidance easier to follow.')}</Benefit>
               <Benefit icon={ShieldCheck} title={t('Safer hospital meals')}>{t('Every offered meal is checked against the diet order, allergies and each recorded condition.')}</Benefit>

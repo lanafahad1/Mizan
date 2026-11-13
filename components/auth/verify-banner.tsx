@@ -1,5 +1,5 @@
 'use client';
-// A quiet reminder for people who have not confirmed their email yet (it is not required to use CareBite).
+// A quiet reminder for people who have not confirmed their email yet (it is not required to use Mizan).
 import * as React from 'react';
 import { MailWarning, X } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
