@@ -38,10 +38,10 @@ function Space({ icon: Icon, tone, title, who, children, action }: { icon: Lucid
         <span className={`grid size-11 shrink-0 place-items-center rounded-full ${tone === 'mint' ? 'bg-sage text-heading' : 'bg-rose text-rose-ink'}`}><Icon className="size-5" aria-hidden /></span>
         <div className="flex min-w-0 flex-col">
           <h2 className="text-[1.2rem]">{title}</h2>
-          <span className="text-sm text-muted-foreground">{who}</span>
+          <span className="text-sm text-[#55527A]">{who}</span>
         </div>
       </div>
-      <div className="flex-1 text-[.97rem]">{children}</div>
+      <div className="flex-1 text-[.97rem] text-[#2A2750]">{children}</div>
       {action}
     </div>
   );
@@ -55,21 +55,22 @@ export default async function Home() {
 
   return (
     <>
-      <section className="relative isolate overflow-hidden py-10 sm:py-16">
+      <section className="mz-hero relative isolate overflow-hidden bg-[#DDD5F2] py-12 sm:py-20">
         <HeroAurora className="-z-20" />
-        {/* Soft cream glow behind the text keeps it readable over any part of the moving background. */}
+        {/* A soft cream veil behind the text and a fine grain keep it readable over any part of the moving light. */}
         <div aria-hidden="true" className="mz-hero-scrim pointer-events-none absolute inset-0 -z-10" />
+        <div aria-hidden="true" className="mz-grain pointer-events-none absolute inset-0 -z-10" />
         <div className="container-page grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-12">
           <div className="flex flex-col gap-5">
-            <h1 className="text-display mz-rise" style={{ '--d': '0ms' } as React.CSSProperties}>{hero[0]}<em className="not-italic text-rose-ink">{hero[1]}</em>{hero[2]}</h1>
-            <p className="mz-rise text-[1.1rem] text-[#3D3B52]" style={{ '--d': '90ms' } as React.CSSProperties}>{t('Track, plan and enjoy food that fits you, at home or in hospital.')}</p>
+            <h1 className="text-display mz-rise" style={{ '--d': '0ms' } as React.CSSProperties}>{hero[0]}<em className="not-italic text-[#4F46E5]">{hero[1]}</em>{hero[2]}</h1>
+            <p className="mz-rise text-[1.1rem] text-[#34315A]" style={{ '--d': '90ms' } as React.CSSProperties}>{t('Track, plan and enjoy food that fits you, at home or in hospital.')}</p>
             {actor ? (
               <Link href={homeFor(actor)} className={buttonVariants({ size: 'lg', className: 'w-full sm:w-fit' })}><ChevronRight aria-hidden className="rtl:-scale-x-100" />{t('Go to my start page')}</Link>
             ) : null}
-            <ul className="mz-rise flex flex-wrap gap-x-5 gap-y-2 text-[.9rem] font-semibold text-[#3D3B52]" style={{ '--d': '170ms' } as React.CSSProperties}>
-              <li className="inline-flex items-center gap-1.5"><HeartPulse className="size-4 text-heading" aria-hidden />{t('Guided by the Ministry of Health and SFDA')}</li>
-              <li className="inline-flex items-center gap-1.5"><Lock className="size-4 text-heading" aria-hidden />{t('Your diary stays private')}</li>
-              <li className="inline-flex items-center gap-1.5"><Shield className="size-4 text-heading" aria-hidden />{t('Not clinically validated')}</li>
+            <ul className="mz-rise flex flex-wrap gap-x-5 gap-y-2 text-[.9rem] font-semibold text-[#34315A]" style={{ '--d': '170ms' } as React.CSSProperties}>
+              <li className="inline-flex items-center gap-1.5"><HeartPulse className="size-4 text-primary" aria-hidden />{t('Guided by the Ministry of Health and SFDA')}</li>
+              <li className="inline-flex items-center gap-1.5"><Lock className="size-4 text-primary" aria-hidden />{t('Your diary stays private')}</li>
+              <li className="inline-flex items-center gap-1.5"><Shield className="size-4 text-primary" aria-hidden />{t('Not clinically validated')}</li>
             </ul>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -78,7 +79,7 @@ export default async function Home() {
               <p>{t('Keep a food diary, see your daily calorie goal and track your health readings. It’s private: hospital staff never see it.')}</p>
             </Space>
             <Space icon={Hospital} tone="blush" title={t('Hospital care')} who={t('For patients, staff and admins')}
-              action={<Link href="/login?space=hospital" className={buttonVariants({ variant: 'outline', className: 'w-full' })}>{t('Hospital sign-in')} <ChevronRight aria-hidden className="rtl:-scale-x-100" /></Link>}>
+              action={<Link href="/login?space=hospital" className={buttonVariants({ variant: 'outline', className: 'w-full bg-white/50' })}>{t('Hospital sign-in')} <ChevronRight aria-hidden className="rtl:-scale-x-100" /></Link>}>
               <p>{t('Every meal is checked against each patient’s diet and health conditions. A demonstration hospital with fictional data.')}</p>
             </Space>
           </div>

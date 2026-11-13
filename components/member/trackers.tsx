@@ -9,6 +9,7 @@ import { Input, Label } from '@/components/ui/input';
 import { Illustration } from '@/components/illustrations/illustration';
 import { cn } from '@/lib/utils';
 import { useT } from '@/components/site/lang';
+import { CountUp } from '@/components/site/count-up';
 import { useDaily, n0, type DailyType } from './daily';
 
 const card = 'flex min-w-0 flex-col gap-3 rounded-[20px] border border-border bg-card p-4 shadow-soft';
@@ -21,7 +22,7 @@ export function Trackers({ water, steps, activityToday, activityWeek }: { water:
         <h2 id="trackers-h" className="text-lg sm:text-xl">{t('Water, steps and activity')}</h2>
         <p className="text-sm text-muted-foreground">{t('Copy your steps and active minutes from your phone or watch. The website can’t count them for you.')}</p>
       </div>
-      <div className="grid gap-3 md:grid-cols-3">
+      <div data-reveal-group className="grid gap-3 md:grid-cols-3">
         <WaterCard cups={water ?? 0} logged={water != null} />
         <NumberCard type="steps" art="steps" title={t('Steps today')} value={steps} unit={t('steps')}
           goal={t('The Ministry of Health suggests more than 7,500 steps a day.')} met={(steps ?? 0) > 7500}
@@ -47,7 +48,7 @@ function WaterCard({ cups, logged }: { cups: number; logged: boolean }) {
   };
   const met = shown >= 6;
   return (
-    <div className={card}>
+    <div data-mz-card className={cn(card, 'mz-play')}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-col">
           <h3 className="text-base">{t('Water today')}</h3>
@@ -56,7 +57,7 @@ function WaterCard({ cups, logged }: { cups: number; logged: boolean }) {
         <Illustration name="water" className="size-14" />
       </div>
       <div aria-hidden className="flex gap-1">
-        {Array.from({ length: 8 }, (_, i) => <span key={i} className={cn('h-2.5 flex-1 rounded-full', i < shown ? 'bg-primary' : 'bg-mint')} />)}
+        {Array.from({ length: 8 }, (_, i) => <span key={i} className={cn('mz-pop h-2.5 flex-1 rounded-full', i < shown ? 'bg-primary' : 'bg-mint')} style={{ '--i': i } as React.CSSProperties} />)}
       </div>
       <p className="m-0 flex items-center gap-1.5 text-sm text-muted-foreground">{met ? <Check className="size-4 shrink-0 text-success" aria-hidden /> : null}{met ? t('Goal reached. Well done.') : null} {t('The Ministry of Health suggests 6–8 cups a day.')}</p>
       <div className="mt-auto flex items-center gap-2">
@@ -97,16 +98,16 @@ function NumberCard({ type, art, title, value, unit, of, goal, met, sub, today, 
   };
   const share = of ? Math.min(1, (value ?? 0) / of) : null;
   return (
-    <div className={card}>
+    <div data-mz-card className={cn(card, 'mz-play')}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-col">
           <h3 className="text-base">{title}</h3>
-          <p className="m-0"><b className="font-display text-[1.6rem] font-semibold leading-tight text-heading tabular">{n0(value)}</b> <span className="text-muted-foreground">{of ? t('of {n} {unit}', { n: n0(of), unit }) : unit}</span></p>
+          <p className="m-0"><b className="font-display text-[1.6rem] font-semibold leading-tight text-heading tabular">{value == null ? n0(value) : <CountUp value={value} format={n0} />}</b> <span className="text-muted-foreground">{of ? t('of {n} {unit}', { n: n0(of), unit }) : unit}</span></p>
           {sub ? <span className="text-sm text-muted-foreground">{sub}</span> : null}
         </div>
         <Illustration name={art} className="size-14" />
       </div>
-      {share != null ? <div aria-hidden className="h-2.5 overflow-hidden rounded-full bg-mint"><span className="block h-full rounded-full bg-primary" style={{ width: `${Math.round(share * 100)}%` }} /></div> : null}
+      {share != null ? <div aria-hidden className="h-2.5 overflow-hidden rounded-full bg-mint"><span className="mz-bar block h-full rounded-full bg-primary" style={{ width: `${Math.round(share * 100)}%` }} /></div> : null}
       <p className="m-0 flex items-center gap-1.5 text-sm text-muted-foreground">{met ? <Check className="size-4 shrink-0 text-success" aria-hidden /> : null}{met ? t('Goal reached. Well done.') : null} {goal}</p>
       {open ? (
         <form onSubmit={submit} noValidate className="mt-auto flex flex-col gap-1.5">

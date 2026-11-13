@@ -42,22 +42,49 @@ export function MemberTabBar({ space = 'member' }: { space?: 'member' | 'patient
   React.useEffect(() => {
     listRef.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   }, [path]);
+  // One underline that slides to the current tab (transform only; app/styles/motion.css). Until it is
+  // measured, and without JavaScript, each tab draws its own border.
+  const [ink, setInk] = React.useState<{ x: number; y: number; w: number } | null>(null);
+  const [inkMoves, setInkMoves] = React.useState(false);
+  React.useLayoutEffect(() => {
+    const ul = listRef.current;
+    if (!ul) return;
+    const place = () => {
+      const a = ul.querySelector<HTMLElement>('a[aria-current="page"]');
+      setInk(a ? { x: a.offsetLeft, y: a.offsetTop + a.offsetHeight - 2.5, w: a.offsetWidth } : null);
+    };
+    place();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(place);
+    ul.querySelectorAll('a').forEach((a) => ro.observe(a));
+    return () => ro.disconnect();
+  }, [path]);
+  React.useEffect(() => {
+    if (!ink || inkMoves) return;
+    const id = requestAnimationFrame(() => setInkMoves(true));
+    return () => cancelAnimationFrame(id);
+  }, [ink, inkMoves]);
   return (
     <>
       <nav aria-label={space === 'patient' ? t('Patient') : t('Member')} className="border-t border-border lg:hidden print:hidden">
         <div className={cn(containerClass({ space: 'member' }), 'flex items-center gap-2')}>
-          <ul ref={listRef} className="-ms-2 flex min-w-0 flex-1 list-none items-stretch gap-0.5 overflow-x-auto p-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <ul ref={listRef} className="relative -ms-2 flex min-w-0 flex-1 list-none items-stretch gap-0.5 overflow-x-auto p-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {TABS[space].map((x) => {
               const active = on(path, x.href) || (x.also ?? []).some((h) => on(path, h));
               return (
                 <li key={x.href} className="flex shrink-0">
                   <Link href={x.href} aria-current={active ? 'page' : undefined}
-                    className="-mb-px inline-flex min-h-11 items-center whitespace-nowrap border-b-[2.5px] border-transparent px-2 font-display text-[.86rem] font-semibold text-muted-foreground no-underline transition-colors hover:text-foreground aria-[current=page]:border-primary aria-[current=page]:text-primary sm:px-3.5">
+                    className={cn('-mb-px inline-flex min-h-11 items-center whitespace-nowrap border-b-[2.5px] border-transparent px-2 font-display text-[.86rem] font-semibold text-muted-foreground no-underline transition-colors hover:text-foreground aria-[current=page]:text-primary sm:px-3.5', ink ? 'aria-[current=page]:border-transparent' : 'aria-[current=page]:border-primary')}>
                     {t(x.label)}
                   </Link>
                 </li>
               );
             })}
+            {ink ? (
+              <li aria-hidden="true" data-anim={inkMoves ? '' : undefined}
+                className="mz-ink pointer-events-none absolute left-0 top-0 h-[2.5px] w-px origin-left bg-primary"
+                style={{ transform: `translate(${ink.x}px, ${ink.y}px) scaleX(${ink.w})` }} />
+            ) : null}
           </ul>
           <button type="button" onClick={() => setOpen(true)} aria-haspopup="dialog" title={t('Quick add')}
             className={cn(buttonVariants({ size: 'sm' }), 'min-h-9 shrink-0 gap-1 px-3 max-sm:whitespace-nowrap max-[359px]:px-2.5')}>
@@ -81,8 +108,8 @@ function QuickAdd({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boo
     const v = await save('water', { add: 1 });
     if (v != null) { toast(t('Added a cup of water. That’s {n} today.', { n: n0(v) })); close(); }
   };
-  const tile = 'flex min-h-16 w-full items-center gap-3 rounded-[16px] border border-border bg-card px-3 py-2 text-start font-display text-[.95rem] font-medium text-heading no-underline hover:border-sage hover:bg-secondary disabled:opacity-60';
-  const art = (n: IllustrationName) => <Illustration name={n} className="size-11" />;
+  const tile = 'mz-lift flex min-h-16 w-full items-center gap-3 rounded-[16px] border border-border bg-card px-3 py-2 text-start font-display text-[.95rem] font-medium text-heading no-underline hover:border-sage hover:bg-secondary disabled:opacity-60';
+  const art = (n: IllustrationName) => <Illustration name={n} className="size-11" still />;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>

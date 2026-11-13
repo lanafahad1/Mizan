@@ -242,7 +242,7 @@ function IdeaCard({ it, period, busy, onAdd, targetKcal, bySize }: { it: Scored;
     <RowCard className="rounded-[20px] border border-border bg-card p-3 shadow-soft sm:p-4"
       art={it.art && it.artId
         ? <MealArt meal={{ id: it.artId, name: it.name, art: it.art, category: it.period ?? undefined }} className="size-full rounded-none" />
-        : <Illustration name="ideas" className="size-14" />}
+        : <Illustration name="ideas" className="size-14" still />}
       title={
         <h2 className="flex items-start gap-1.5 text-base leading-snug">
           <span className="min-w-0 break-words">{name}</span>

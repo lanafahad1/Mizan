@@ -57,16 +57,21 @@ void main() {
   vec3 c = uA;
   c = mix(c, uB, clamp(w1 * 0.78 + w3 * 0.62 + haze * 0.16, 0.0, 1.0));
   c = mix(c, uC, clamp(w2 * 0.82 + w4 * 0.48, 0.0, 1.0));
-  c = mix(c, uD, clamp(w4 * 0.35 * haze, 0.0, 1.0));
-  fragColor = vec4(c, 1.0);
+  c += mix(uB, uC, 0.5) * pow(max(0.0, w1 + w2 - 0.72), 2.0) * 0.28;
+  c = mix(c, uD, clamp(w4 * 0.55 * haze + w2 * w3 * 0.6, 0.0, 0.55));
+  // soft vignette (cheap): keeps the edges deep so the lights feel like a glow
+  float edge = smoothstep(0.95, 0.2, length((uv - 0.5) * vec2(uRes.x / uRes.y, 1.0)));
+  c *= mix(1.0, edge, 0.12);
+  fragColor = vec4(clamp(c, 0.0, 1.0), 1.0);
 }`;
 
-// Mizan palette, light: cream-lavender base, lavender, sky, warm gold-cream glow.
-const COLORS = { a: '#F4F1FB', b: '#B9B1F1', c: '#A6D6F3', d: '#F6DCAE' };
+// "Daylight, a bit darker" (the owner's pick): deep lavender base, indigo-violet light,
+// sky light and a warm gold glow, in Mizan's colours instead of the original navy/teal/sand.
+const COLORS = { a: '#DDD5F2', b: '#7266E8', c: '#45A6E4', d: '#EEB05C' };
 const rgb = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255) as [number, number, number];
 
 /** Static fallback with the same colours (shown first, and when animation is off). */
-export const AURORA_FALLBACK = `radial-gradient(60% 70% at 18% 72%, ${COLORS.b} 0%, transparent 70%), radial-gradient(55% 65% at 82% 38%, ${COLORS.c} 0%, transparent 70%), radial-gradient(40% 50% at 50% 10%, ${COLORS.d} 0%, transparent 70%), ${COLORS.a}`;
+export const AURORA_FALLBACK = `radial-gradient(55% 65% at 20% 75%, ${COLORS.b}cc 0%, transparent 70%), radial-gradient(50% 60% at 80% 35%, ${COLORS.c}b3 0%, transparent 70%), radial-gradient(35% 45% at 55% 10%, ${COLORS.d}66 0%, transparent 70%), ${COLORS.a}`;
 
 export function HeroAurora({ className = '' }: { className?: string }) {
   const ref = React.useRef<HTMLDivElement>(null);

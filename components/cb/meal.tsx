@@ -16,7 +16,7 @@ type Evaluation = any;
 
 /** Generated illustration of a meal (our own SVG; the meal name is escaped). */
 export function MealArt({ meal, className, label = false }: { meal: { id: string; name: string; art?: unknown; category?: string }; className?: string; label?: boolean }) {
-  return <div className={cn('overflow-hidden rounded-[14px] bg-blush [&>svg]:block [&>svg]:h-full [&>svg]:w-full', className)} dangerouslySetInnerHTML={{ __html: mealArt(meal, { label }) }} />;
+  return <div className={cn('mz-art overflow-hidden rounded-[14px] bg-blush [&>svg]:block [&>svg]:h-full [&>svg]:w-full', className)} dangerouslySetInnerHTML={{ __html: mealArt(meal, { label }) }} />;
 }
 
 /** Nutrition summary from SFDA SFCT values; partial totals are marked "≥" and never estimated. */

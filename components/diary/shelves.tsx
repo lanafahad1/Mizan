@@ -62,8 +62,8 @@ export function ShelfGrid({ onShelf }: { onShelf: (id: ShelfId) => void }) {
       {SHELVES.map((s) => (
         <li key={s.id}>
           <button type="button" onClick={() => onShelf(s.id)}
-            className="flex h-full min-h-32 w-full flex-col items-center gap-1.5 rounded-[18px] border border-border bg-background px-2 pb-3 pt-2.5 text-center transition-colors hover:border-sage hover:bg-secondary focus-visible:bg-secondary">
-            <Illustration name={s.art} className="size-16" />
+            className="mz-lift flex h-full min-h-32 w-full flex-col items-center gap-1.5 rounded-[18px] border border-border bg-background px-2 pb-3 pt-2.5 text-center transition-colors hover:border-sage hover:bg-secondary focus-visible:bg-secondary">
+            <Illustration name={s.art} className="size-16" still />
             <span className="font-display text-[.92rem] font-semibold leading-tight text-heading">{t(s.title)}</span>
             <span className="text-xs leading-snug text-muted-foreground">{t(s.line, s.vars)}</span>
           </button>
@@ -99,8 +99,8 @@ export function FoodRow({ food: f, onPick, favorite }: { food: Food; onPick: () 
   return (
     <li>
       <button type="button" onClick={onPick}
-        className="grid min-h-14 w-full grid-cols-[56px_minmax(0,1fr)] items-center gap-3 rounded-[16px] border border-border bg-card p-2.5 text-start transition-colors hover:border-sage hover:bg-secondary/40 focus-visible:bg-secondary/40">
-        <span aria-hidden className="grid aspect-square w-full place-items-center rounded-[12px] bg-muted"><Illustration name={foodArt(f)} className="size-11" /></span>
+        className="mz-lift grid min-h-14 w-full grid-cols-[56px_minmax(0,1fr)] items-center gap-3 rounded-[16px] border border-border bg-card p-2.5 text-start transition-colors hover:border-sage hover:bg-secondary/40 focus-visible:bg-secondary/40">
+        <span aria-hidden className="grid aspect-square w-full place-items-center rounded-[12px] bg-muted"><Illustration name={foodArt(f)} className="size-11" still /></span>
         <span className="flex min-w-0 flex-col gap-0.5">
           <span className="font-display font-semibold leading-snug text-foreground">
             {favorite ? <><Star aria-hidden className="me-1 inline size-3.5 fill-current align-[-2px] text-primary" /><span className="sr-only">{t('Favourite')}: </span></> : null}
@@ -180,7 +180,7 @@ function ChipGroup<T extends string>({ label, items, value, onChange }: {
     <div role="group" aria-label={label} className="flex flex-wrap gap-2">
       {items.map((it) => (
         <button key={it.id} type="button" aria-pressed={value === it.id} onClick={() => onChange(it.id)} className={cn(chip, it.art && 'ps-1.5')}>
-          {it.art ? <Illustration name={it.art} className="size-8 rounded-full bg-card" /> : null}
+          {it.art ? <Illustration name={it.art} className="size-8 rounded-full bg-card" still /> : null}
           {t(it.label)}
         </button>
       ))}
@@ -257,7 +257,7 @@ function RecentShelf({ onFood, favorites, recent }: ShelfProps) {
               <li key={r.foodId}>
                 <button type="button" onClick={() => openRecent(r)} disabled={opening != null}
                   className="flex min-h-14 w-full items-center gap-3 rounded-[16px] border border-border bg-card p-2.5 text-start transition-colors hover:border-sage hover:bg-secondary/40 disabled:opacity-60">
-                  <span aria-hidden className="grid size-14 shrink-0 place-items-center rounded-[12px] bg-muted"><Illustration name="shelf-recent" className="size-11" /></span>
+                  <span aria-hidden className="grid size-14 shrink-0 place-items-center rounded-[12px] bg-muted"><Illustration name="shelf-recent" className="size-11" still /></span>
                   <span className="flex min-w-0 flex-1 flex-col">
                     <span dir="auto" className={cn('truncate font-semibold', lang === 'ar' ? 'text-right' : 'text-left')}>{t(r.name)}</span>
                     <span className="truncate text-sm text-muted-foreground">{r.brand ? `${r.brand} · ` : ''}{t('Last time: {amount}', { amount: amountText(r.amountLabel, t, lang) })}</span>

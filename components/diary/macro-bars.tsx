@@ -1,4 +1,5 @@
 'use client';
+import type * as React from 'react';
 import { cn } from '@/lib/utils';
 import { useT } from '@/components/site/lang';
 import { fmt, LABELS, UNITS, type NutrientKey, type Nutrients } from './types';
@@ -26,7 +27,7 @@ export function NutrientBar({ k, value, target, missing = 0, compact = false }: 
       </div>
       {target ? (
         <div aria-hidden className={cn('overflow-hidden rounded-full bg-mint', compact ? 'h-1.5' : 'h-2')}>
-          <div className={cn('h-full rounded-full transition-[width] duration-500 ease-out motion-reduce:transition-none', over ? 'bg-destructive' : 'bg-primary')} style={{ width: `${share * 100}%` }} />
+          <div className={cn('mz-bar h-full rounded-full transition-[width] duration-500 ease-out motion-reduce:transition-none', over ? 'bg-destructive' : 'bg-primary')} style={{ width: `${share * 100}%` }} />
         </div>
       ) : null}
     </div>
@@ -34,7 +35,7 @@ export function NutrientBar({ k, value, target, missing = 0, compact = false }: 
 }
 
 /** One macro as a small column: name, amount (of target) and a short bar. */
-function MacroMini({ k, value, target, missing = 0 }: { k: NutrientKey; value: number | null | undefined; target?: number | null; missing?: number }) {
+function MacroMini({ k, value, target, missing = 0, i = 0 }: { k: NutrientKey; value: number | null | undefined; target?: number | null; missing?: number; i?: number }) {
   const { t } = useT();
   const v = value ?? 0;
   const share = target ? Math.min(v / target, 1) : 0;
@@ -50,7 +51,7 @@ function MacroMini({ k, value, target, missing = 0 }: { k: NutrientKey; value: n
       </span>
       {target ? (
         <div aria-hidden className="h-1.5 overflow-hidden rounded-full bg-mint">
-          <div className={cn('h-full rounded-full transition-[width] duration-500 ease-out motion-reduce:transition-none', over ? 'bg-destructive' : 'bg-primary')} style={{ width: `${share * 100}%` }} />
+          <div className={cn('mz-bar h-full rounded-full transition-[width] duration-500 ease-out motion-reduce:transition-none', over ? 'bg-destructive' : 'bg-primary')} style={{ width: `${share * 100}%`, '--i': i } as React.CSSProperties} />
         </div>
       ) : null}
       {over ? <span dir="auto" className="text-xs font-semibold text-destructive">{t('{amount} over', { amount: `${fmt(v - target!, k)} ${unit}` })}</span> : null}
@@ -61,8 +62,8 @@ function MacroMini({ k, value, target, missing = 0 }: { k: NutrientKey; value: n
 /** Carbs, protein and fat as three small bars side by side. */
 export function MacroBars({ totals, targets, missing }: { totals: Nutrients; targets: Nutrients | null; missing: Partial<Record<NutrientKey, number>> }) {
   return (
-    <div className="grid grid-cols-3 gap-3 sm:gap-5">
-      {(['carbs', 'protein', 'fat'] as const).map((k) => <MacroMini key={k} k={k} value={totals[k]} target={targets?.[k]} missing={missing[k]} />)}
+    <div className="mz-play grid grid-cols-3 gap-3 sm:gap-5">
+      {(['carbs', 'protein', 'fat'] as const).map((k, i) => <MacroMini key={k} k={k} value={totals[k]} target={targets?.[k]} missing={missing[k]} i={i} />)}
     </div>
   );
 }
@@ -70,7 +71,7 @@ export function MacroBars({ totals, targets, missing }: { totals: Nutrients; tar
 /** Sugar and sodium (shown under "More"). */
 export function MinorBars({ totals, targets, missing }: { totals: Nutrients; targets: Nutrients | null; missing: Partial<Record<NutrientKey, number>> }) {
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <div className="mz-play grid grid-cols-1 gap-3 sm:grid-cols-2">
       {(['sugar', 'sodium'] as const).map((k) => <NutrientBar key={k} k={k} value={totals[k]} target={targets?.[k]} missing={missing[k]} compact />)}
     </div>
   );

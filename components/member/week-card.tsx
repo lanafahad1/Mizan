@@ -93,7 +93,7 @@ function WeekLine({ days, target, today, dayName, describe }: {
   const line = (run: number[]) => run.map((i, k) => `${k ? 'L' : 'M'}${x(i)} ${y(days[i].kcal)}`).join(' ');
   const ticks = [0, top / 2, top];
   return (
-    <div ref={ref} aria-hidden className="w-full" dir="ltr">
+    <div ref={ref} aria-hidden className="mz-play w-full" dir="ltr">
       <svg width={width} height={H} viewBox={`0 0 ${width} ${H}`} className="block max-w-full overflow-visible">
         {ticks.map((v) => (
           <g key={v}>
@@ -103,8 +103,8 @@ function WeekLine({ days, target, today, dayName, describe }: {
         ))}
         {runs.map((run) => (
           <g key={run[0]}>
-            {run.length > 1 ? <path d={`${line(run)} L${x(run[run.length - 1])} ${base} L${x(run[0])} ${base} Z`} className="fill-secondary" /> : null}
-            {run.length > 1 ? <path d={line(run)} fill="none" className="stroke-primary" strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" /> : null}
+            {run.length > 1 ? <path d={`${line(run)} L${x(run[run.length - 1])} ${base} L${x(run[0])} ${base} Z`} className="mz-area fill-secondary" /> : null}
+            {run.length > 1 ? <path d={line(run)} pathLength={1} fill="none" className="mz-line stroke-primary" strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" /> : null}
           </g>
         ))}
         {target ? (
@@ -115,10 +115,10 @@ function WeekLine({ days, target, today, dayName, describe }: {
         ) : null}
         {days.map((d, i) => {
           const isToday = d.date === today;
-          if (!d.logged) return <circle key={d.date} cx={x(i)} cy={base} r={3.5} className="fill-card stroke-input" strokeWidth={1.5}><title>{describe(d)}</title></circle>;
+          if (!d.logged) return <circle key={d.date} cx={x(i)} cy={base} r={3.5} className="mz-dot fill-card stroke-input" style={{ '--i': i } as React.CSSProperties} strokeWidth={1.5}><title>{describe(d)}</title></circle>;
           const over = Boolean(target && d.kcal > target);
           const cls = isToday ? 'fill-chart-2 stroke-card' : over ? 'fill-chart-5 stroke-warning' : 'fill-chart-1 stroke-card';
-          return <circle key={d.date} cx={x(i)} cy={y(d.kcal)} r={isToday ? 6 : 4.5} className={cls} strokeWidth={isToday ? 2.5 : over ? 1.5 : 2}><title>{describe(d)}</title></circle>;
+          return <circle key={d.date} cx={x(i)} cy={y(d.kcal)} r={isToday ? 6 : 4.5} className={`mz-dot ${cls}`} style={{ '--i': i } as React.CSSProperties} strokeWidth={isToday ? 2.5 : over ? 1.5 : 2}><title>{describe(d)}</title></circle>;
         })}
         {days.map((d, i) => (
           <text key={d.date} x={x(i)} y={H - 7} textAnchor="middle" fontSize={11} fontWeight={d.date === today ? 700 : 500} className={d.date === today ? 'fill-foreground' : 'fill-muted-foreground'}>{dayName(d.date)}</text>

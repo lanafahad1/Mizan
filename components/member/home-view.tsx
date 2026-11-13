@@ -122,7 +122,7 @@ export function HomeView({ name, hour: serverHour, overview, diary, week, activi
           <ol className="m-0 flex list-none flex-col gap-2 p-0">
             {steps.map((s, i) => (
               <li key={s.id}>
-                <Link href={s.href} className={cn('flex min-h-14 items-center gap-3 rounded-[14px] border bg-card px-3 py-2.5 text-foreground no-underline hover:border-primary', s.done ? 'border-sage' : 'border-border')}>
+                <Link href={s.href} className={cn('mz-lift flex min-h-14 items-center gap-3 rounded-[14px] border bg-card px-3 py-2.5 text-foreground no-underline hover:border-primary', s.done ? 'border-sage' : 'border-border')}>
                   <span aria-hidden className={cn('grid size-7 shrink-0 place-items-center rounded-full border text-sm font-bold', s.done ? 'border-primary bg-primary text-primary-foreground' : 'border-input bg-card text-heading')}>
                     {s.done ? <Check className="size-4" /> : i + 1}
                   </span>
@@ -183,7 +183,7 @@ function IdeaCard({ idea }: { idea: HomeIdea }) {
     } finally { setBusy(false); }
   };
   return (
-    <section aria-labelledby="idea-h" className="flex flex-col gap-2 rounded-[20px] border border-border bg-card p-4 sm:p-5">
+    <section data-mz-card aria-labelledby="idea-h" className="flex flex-col gap-2 rounded-[20px] border border-border bg-card p-4 sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 flex-col gap-0.5">
           <span className="text-sm text-muted-foreground">{t('An idea for your {meal}', { meal: mealName })}</span>

@@ -1,0 +1,113 @@
+/* Mizan motion: calm, quick, transform + opacity only (stroke-dashoffset for the week line).
+   Imported once in app/layout.tsx. The scroll reveal and page entry are driven by
+   components/site/reveal.tsx (Web Animations API); this file holds the CSS half.
+   Everything that moves is inside (prefers-reduced-motion: no-preference): with reduced
+   motion, content is simply shown. Hero motion (.mz-rise etc.) lives in globals.css. */
+
+:root {
+  --mz-ease: cubic-bezier(.2, .7, .2, 1);
+  --mz-fast: 160ms;
+  --mz-base: 240ms;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+  /* ── Buttons: lift a hair on hover, press down on click ─────────────────────── */
+  .mz-press {
+    transition-property: color, background-color, border-color, text-decoration-color, box-shadow, transform;
+    transition-duration: var(--mz-fast);
+    transition-timing-function: var(--mz-ease);
+  }
+  @media (hover: hover) {
+    .mz-press:hover:not(:disabled):not([aria-disabled="true"]) { transform: translateY(-1px); }
+  }
+  .mz-press:active:not(:disabled):not([aria-disabled="true"]) { transform: translateY(0) scale(.98); transition-duration: 90ms; }
+
+  /* ── Clickable cards and tiles: lift 2px on hover, settle on press ──────────── */
+  .mz-lift {
+    transition-property: color, background-color, border-color, box-shadow, transform;
+    transition-duration: var(--mz-base);
+    transition-timing-function: var(--mz-ease);
+  }
+  @media (hover: hover) {
+    .mz-lift:hover:not(:disabled) { transform: translateY(-2px); }
+  }
+  .mz-lift:active:not(:disabled) { transform: translateY(0) scale(.99); transition-duration: 90ms; }
+
+  /* ── Text links: the underline fades in instead of snapping ─────────────────── */
+  :is(#main, footer) a:not([class~="no-underline"], [class~="underline"], [class~="flex"], [class~="grid"], [class~="block"], [class*="decoration-"], .mz-press, .mz-lift, .prose-cb a),
+  a[class*="hover:underline"] {
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 1.5px;
+    transition: text-decoration-color var(--mz-base) var(--mz-ease), color var(--mz-fast) var(--mz-ease);
+  }
+  @media (hover: hover) {
+    :is(#main, footer) a:not([class~="no-underline"], [class~="underline"], [class~="flex"], [class~="grid"], [class~="block"], [class*="decoration-"], .mz-press, .mz-lift, .prose-cb a):hover,
+    a[class*="hover:underline"]:hover { text-decoration-color: currentColor; }
+  }
+  :is(#main, footer) a:not([class~="no-underline"], [class~="flex"], [class~="grid"], [class~="block"], [class~="underline"], [class*="decoration-"], .mz-press, .mz-lift, .prose-cb a):focus-visible,
+  a[class*="hover:underline"]:focus-visible { text-decoration-color: currentColor; }
+
+  /* ── Member / patient top tabs: the underline slides to the current tab ─────── */
+  .mz-ink[data-anim] { transition: transform 320ms var(--mz-ease); }
+
+  /* ── Bottom sheets on phones slide up (the dialog keeps its scale on wider screens) ── */
+  @media (max-width: 639.98px) {
+    .t-modal { transform: translateY(32px); }
+    .t-modal.is-open { transform: none; }
+    .t-modal.is-closing { transform: translateY(32px); }
+  }
+
+  /* ── Data: bars grow from their start, cups pop, the week line draws ────────── */
+  .mz-seg, .mz-bar {
+    transform-origin: left center;
+    animation: mz-grow-x 700ms var(--mz-ease) both;
+    animation-delay: calc(160ms + var(--i, 0) * 90ms);
+  }
+  .mz-seg:dir(rtl), .mz-bar:dir(rtl) { transform-origin: right center; }
+  .mz-fade { animation: mz-fade 600ms var(--mz-ease) 160ms both; }
+  .mz-pop { animation: mz-pop 420ms var(--mz-ease) both; animation-delay: calc(160ms + var(--i, 0) * 45ms); }
+  .mz-line { stroke-dasharray: 1; animation: mz-draw 700ms var(--mz-ease) 160ms both; }
+  .mz-area { animation: mz-fade 600ms var(--mz-ease) 380ms both; }
+  .mz-dot {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: mz-dot 420ms var(--mz-ease) both;
+    animation-delay: calc(260ms + var(--i, 0) * 60ms);
+  }
+
+  /* ── Illustrations: a slow bob, sparkles twinkle twice, a small lift with their card ── */
+  .mz-illo { transition: scale 320ms var(--mz-ease); }
+  .mz-illo:not(.mz-still) { animation: mz-float 5s ease-in-out var(--mz-o, 0s) infinite; }
+  .mz-illo:not(.mz-still) > svg > path:not([stroke]) {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: mz-twinkle 1.8s ease-in-out 700ms 2 both;
+  }
+  .mz-illo:not(.mz-still) > svg > path:not([stroke]):nth-child(even) { animation-delay: 1.2s; }
+  .mz-art > svg { transition: scale 400ms var(--mz-ease); }
+  @media (hover: hover) {
+    :is(a, button, li, article, [data-mz-card]):hover .mz-illo { scale: 1.06; }
+    :is(a, button, li, article, [data-mz-card]):hover .mz-illo > svg > path:not([stroke]) {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: mz-twinkle-hover 1.6s ease-in-out infinite;
+    }
+    :is(a, li, article, [data-mz-card]):hover .mz-art > svg { scale: 1.05; }
+  }
+}
+
+@keyframes mz-grow-x { from { transform: scaleX(0); } }
+@keyframes mz-fade { from { opacity: 0; } }
+@keyframes mz-pop { from { opacity: 0; transform: scale(.3); } }
+@keyframes mz-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes mz-dot { 0% { transform: scale(0); } 65% { transform: scale(1.18); } 100% { transform: scale(1); } }
+@keyframes mz-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -3px; } }
+@keyframes mz-twinkle { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.62); } }
+@keyframes mz-twinkle-hover { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.62); } }
+
+@media print {
+  .mz-seg, .mz-bar, .mz-fade, .mz-pop, .mz-line, .mz-area, .mz-dot, .mz-illo, .mz-illo > svg > path { animation: none !important; }
+  .mz-line { stroke-dasharray: none; }
+}

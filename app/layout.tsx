@@ -3,6 +3,7 @@ import localFont from 'next/font/local';
 import { Rubik } from 'next/font/google';
 import { headers } from 'next/headers';
 import './globals.css';
+import './styles/motion.css';
 import { SiteHeader } from '@/components/site/site-header';
 import { SiteFooter } from '@/components/site/site-footer';
 import { Providers } from '@/components/site/providers';
@@ -11,6 +12,7 @@ import { jsonLd } from '@/lib/seo';
 import { getLang } from '@/lib/i18n/server';
 import { dirOf, makeT } from '@/lib/i18n';
 import { LangProvider } from '@/components/site/lang';
+import { MotionRuntime } from '@/components/site/reveal';
 
 const SITE_TITLE = `${SITE_NAME}: Your plate, your balance`;
 
@@ -79,6 +81,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <SiteHeader />
             <main id="main" tabIndex={-1} className="flex flex-1 flex-col outline-none">{children}</main>
             <SiteFooter />
+            <MotionRuntime />
           </LangProvider>
         </Providers>
         <script type="application/ld+json" nonce={nonce} dangerouslySetInnerHTML={{ __html: jsonLd(org) }} />
