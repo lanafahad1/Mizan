@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
-import { IBM_Plex_Sans_Arabic } from 'next/font/google';
+import { Rubik } from 'next/font/google';
 import { headers } from 'next/headers';
 import './globals.css';
 import { SiteHeader } from '@/components/site/site-header';
@@ -35,8 +35,8 @@ const nunito = localFont({
 });
 
 // Arabic letters (Poppins and Nunito have none): used only when the site is in Arabic.
-// IBM Plex Sans Arabic: the Arabic font of the Saudi government unified design system (DGA), used by moh.gov.sa.
-const plexArabic = IBM_Plex_Sans_Arabic({ variable: '--font-plex-arabic', subsets: ['arabic'], weight: ['400', '500', '600', '700'], display: 'swap' });
+// Rubik: the Arabic font (soft and rounded, chosen by the owner to match the Tiny world drawings).
+const arabicFont = Rubik({ variable: '--font-arabic-rubik', subsets: ['arabic'], weight: ['400', '500', '600', '700'], display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -71,7 +71,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     ],
   };
   return (
-    <html lang={lang} dir={dirOf(lang)} className={`${poppins.variable} ${nunito.variable} ${plexArabic.variable}`}>
+    <html lang={lang} dir={dirOf(lang)} className={`${poppins.variable} ${nunito.variable} ${arabicFont.variable}`}>
       <body className="flex min-h-dvh flex-col">
         <a href="#main" className="sr-only z-[70] rounded-full bg-primary px-4 py-2 text-primary-foreground focus:not-sr-only focus:fixed focus:start-4 focus:top-4">{t('Skip to content')}</a>
         <Providers nonce={nonce}>

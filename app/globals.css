@@ -14,7 +14,7 @@
   --cb-text: #1B1A3A;      /* indigo ink */
   --cb-text-muted: #615F74;
   --cb-border: #E8E2D8;
-  /* The older CareBite names, re-mapped by role so every existing class keeps working:
+  /* The older colour names, re-mapped by role so every existing class keeps working:
      heading → indigo ink; mint/sage (the old green supports) → lavender;
      blush (soft band) → cream; rose/pink (the old second colour) → sky;
      sage-deep and rose-ink (dark text on those) → deep indigo. */
@@ -196,7 +196,7 @@
   --font-sans: var(--font-nunito), "Segoe UI", system-ui, -apple-system, sans-serif;
   --font-display: var(--font-poppins), "Segoe UI", system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --font-arabic: var(--font-plex-arabic), "Geeza Pro", "Segoe UI", system-ui, sans-serif;
+  --font-arabic: var(--font-arabic-rubik), "Geeza Pro", "Segoe UI", system-ui, sans-serif;
 
   --radius-sm: 10px;
   --radius-md: 12px;
@@ -278,7 +278,7 @@
 .t-tt { white-space: normal; width: max-content; max-width: 16rem; text-align: center; }
 
 /* ---- Arabic (right-to-left) ------------------------------------------------
-   IBM Plex Sans Arabic replaces Poppins/Nunito only in Arabic; directional icons point the
+   Rubik replaces Poppins/Nunito only in Arabic; directional icons point the
    other way; charts and numbers stay left-to-right. */
 @layer base {
   html[lang="ar"] { --font-sans: var(--font-arabic); --font-display: var(--font-arabic); }
@@ -289,3 +289,33 @@
   [dir="rtl"] svg[role="img"], [dir="rtl"] .ltr { direction: ltr; }
 }
 .font-arabic { font-family: var(--font-arabic); }
+
+/* ---- Home hero: glass cards, readable text over the animated aurora, entrance motion ---- */
+.mz-hero-scrim {
+  background:
+    radial-gradient(48% 62% at 22% 48%, rgb(251 248 243 / 0.62) 0%, rgb(251 248 243 / 0.3) 50%, transparent 80%),
+    linear-gradient(180deg, transparent 80%, rgb(251 248 243 / 0.85));
+}
+[dir="rtl"] .mz-hero-scrim {
+  background:
+    radial-gradient(48% 62% at 78% 48%, rgb(251 248 243 / 0.62) 0%, rgb(251 248 243 / 0.3) 50%, transparent 80%),
+    linear-gradient(180deg, transparent 80%, rgb(251 248 243 / 0.85));
+}
+@media (max-width: 1023.98px) {
+  .mz-hero-scrim, [dir="rtl"] .mz-hero-scrim { background: linear-gradient(180deg, rgb(251 248 243 / 0.5) 0%, rgb(251 248 243 / 0.35) 38%, transparent 60%, transparent 88%, rgb(251 248 243 / 0.85) 100%); }
+}
+.mz-glass {
+  background: rgb(255 255 255 / 0.58);
+  border: 1px solid rgb(255 255 255 / 0.75);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.9) inset, 0 10px 32px -14px rgb(46 42 134 / 0.28);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  backdrop-filter: blur(14px) saturate(150%);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .mz-glass { background: rgb(255 255 255 / 0.9); }
+}
+@media (prefers-reduced-transparency: reduce) { .mz-glass { background: rgb(255 255 255 / 0.95); backdrop-filter: none; -webkit-backdrop-filter: none; } }
+@keyframes mz-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  .mz-rise { animation: mz-rise 700ms cubic-bezier(.2,.7,.2,1) both; animation-delay: var(--d, 0ms); }
+}

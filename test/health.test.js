@@ -70,17 +70,17 @@ test('a member has a private space that no hospital role can reach', () => {
   assert.equal(service.healthWorklist(admin).waiting.length, 0);
   assert.equal(status(() => service.getHealthOverview(admin, `m:${member.id}`)), 404);
   assert.equal(status(() => service.listPatients(member)), 403);
-  assert.equal(status(() => service.getHealthOverview(member, ids['CB-1001'])), 403);
+  assert.equal(status(() => service.getHealthOverview(member, ids['MZ-1001'])), 403);
   // Every record lives under the member's own owner key.
   assert.ok(repo.listHealth({ ownerPrefix: 'm:' }).every((r) => r.owner === `m:${member.id}`));
 });
 
 test('patients reach only their own health record; the care team reaches patients', () => {
-  assert.equal(service.getHealthOverview(asPatient('CB-1001'), 'me').kind, 'patient');
-  assert.equal(status(() => service.getHealthOverview(asPatient('CB-1001'), ids['CB-1004'])), 403);
-  assert.equal(service.getHealthOverview(staff, ids['CB-1001']).kind, 'patient');
-  service.addReading(staff, ids['CB-1001'], { type: 'bp', value: 140, value2: 90, date: today });
-  assert.equal(service.getHealthOverview(asPatient('CB-1001'), 'me').latest.bp.value2, 90);
+  assert.equal(service.getHealthOverview(asPatient('MZ-1001'), 'me').kind, 'patient');
+  assert.equal(status(() => service.getHealthOverview(asPatient('MZ-1001'), ids['MZ-1004'])), 403);
+  assert.equal(service.getHealthOverview(staff, ids['MZ-1001']).kind, 'patient');
+  service.addReading(staff, ids['MZ-1001'], { type: 'bp', value: 140, value2: 90, date: today });
+  assert.equal(service.getHealthOverview(asPatient('MZ-1001'), 'me').latest.bp.value2, 90);
 });
 
 test('readings are validated', () => {
@@ -96,17 +96,17 @@ test('assessment: members complete it themselves; patients send it to the care t
   assert.equal(service.submitAssessment(member, 'me', draft.id).status, 'completed');
   assert.equal(service.getHealthOverview(member, 'me').latest.weight.value, 82);
 
-  const pa = service.saveAssessment(asPatient('CB-1003'), 'me', { answers: { weightKg: 70, heightCm: 170 } });
-  assert.equal(service.submitAssessment(asPatient('CB-1003'), 'me', pa.id).status, 'awaiting-review');
-  assert.equal(status(() => service.reviewAssessment(staff, ids['CB-1003'], pa.id, { decision: 'approved', review: { kcal: 1800 } })), 403);
-  assert.equal(status(() => service.reviewAssessment(admin, ids['CB-1003'], pa.id, { decision: 'more-info' })), 422, 'a note is required');
-  service.reviewAssessment(admin, ids['CB-1003'], pa.id, { decision: 'approved', review: { kcal: 1800, sodium: 2000, nextReviewOn: today } });
-  const o = service.getHealthOverview(asPatient('CB-1003'), 'me');
+  const pa = service.saveAssessment(asPatient('MZ-1003'), 'me', { answers: { weightKg: 70, heightCm: 170 } });
+  assert.equal(service.submitAssessment(asPatient('MZ-1003'), 'me', pa.id).status, 'awaiting-review');
+  assert.equal(status(() => service.reviewAssessment(staff, ids['MZ-1003'], pa.id, { decision: 'approved', review: { kcal: 1800 } })), 403);
+  assert.equal(status(() => service.reviewAssessment(admin, ids['MZ-1003'], pa.id, { decision: 'more-info' })), 422, 'a note is required');
+  service.reviewAssessment(admin, ids['MZ-1003'], pa.id, { decision: 'approved', review: { kcal: 1800, sodium: 2000, nextReviewOn: today } });
+  const o = service.getHealthOverview(asPatient('MZ-1003'), 'me');
   assert.equal(o.targets.kcal, 1800);
   assert.equal(o.targetsBasis, 'care-team');
   assert.equal(service.healthWorklist(staff).due.length, 1);
   // A patient cannot set their own targets.
-  assert.equal(status(() => service.setHealthTargets(asPatient('CB-1003'), 'me', { kcal: 3000 })), 403);
+  assert.equal(status(() => service.setHealthTargets(asPatient('MZ-1003'), 'me', { kcal: 3000 })), 403);
 });
 
 test('food diary: foods, grams, quick add and daily totals', () => {
@@ -129,7 +129,7 @@ test('food diary: foods, grams, quick add and daily totals', () => {
 });
 
 test('a patient’s day counts hospital meals they ate plus food from outside', () => {
-  const d = service.getDiary(asPatient('CB-1001'), 'me');
+  const d = service.getDiary(asPatient('MZ-1001'), 'me');
   const breakfast = d.meals.find((m) => m.id === 'breakfast').entries;
   assert.ok(breakfast.some((e) => e.hospital), 'the delivered breakfast is counted from intake');
 });
@@ -144,7 +144,7 @@ test('custom foods from a pack label are validated and private', () => {
 });
 
 test('demo health data seeds without errors and clearing the hospital keeps members', () => {
-  repo.createUser({ username: 'sara.member', name: 'Sara', role: 'member', email: 'sara@carebite.test' });
+  repo.createUser({ username: 'sara.member', name: 'Sara', role: 'member', email: 'sara@mizan.test' });
   seedHealthDemo({ repo, service, today, patientIds: ids });
   const sara = repo.getUserByUsername('sara.member');
   assert.ok(repo.listHealth({ owner: `m:${sara.id}`, kind: 'reading' }).length >= 9);

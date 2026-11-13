@@ -240,7 +240,7 @@ export const PUBLIC: Record<string, string> = {
   'Privacy and safety by design: minimum necessary information': 'الخصوصية والسلامة منذ التصميم: الحد الأدنى من المعلومات اللازمة',
   'The member space is private: hospital staff can never see it.': 'مساحة الأعضاء خاصة: لا يستطيع موظفو المستشفى رؤيتها أبدًا.',
   'In hospital care, only an admin can change clinical dietary restrictions; patients send requests instead.': 'في رعاية المستشفى، لا يغيّر القيود الغذائية السريرية إلا المشرف؛ أما المرضى فيرسلون طلبات بدلًا من ذلك.',
-  'Fictional demonstration identifiers (CB-####), never medical record numbers.': 'معرّفات تجريبية افتراضية (CB-####)، وليست أرقام سجلات طبية أبدًا.',
+  'Fictional demonstration identifiers (MZ-####), never medical record numbers.': 'معرّفات تجريبية افتراضية (MZ-####)، وليست أرقام سجلات طبية أبدًا.',
   'An audit log of every change to a patient’s record and meals.': 'سجل تدقيق لكل تغيير على سجل المريض ووجباته.',
   'Data model: relational, coded and auditable': 'نموذج البيانات: علائقي ومرمّز وقابل للتدقيق',
   'Picking from a list, such as choosing “Sesame” from the SFDA list instead of typing it, keeps automatic checks reliable. Anything typed that can’t be matched goes to an admin.': 'الاختيار من قائمة، مثل اختيار «السمسم» من قائمة الهيئة العامة للغذاء والدواء بدلًا من كتابته، يجعل الفحص التلقائي موثوقًا. وأي نص مكتوب لا يمكن مطابقته يُحال إلى المشرف.',
@@ -406,8 +406,8 @@ export const PUBLIC: Record<string, string> = {
   'Accounts:': 'الحسابات:',
   'username, email, display name, role and a hashed password.': 'اسم المستخدم، والبريد الإلكتروني، والاسم الظاهر، والدور، وكلمة مرور مُجزّأة (مشفّرة).',
   'Patient nutrition profile:': 'الملف الغذائي للمريض:',
-  'a demonstration identifier (CB-####), ward and bed, age range, relevant conditions, the prescribed diet order, allergies and intolerances (recorded separately), medically required exclusions, food preferences and appetite. Used only to screen, rank and prepare meals.':
-    'معرّف تجريبي (CB-####)، والجناح والسرير، والفئة العمرية، والحالات الصحية ذات الصلة، والحمية الموصوفة، والحساسيات وعدم التحمّل (تُسجَّل كلٌّ على حدة)، والاستبعادات المطلوبة طبيًا، وتفضيلات الطعام، والشهية. تُستخدم فقط لفحص الوجبات وترتيبها وتحضيرها.',
+  'a demonstration identifier (MZ-####), ward and bed, age range, relevant conditions, the prescribed diet order, allergies and intolerances (recorded separately), medically required exclusions, food preferences and appetite. Used only to screen, rank and prepare meals.':
+    'معرّف تجريبي (MZ-####)، والجناح والسرير، والفئة العمرية، والحالات الصحية ذات الصلة، والحمية الموصوفة، والحساسيات وعدم التحمّل (تُسجَّل كلٌّ على حدة)، والاستبعادات المطلوبة طبيًا، وتفضيلات الطعام، والشهية. تُستخدم فقط لفحص الوجبات وترتيبها وتحضيرها.',
   'Meals and feedback:': 'الوجبات والتقييمات:',
   'offered options, selections and confirmations, appetite before meals, intake, reasons, satisfaction, weighed plate waste and requests to the nutrition team.':
     'الخيارات المعروضة، والاختيارات والتأكيدات، والشهية قبل الوجبات، والكمية المتناولة، والأسباب، والرضا، وهدر الأطباق الموزون، والطلبات المرسلة إلى فريق التغذية.',

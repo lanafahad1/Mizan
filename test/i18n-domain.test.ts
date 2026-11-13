@@ -18,7 +18,7 @@ const ar = (s: string) => translate('ar', s);
 
 function patient(over: Record<string, any> = {}) {
   const base: Record<string, any> = {
-    demoId: 'CB-0001', ageRange: '45-59', ward: '3A', bed: '1',
+    demoId: 'MZ-0001', ageRange: '45-59', ward: '3A', bed: '1',
     conditions: { selected: ['none'] },
     dietOrder: { categories: ['regular'], portionsPermitted: ['small', 'regular', 'large'] },
     allergies: { status: 'nka' },

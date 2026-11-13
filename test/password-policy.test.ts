@@ -13,7 +13,7 @@ test('common and context passwords are refused', () => {
   assert.match(passwordProblem('password123') ?? '', /too common/);
   assert.match(passwordProblem('aaaaaaaaaa') ?? '', /too common/);
   assert.match(passwordProblem('nurse.one', { username: 'nurse.one' }) ?? '', /username or email/);
-  assert.match(passwordProblem('layla.applicant', { email: 'layla.applicant@carebite.test' }) ?? '', /username or email/);
+  assert.match(passwordProblem('layla.applicant', { email: 'layla.applicant@mizan.test' }) ?? '', /username or email/);
 });
 
 test('usernames follow the documented rule', () => {

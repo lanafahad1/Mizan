@@ -9,7 +9,7 @@ import { DemoAccountList, type DemoAccount } from './demo-accounts';
 import { LoginForm } from './login-form';
 import { RegisterForm } from './register-form';
 
-export const DEMO_PASSWORD = 'CareBite#2026';
+export const DEMO_PASSWORD = 'Mizan#2026';
 
 /** The two Mizan spaces. Member = personal lifestyle use; hospital = patients and hospital staff. */
 export type Space = 'member' | 'hospital';

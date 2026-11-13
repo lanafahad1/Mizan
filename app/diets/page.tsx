@@ -122,7 +122,7 @@ export default async function DietsPage() {
               </div>
             </div>
             <p className="text-sm text-muted-foreground">{t('Mizan does not choose a calorie deficit itself. Energy can only be checked for dishes with nutrient values. Members can estimate their own needs with the')} <Link href="/tools/calculator">{t('calculator')}</Link>{t('.')}</p>
-            <SourceLinks t={t} ids={['MOH-OBESITY', 'MOH-CALC', 'CAREBITE-ALLOC'].filter((id) => (SOURCES as any)[id])} />
+            <SourceLinks t={t} ids={['MOH-OBESITY', 'MOH-CALC', 'MIZAN-ALLOC'].filter((id) => (SOURCES as any)[id])} />
           </Section>
 
           <Section id="categories" title={t('Hospital diet categories')} meta={t('{n} categories', { n: active.length })} intro={t('A diet order combines one or more categories. Open a diet to see its rules.')}>
@@ -180,7 +180,7 @@ export default async function DietsPage() {
 
           <Section id="intake" title={t('Intake flags')} meta={t('{n} flags', { n: INTAKE_FLAG_RULES.length })} intro={t('Prompts for a professional review from recorded meals. They never change a diet order.')}>
             <ul className="flex list-disc flex-col gap-1.5 ps-5">{INTAKE_FLAG_RULES.map((r: any) => <li key={r.id}><b className="text-heading">{t(r.title)} ({r.id}):</b> {t(r.logic)}</li>)}</ul>
-            <SourceLinks ids={['CAREBITE-FLAGS']} t={t} />
+            <SourceLinks ids={['MIZAN-FLAGS']} t={t} />
           </Section>
 
           <Section id="allocation" title={t('Daily limits per meal')} intro={t('To check one meal against a daily limit, the limit is shared across the day.')}>

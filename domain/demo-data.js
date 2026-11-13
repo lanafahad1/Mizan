@@ -1,6 +1,6 @@
 // Synthetic demonstration data for the fictional Mizan hospital. Every
 // patient, staff member and record here is invented. Identifiers use the
-// CB-#### demonstration format and are not medical record numbers.
+// MZ-#### demonstration format and are not medical record numbers.
 
 import { normalizeNewPatient } from './patient.js';
 import { recommend } from './engine.js';
@@ -12,18 +12,18 @@ import { DISHES } from '../data/dishes.js';
 import { MEALS } from '../data/meals.js';
 import { MENU_CYCLE } from '../data/menu.js';
 
-export const DEMO_PASSWORD = 'CareBite#2026';
+export const DEMO_PASSWORD = 'Mizan#2026';
 const DEFAULT_REVIEW_NOTE = 'Reviewed by the admin against the diet order: no added salt, portion as suggested.';
 
 // Demonstration access only. These shared accounts let reviewers see each role.
 // Real hospital staff would be issued accounts through the hospital's identity
 // system after identity checks; Mizan does not verify anyone's identity.
 export const DEMO_ACCOUNTS = [
-  { username: 'admin.demo', email: 'admin@carebite.test', name: 'Demo Admin', role: 'admin', summary: 'Controls everything: staff access, diet orders and allergies, meals that need review, menu verification, plus every staff task.' },
-  { username: 'staff.demo', email: 'staff@carebite.test', name: 'Demo Staff Member', role: 'staff', summary: 'Runs meal service: offers and confirms eligible meals, prepares and delivers trays, records intake, maintains the menu, answers requests.' },
-  { username: 'noura.1001', email: 'noura@carebite.test', name: 'Noura', role: 'patient', patientDemoId: 'CB-1001', summary: 'Patient account linked to CB-1001: choose meals, give feedback, ask for help.' },
-  { username: 'khalid.1004', email: 'khalid@carebite.test', name: 'Khalid', role: 'patient', patientDemoId: 'CB-1004', summary: 'Patient account linked to CB-1004 (peanut and tree nut allergies).' },
-  { username: 'sara.member', email: 'sara@carebite.test', name: 'Sara', role: 'member', summary: 'Member (personal use, no hospital): food diary, weight and blood pressure, personal targets.' },
+  { username: 'admin.demo', email: 'admin@mizan.test', name: 'Demo Admin', role: 'admin', summary: 'Controls everything: staff access, diet orders and allergies, meals that need review, menu verification, plus every staff task.' },
+  { username: 'staff.demo', email: 'staff@mizan.test', name: 'Demo Staff Member', role: 'staff', summary: 'Runs meal service: offers and confirms eligible meals, prepares and delivers trays, records intake, maintains the menu, answers requests.' },
+  { username: 'noura.1001', email: 'noura@mizan.test', name: 'Noura', role: 'patient', patientDemoId: 'MZ-1001', summary: 'Patient account linked to MZ-1001: choose meals, give feedback, ask for help.' },
+  { username: 'khalid.1004', email: 'khalid@mizan.test', name: 'Khalid', role: 'patient', patientDemoId: 'MZ-1004', summary: 'Patient account linked to MZ-1004 (peanut and tree nut allergies).' },
+  { username: 'sara.member', email: 'sara@mizan.test', name: 'Sara', role: 'member', summary: 'Member (personal use, no hospital): food diary, weight and blood pressure, personal targets.' },
 ];
 
 const ALL = ['small', 'regular', 'large'];
@@ -31,7 +31,7 @@ const SR = ['small', 'regular'];
 
 // [profile input, behaviour used to generate the synthetic intake history]
 const PATIENTS = [
-  [{ demoId: 'CB-1001', preferredName: 'Noura', ageRange: '45-59', ward: '3C', bed: '12', admittedDaysAgo: 6,
+  [{ demoId: 'MZ-1001', preferredName: 'Noura', ageRange: '45-59', ward: '3C', bed: '12', admittedDaysAgo: 6,
     conditions: { selected: ['obesity', 't2d', 'hypertension'] },
     dietOrder: { categories: ['consistent-carb', 'low-sodium'], carbsGPerMeal: 60, portionsPermitted: SR, notes: '' },
     allergies: { status: 'nka' },
@@ -39,7 +39,7 @@ const PATIENTS = [
     appetite: { level: 'good' } },
   { eat: ['all', 'most', 'all', 'most'], refuse: 0, sat: [4, 5] }],
 
-  [{ demoId: 'CB-1002', preferredName: 'Fahad', ageRange: '60-74', ward: '4B', bed: '03', admittedDaysAgo: 6,
+  [{ demoId: 'MZ-1002', preferredName: 'Fahad', ageRange: '60-74', ward: '4B', bed: '03', admittedDaysAgo: 6,
     conditions: { selected: ['obesity', 'hypertension', 'cholesterol', 'cvd'] },
     dietOrder: { categories: ['heart-healthy'], portionsPermitted: ALL, notes: 'Prefers meals served hot.' },
     allergies: { status: 'recorded', confirmed: ['shellfish'] },
@@ -47,7 +47,7 @@ const PATIENTS = [
     appetite: { level: 'fair' } },
   { eat: ['most', 'some', 'most', 'all'], refuse: 0.15, recentRefusals: 2, reasons: ['taste', 'not-preferred'], sat: [2, 4] }],
 
-  [{ demoId: 'CB-1003', preferredName: 'Mona', ageRange: '60-74', ward: '5C', bed: '07', admittedDaysAgo: 6,
+  [{ demoId: 'MZ-1003', preferredName: 'Mona', ageRange: '60-74', ward: '5C', bed: '07', admittedDaysAgo: 6,
     conditions: { selected: ['kidney', 'hypertension'] },
     dietOrder: { categories: ['renal'], potassiumMgPerDay: 2400, phosphorusMgPerDay: 800, portionsPermitted: SR, notes: 'Fluid restriction managed by the ward.' },
     allergies: { status: 'nka' },
@@ -55,7 +55,7 @@ const PATIENTS = [
     appetite: { level: 'poor' } },
   { eat: ['some', 'none', 'some', 'most'], refuse: 0.1, reasons: ['low-appetite', 'nausea'], sat: [3, 4] }],
 
-  [{ demoId: 'CB-1004', preferredName: 'Khalid', ageRange: '30-44', ward: '2A', bed: '15', admittedDaysAgo: 4,
+  [{ demoId: 'MZ-1004', preferredName: 'Khalid', ageRange: '30-44', ward: '2A', bed: '15', admittedDaysAgo: 4,
     conditions: { selected: ['surgery'] },
     dietOrder: { categories: ['high-protein'], portionsPermitted: ALL, notes: '' },
     allergies: { status: 'recorded', confirmed: ['peanut', 'tree_nut'] },
@@ -63,7 +63,7 @@ const PATIENTS = [
     appetite: { level: 'good' } },
   { eat: ['all', 'all', 'most', 'all'], refuse: 0, reasons: ['portion-too-small'], sat: [4, 5] }],
 
-  [{ demoId: 'CB-1005', preferredName: 'Sara', ageRange: '18-29', ward: '3A', bed: '04', admittedDaysAgo: 5,
+  [{ demoId: 'MZ-1005', preferredName: 'Sara', ageRange: '18-29', ward: '3A', bed: '04', admittedDaysAgo: 5,
     conditions: { selected: ['coeliac'] },
     dietOrder: { categories: ['gluten-free'], portionsPermitted: ALL, notes: '' },
     allergies: { status: 'recorded', confirmed: ['egg'] },
@@ -72,7 +72,7 @@ const PATIENTS = [
     appetite: { level: 'good' } },
   { eat: ['most', 'all', 'most', 'some'], refuse: 0.05, reasons: ['temperature'], sat: [3, 5] }],
 
-  [{ demoId: 'CB-1006', preferredName: 'Abdullah', ageRange: '75+', ward: '6A', bed: '02', admittedDaysAgo: 6,
+  [{ demoId: 'MZ-1006', preferredName: 'Abdullah', ageRange: '75+', ward: '6A', bed: '02', admittedDaysAgo: 6,
     conditions: { selected: ['dysphagia'] },
     dietOrder: { categories: ['texture-modified', 'high-protein'], textureLevel: '5', portionsPermitted: SR, notes: 'Upright for meals; supervised feeding.' },
     allergies: { status: 'nka' },
@@ -80,7 +80,7 @@ const PATIENTS = [
     appetite: { level: 'poor' } },
   { eat: ['some', 'most', 'some', 'some'], refuse: 0.1, reasons: ['low-appetite'], sat: [3, 4], reviewNote: 'Prepared minced and moist (IDDSI Level 5); sauces served separately.' }],
 
-  [{ demoId: 'CB-1007', preferredName: 'Huda', ageRange: '30-44', ward: '3A', bed: '09', admittedDaysAgo: 0,
+  [{ demoId: 'MZ-1007', preferredName: 'Huda', ageRange: '30-44', ward: '3A', bed: '09', admittedDaysAgo: 0,
     conditions: { selected: ['none'] },
     dietOrder: { categories: ['regular'], portionsPermitted: ALL, notes: '' },
     allergies: { status: 'unknown' },
@@ -88,7 +88,7 @@ const PATIENTS = [
     appetite: { level: 'good' } },
   null],
 
-  [{ demoId: 'CB-1008', preferredName: 'Faisal', ageRange: '45-59', ward: '2A', bed: '11', admittedDaysAgo: 1,
+  [{ demoId: 'MZ-1008', preferredName: 'Faisal', ageRange: '45-59', ward: '2A', bed: '11', admittedDaysAgo: 1,
     conditions: { selected: ['surgery'] },
     dietOrder: { categories: ['regular'], npo: true, portionsPermitted: ALL, notes: 'Nothing by mouth from midnight before surgery.' },
     allergies: { status: 'nka' },
@@ -96,7 +96,7 @@ const PATIENTS = [
     appetite: { level: 'fair' } },
   null],
 
-  [{ demoId: 'CB-1009', preferredName: 'Reem', ageRange: '30-44', ward: '3C', bed: '05', admittedDaysAgo: 3,
+  [{ demoId: 'MZ-1009', preferredName: 'Reem', ageRange: '30-44', ward: '3C', bed: '05', admittedDaysAgo: 3,
     conditions: { selected: ['t1d'] },
     dietOrder: { categories: ['consistent-carb', 'vegetarian'], carbsGPerMeal: 45, portionsPermitted: SR, notes: '' },
     allergies: { status: 'recorded', confirmed: ['milk'] },
@@ -104,7 +104,7 @@ const PATIENTS = [
     appetite: { level: 'good' } },
   { eat: ['all', 'most', 'all', 'most'], refuse: 0, sat: [4, 5], addAllergyToday: 'sesame' }],
 
-  [{ demoId: 'CB-1010', preferredName: 'Majed', ageRange: '45-59', ward: '4B', bed: '08', admittedDaysAgo: 5,
+  [{ demoId: 'MZ-1010', preferredName: 'Majed', ageRange: '45-59', ward: '4B', bed: '08', admittedDaysAgo: 5,
     conditions: { selected: ['hypertension'] },
     dietOrder: { categories: ['low-sodium'], portionsPermitted: ALL, notes: '' },
     allergies: { status: 'nka' },
@@ -114,7 +114,7 @@ const PATIENTS = [
 ];
 
 /** A staff access request waiting for the admin (not a shared demo account, so it can be approved). */
-export const DEMO_PENDING_STAFF = { username: 'layla.applicant', email: 'layla.applicant@carebite.test', name: 'Layla (applicant)', requestedRole: 'staff', requestNote: 'Clinical nutrition technician, Ward 3A. Starting next week.' };
+export const DEMO_PENDING_STAFF = { username: 'layla.applicant', email: 'layla.applicant@mizan.test', name: 'Layla (applicant)', requestedRole: 'staff', requestNote: 'Clinical nutrition technician, Ward 3A. Starting next week.' };
 
 /** Replace the editable menu catalogue with the starting catalogue (verified by the demo admin). */
 export function seedCatalog(repo, at) {
@@ -261,74 +261,74 @@ export function seedHospitalDemo({ repo, service, today }) {
   };
   const safely = (fn) => { try { fn(); } catch { /* a demo step that does not apply to today's menu is skipped */ } };
 
-  // Majed (CB-1010) was discharged yesterday: past meals stay, nothing upcoming.
+  // Majed (MZ-1010) was discharged yesterday: past meals stay, nothing upcoming.
   safely(() => {
-    const m = P('CB-1010');
+    const m = P('MZ-1010');
     repo.updatePatient(m.id, { ...m, status: 'discharged', dischargedOn: addDays(today, -1), dischargedBy: staff.name, dischargeNote: 'Discharged home.', updatedAt: at(addDays(today, -1), 14), updatedBy: staff.name });
     repo.addAudit({ at: at(addDays(today, -1), 14), actorId: null, actorRole: 'staff', actorName: staff.name, patientId: m.id, action: 'patient.discharge', detail: `Recorded discharge on ${addDays(today, -1)} (Discharged home.). Past meals, intake and requests are kept.` });
   });
 
   // Noura: breakfast delivered (she and the team both recorded it), lunch chosen by her and awaiting confirmation, dinner offered; tomorrow offered.
-  safely(() => { confirm('CB-1001', 'breakfast'); progress('CB-1001', 'breakfast', 'delivered'); });
-  safely(() => choose('CB-1001', 'lunch', today, 1));
-  safely(() => offer('CB-1001', 'dinner'));
-  safely(() => offer('CB-1001', 'snack'));
-  for (const period of PERIOD_IDS) safely(() => offer('CB-1001', period, tomorrow));
+  safely(() => { confirm('MZ-1001', 'breakfast'); progress('MZ-1001', 'breakfast', 'delivered'); });
+  safely(() => choose('MZ-1001', 'lunch', today, 1));
+  safely(() => offer('MZ-1001', 'dinner'));
+  safely(() => offer('MZ-1001', 'snack'));
+  for (const period of PERIOD_IDS) safely(() => offer('MZ-1001', period, tomorrow));
   // Fahad: breakfast prepared, lunch offered (he asked for something different).
-  safely(() => { confirm('CB-1002', 'breakfast'); progress('CB-1002', 'breakfast', 'prepared'); });
-  safely(() => offer('CB-1002', 'lunch'));
+  safely(() => { confirm('MZ-1002', 'breakfast'); progress('MZ-1002', 'breakfast', 'prepared'); });
+  safely(() => offer('MZ-1002', 'lunch'));
   // Mona: breakfast delivered, lunch confirmed (small portions), dinner offered.
-  safely(() => { confirm('CB-1003', 'breakfast'); progress('CB-1003', 'breakfast', 'delivered'); });
-  safely(() => confirm('CB-1003', 'lunch'));
-  safely(() => offer('CB-1003', 'dinner', today, 2));
+  safely(() => { confirm('MZ-1003', 'breakfast'); progress('MZ-1003', 'breakfast', 'delivered'); });
+  safely(() => confirm('MZ-1003', 'lunch'));
+  safely(() => offer('MZ-1003', 'dinner', today, 2));
   // Khalid: breakfast confirmed; lunch, dinner and snack offered for him to choose; next two days offered automatically.
-  safely(() => confirm('CB-1004', 'breakfast'));
-  for (const period of ['lunch', 'dinner', 'snack']) safely(() => offer('CB-1004', period));
-  safely(() => service.autoSchedule(staff, ids['CB-1004'], { from: tomorrow, days: 2 }));
-  safely(() => service.cancelMeal(staff, ids['CB-1004'], { date: tomorrow, period: 'snack', reason: 'Patient asked to skip the evening snack tomorrow (procedure in the morning).' }));
+  safely(() => confirm('MZ-1004', 'breakfast'));
+  for (const period of ['lunch', 'dinner', 'snack']) safely(() => offer('MZ-1004', period));
+  safely(() => service.autoSchedule(staff, ids['MZ-1004'], { from: tomorrow, days: 2 }));
+  safely(() => service.cancelMeal(staff, ids['MZ-1004'], { date: tomorrow, period: 'snack', reason: 'Patient asked to skip the evening snack tomorrow (procedure in the morning).' }));
   // Sara: breakfast confirmed, lunch chosen.
-  safely(() => confirm('CB-1005', 'breakfast'));
-  safely(() => choose('CB-1005', 'lunch'));
+  safely(() => confirm('MZ-1005', 'breakfast'));
+  safely(() => choose('MZ-1005', 'lunch'));
   // Sara then reports a possible allergy to something in her confirmed breakfast: it is put on hold until reviewed.
   safely(() => {
-    const e = repo.getEntry(ids['CB-1005'], today, 'breakfast');
+    const e = repo.getEntry(ids['MZ-1005'], today, 'breakfast');
     const allergen = e ? service.catalog().byId[e.selectedMealId]?.allergenSummary?.contains?.[0] : null;
-    if (allergen) service.createRequest(asPatient('CB-1005'), ids['CB-1005'], { type: 'clinical-change', reportKind: 'new-allergy', allergen, message: 'I think I reacted to this at home last week. Could the team check before breakfast?' });
+    if (allergen) service.createRequest(asPatient('MZ-1005'), ids['MZ-1005'], { type: 'clinical-change', reportKind: 'new-allergy', allergen, message: 'I think I reacted to this at home last week. Could the team check before breakfast?' });
   });
   // Abdullah: breakfast approved by the admin after review; the rest awaits review.
   safely(() => {
-    const r = recommend({ ...P('CB-1006'), reportedAllergies: [] }, service.catalog(), { mealIds: menuFor(service.menu(), today).breakfast, period: 'breakfast' }).review[0];
-    if (r) service.confirmMeal(admin, ids['CB-1006'], { date: today, period: 'breakfast', mealId: r.mealId, reviewNote: 'Prepared minced and moist (IDDSI Level 5); sauces served separately.' });
+    const r = recommend({ ...P('MZ-1006'), reportedAllergies: [] }, service.catalog(), { mealIds: menuFor(service.menu(), today).breakfast, period: 'breakfast' }).review[0];
+    if (r) service.confirmMeal(admin, ids['MZ-1006'], { date: today, period: 'breakfast', mealId: r.mealId, reviewNote: 'Prepared minced and moist (IDDSI Level 5); sauces served separately.' });
   });
   // Reem: breakfast confirmed, lunch offered, tomorrow confirmed (including a hummus snack if on the menu); then a new
   // sesame allergy is recorded, which re-screens her schedule: meals with sesame are withdrawn or put on hold, and the
   // kitchen is alerted about confirmed trays.
-  safely(() => confirm('CB-1009', 'breakfast'));
-  safely(() => offer('CB-1009', 'lunch'));
+  safely(() => confirm('MZ-1009', 'breakfast'));
+  safely(() => offer('MZ-1009', 'lunch'));
   for (const period of PERIOD_IDS) {
     safely(() => {
       const hummus = menuFor(service.menu(), tomorrow)[period].includes('hummus-veggie-sticks') ? 'hummus-veggie-sticks' : null;
-      confirm('CB-1009', period, tomorrow, period === 'snack' ? hummus : null);
+      confirm('MZ-1009', period, tomorrow, period === 'snack' ? hummus : null);
     });
   }
   safely(() => {
-    const reem = P('CB-1009');
+    const reem = P('MZ-1009');
     service.updatePatientSection(admin, reem.id, 'clinical', { ...reem, allergies: { ...reem.allergies, confirmed: [...reem.allergies.confirmed, 'sesame'] } });
   });
 
   // Intake recorded this morning: Noura by herself and by staff (one meal, two records), Mona by staff with a weighed tray.
-  safely(() => service.recordIntake(asPatient('CB-1001'), ids['CB-1001'], { date: today, period: 'breakfast', appetiteBefore: 'good', accepted: true, amount: 'all', satisfaction: 5, reasons: [] }));
-  safely(() => service.recordIntake(staff, ids['CB-1001'], { date: today, period: 'breakfast', appetiteBefore: 'good', accepted: true, amount: 'most', reasons: [] }));
-  safely(() => service.recordIntake(staff, ids['CB-1003'], { date: today, period: 'breakfast', appetiteBefore: 'poor', accepted: true, amount: 'some', satisfaction: 3, reasons: ['low-appetite'], measuredWasteG: 140 }));
+  safely(() => service.recordIntake(asPatient('MZ-1001'), ids['MZ-1001'], { date: today, period: 'breakfast', appetiteBefore: 'good', accepted: true, amount: 'all', satisfaction: 5, reasons: [] }));
+  safely(() => service.recordIntake(staff, ids['MZ-1001'], { date: today, period: 'breakfast', appetiteBefore: 'good', accepted: true, amount: 'most', reasons: [] }));
+  safely(() => service.recordIntake(staff, ids['MZ-1003'], { date: today, period: 'breakfast', appetiteBefore: 'poor', accepted: true, amount: 'some', satisfaction: 3, reasons: ['low-appetite'], measuredWasteG: 140 }));
 
   // Pending requests.
-  safely(() => service.createRequest(asPatient('CB-1001'), ids['CB-1001'], { type: 'schedule-change', message: 'Could my dinner be brought a little later, after evening prayer?' }));
-  safely(() => service.createRequest(asPatient('CB-1002'), ids['CB-1002'], { type: 'alternative', date: today, period: 'lunch', message: 'The lunch options feel too bland. Is there something with more spices?' }));
-  safely(() => service.createRequest(asPatient('CB-1004'), ids['CB-1004'], { type: 'clinical-change', reportKind: 'other', message: 'My lips itched after eating kiwi at home last month. Should this be added to my allergies?' }));
-  safely(() => service.createRequest(staff, ids['CB-1006'], { type: 'assistance', message: 'Family asks whether they can bring dates from home; please advise on texture.' }));
+  safely(() => service.createRequest(asPatient('MZ-1001'), ids['MZ-1001'], { type: 'schedule-change', message: 'Could my dinner be brought a little later, after evening prayer?' }));
+  safely(() => service.createRequest(asPatient('MZ-1002'), ids['MZ-1002'], { type: 'alternative', date: today, period: 'lunch', message: 'The lunch options feel too bland. Is there something with more spices?' }));
+  safely(() => service.createRequest(asPatient('MZ-1004'), ids['MZ-1004'], { type: 'clinical-change', reportKind: 'other', message: 'My lips itched after eating kiwi at home last month. Should this be added to my allergies?' }));
+  safely(() => service.createRequest(staff, ids['MZ-1006'], { type: 'assistance', message: 'Family asks whether they can bring dates from home; please advise on texture.' }));
   // A resolved request, so patients can see a response.
   safely(() => {
-    const r = service.createRequest(asPatient('CB-1004'), ids['CB-1004'], { type: 'assistance', message: 'Can I have my meals a bit earlier on the day of my physiotherapy?' });
+    const r = service.createRequest(asPatient('MZ-1004'), ids['MZ-1004'], { type: 'assistance', message: 'Can I have my meals a bit earlier on the day of my physiotherapy?' });
     service.resolveRequest(staff, r.request.id, { status: 'resolved', response: 'Yes. We have asked the kitchen to bring your lunch 30 minutes earlier on physiotherapy days.' });
   });
 

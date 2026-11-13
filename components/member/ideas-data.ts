@@ -55,7 +55,7 @@ const pickSource = (id: string): IdeaSource => {
   return { id, title: s.title, publisher: s.publisher, url: s.url, summary: s.summary };
 };
 /** The sources shown under the meal ideas. */
-export const ideaSources = () => ['SFDA-SFCT', 'USDA-FDC', 'MOH-SALT', 'CAREBITE-ALLOC'].map(pickSource);
+export const ideaSources = () => ['SFDA-SFCT', 'USDA-FDC', 'MOH-SALT', 'MIZAN-ALLOC'].map(pickSource);
 export const MEAL_SHARES: Record<string, number> = MEAL_SHARE;
 
 /**

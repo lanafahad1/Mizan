@@ -164,7 +164,7 @@ function PasswordCard({ viewer }: { viewer: Viewer }) {
     }
     setCur(''); setN1(''); setN2('');
     toast(t('Password updated. We’ve signed you out on your other devices.'));
-    window.dispatchEvent(new Event('carebite:sessions-changed'));
+    window.dispatchEvent(new Event('mizan:sessions-changed'));
   };
 
   return (

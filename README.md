@@ -115,13 +115,13 @@ Email confirmation and "Forgot password?" emails are sent through Gmail with an 
 
 ### Demo accounts (demonstration access only)
 
-All demo accounts use the password `CareBite#2026`, and the login page has one-click buttons. **No identity is verified**: these are shared demonstration accounts, not real credentials.
+All demo accounts use the password `Mizan#2026`, and the login page has one-click buttons. **No identity is verified**: these are shared demonstration accounts, not real credentials.
 
 | Username | Role |
 | --- | --- |
 | `admin.demo` | Admin |
 | `staff.demo` | Staff |
-| `noura.1001`, `khalid.1004` | Patients CB-1001 and CB-1004 |
+| `noura.1001`, `khalid.1004` | Patients MZ-1001 and MZ-1004 |
 | `sara.member` | Member (personal use, no hospital) |
 
 `layla.applicant` is a pending staff access request that `admin.demo` can approve.

@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS Meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 -- Patients -----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS Patients (
   id INTEGER PRIMARY KEY,
-  demo_id TEXT NOT NULL UNIQUE CHECK (demo_id ~ '^CB-[0-9]{4}$'),
+  demo_id TEXT NOT NULL UNIQUE CHECK (demo_id ~ '^MZ-[0-9]{4}$'),
   preferred_name TEXT,
   age_range TEXT NOT NULL,
   ward TEXT NOT NULL,
@@ -670,6 +670,18 @@ async function migrate(client) {
     if (r.rowCount) await client.query(`UPDATE Meta SET value = (value::int + 1)::text WHERE key = 'catalog_version'`);
     await client.query(`INSERT INTO Meta (key, value) VALUES ('migration_ingredient_nutrition', $1) ON CONFLICT (key) DO NOTHING`, [String(r.rowCount)]);
   }
+  // 3. The project was renamed to Mizan: system names written by an earlier seed are
+  //    renamed too (exact old values only; a no-op once done). The reference tables
+  //    (rules and their source ids) are rewritten from the code by ensureSchema itself.
+  const OLD_NAME = 'CareBite'; // the old project name, kept here only to find old rows
+  const meals = await client.query(`UPDATE Meals SET updated_by = 'Mizan seed' WHERE updated_by = $1`, [`${OLD_NAME} seed`]);
+  const dishes = await client.query(`UPDATE Dishes SET updated_by = 'Mizan seed' WHERE updated_by = $1`, [`${OLD_NAME} seed`]);
+  if (meals.rowCount || dishes.rowCount) await client.query(`UPDATE Meta SET value = (value::int + 1)::text WHERE key = 'catalog_version'`);
+  await client.query(`UPDATE ScheduleEvents SET actor_name = 'Mizan' WHERE actor_role = 'system' AND actor_name = $1`, [OLD_NAME]);
+  // 4. Demonstration patient identifiers moved from the old "MZ-####" format to "MZ-####".
+  await client.query(`ALTER TABLE Patients DROP CONSTRAINT IF EXISTS patients_demo_id_check`);
+  await client.query(`UPDATE Patients SET demo_id = 'MZ-' || substring(demo_id from 4) WHERE demo_id LIKE 'CB-%'`);
+  await client.query(`ALTER TABLE Patients ADD CONSTRAINT patients_demo_id_check CHECK (demo_id ~ '^MZ-[0-9]{4}$')`);
 }
 
 /** INSERT rows in chunks; with conflict key columns, existing rows are updated instead. */

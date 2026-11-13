@@ -110,7 +110,7 @@ export default async function AboutPage() {
             <CheckList>
               <CheckItem icon={Lock}>{t('The member space is private: hospital staff can never see it.')}</CheckItem>
               <CheckItem icon={Shield}>{t('In hospital care, only an admin can change clinical dietary restrictions; patients send requests instead.')}</CheckItem>
-              <CheckItem icon={Database}>{t('Fictional demonstration identifiers (CB-####), never medical record numbers.')}</CheckItem>
+              <CheckItem icon={Database}>{t('Fictional demonstration identifiers (MZ-####), never medical record numbers.')}</CheckItem>
               <CheckItem icon={List}>{t('An audit log of every change to a patient’s record and meals.')}</CheckItem>
             </CheckList>
           </Details>

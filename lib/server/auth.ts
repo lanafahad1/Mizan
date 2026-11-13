@@ -22,6 +22,7 @@ import { username } from 'better-auth/plugins';
 import { nextCookies } from 'better-auth/next-js';
 import type { Pool } from 'pg';
 import { passwordProblem, USERNAME_RE } from '@/lib/password-policy';
+import { originOf, SITE_URL } from '@/lib/site';
 import { sendAccountEmail } from './email';
 
 type Domain = {
@@ -33,20 +34,30 @@ type Domain = {
   deleteMemberData: (userId: string) => Promise<void>;
 };
 
-const SECURE = process.env.NODE_ENV === 'production' && process.env.BETTER_AUTH_URL?.startsWith('https://');
+/** better-auth's base URL: BETTER_AUTH_URL, else the public site address (lib/site.ts, with the Vercel fallback). */
+export const AUTH_BASE_URL = originOf(process.env.BETTER_AUTH_URL) || SITE_URL;
+/** Origins allowed to call the auth endpoints: the base URL, this Vercel project's own domains and TRUSTED_ORIGINS. */
+export const TRUSTED_ORIGINS = [...new Set([
+  AUTH_BASE_URL,
+  SITE_URL,
+  ...[process.env.VERCEL_PROJECT_PRODUCTION_URL, process.env.VERCEL_URL, process.env.VERCEL_BRANCH_URL].map(originOf),
+  ...(process.env.TRUSTED_ORIGINS?.split(',').map(originOf) ?? []),
+].filter(Boolean))];
+
+const SECURE = process.env.NODE_ENV === 'production' && AUTH_BASE_URL.startsWith('https://');
 
 function fieldError(field: string, message: string): never {
   throw new APIError('UNPROCESSABLE_ENTITY', { message, code: 'VALIDATION_FAILED', errors: { [field]: message } } as never);
 }
 
 export function authOptions(db: Pool, domain: Domain) {
-  const baseURL = process.env.BETTER_AUTH_URL ?? 'http://localhost:3000';
+  const baseURL = AUTH_BASE_URL;
   return {
     appName: 'Mizan',
     baseURL,
     secret: process.env.BETTER_AUTH_SECRET,
     database: db,
-    trustedOrigins: [baseURL, ...(process.env.TRUSTED_ORIGINS?.split(',').map((s) => s.trim()).filter(Boolean) ?? [])],
+    trustedOrigins: TRUSTED_ORIGINS,
     telemetry: { enabled: false },
     emailAndPassword: {
       enabled: true,
@@ -122,7 +133,7 @@ export function authOptions(db: Pool, domain: Domain) {
       },
     },
     advanced: {
-      cookiePrefix: 'carebite',
+      cookiePrefix: 'mizan',
       useSecureCookies: SECURE,
       defaultCookieAttributes: { httpOnly: true, sameSite: 'lax', secure: SECURE, path: '/' },
       ipAddress: { ipAddressHeaders: ['x-forwarded-for', 'x-real-ip'] },

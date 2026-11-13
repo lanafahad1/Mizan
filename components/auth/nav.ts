@@ -13,7 +13,7 @@ export function safeNext(value: unknown): string | null {
   if (!next.startsWith('/') || next.startsWith('//') || next.startsWith('/\\')) return null;
   if (CONTROL.test(next) || next.includes('\\')) return null;
   try {
-    const base = 'http://carebite.invalid';
+    const base = 'http://mizan.invalid';
     const url = new URL(next, base);
     if (url.origin !== base) return null;
     // Never bounce back into the auth pages themselves.

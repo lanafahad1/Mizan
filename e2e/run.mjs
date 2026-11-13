@@ -6,7 +6,7 @@
 import { chromium } from 'playwright';
 
 const base = process.env.BASE_URL ?? 'http://localhost:3000';
-const PASSWORD = 'CareBite#2026';
+const PASSWORD = 'Mizan#2026';
 const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
 const results = [];
 const pageErrors = [];
@@ -48,7 +48,7 @@ async function session(username, width = 390) {
   return page;
 }
 const api = (page, method, path, body) => page.request.fetch(`${base}${path}`, {
-  method, headers: { 'X-CareBite-Request': '1', Origin: base, ...(body ? { 'Content-Type': 'application/json' } : {}) }, data: body ? JSON.stringify(body) : undefined,
+  method, headers: { 'X-Mizan-Request': '1', Origin: base, ...(body ? { 'Content-Type': 'application/json' } : {}) }, data: body ? JSON.stringify(body) : undefined,
 });
 const json = async (page, path) => (await api(page, 'GET', path)).json();
 /** Wait for a toast whose text matches (toasts stack, so match by text rather than position). */
@@ -125,7 +125,7 @@ await dialog(noura).locator('textarea').fill('I was told to avoid sesame. (e2e)'
 await dialog(noura).getByRole('button', { name: /Send to my nutrition team/ }).click();
 await noura.waitForTimeout(1200);
 const reqs = await json(staff, '/api/requests');
-ok(reqs.requests.some((r) => r.report?.allergen === 'sesame' && r.patient?.demoId === 'CB-1001'), 'nutrition team sees the sesame report');
+ok(reqs.requests.some((r) => r.report?.allergen === 'sesame' && r.patient?.demoId === 'MZ-1001'), 'nutrition team sees the sesame report');
 const admin = await session('admin.demo', 1300);
 const p1 = (await json(admin, '/api/patients/1')).patient;
 const upd = await api(admin, 'PATCH', '/api/patients/1/sections/clinical', { ...p1, allergies: { ...p1.allergies, status: 'recorded', confirmed: [...new Set([...p1.allergies.confirmed, 'sesame'])] } });
@@ -138,7 +138,7 @@ const k = await json(staff, `/api/kitchen?date=${today}`);
 const pidOf = Object.fromEntries((await json(staff, '/api/patients')).patients.map((x) => [x.demoId, x.id]));
 // A confirmed tray whose patient has another eligible meal for that period (so a replacement exists).
 let tray = null;
-for (const t of k.trays.filter((x) => x.status === 'confirmed' && x.demoId !== 'CB-1001')) {
+for (const t of k.trays.filter((x) => x.status === 'confirmed' && x.demoId !== 'MZ-1001')) {
   const day = await json(staff, `/api/patients/${pidOf[t.demoId]}/day?date=${today}`);
   const per = day.periods.find((x) => x.period === t.period);
   if ((per?.screening?.eligible ?? []).some((m) => m.id !== t.mealId)) { tray = t; break; }
@@ -183,9 +183,9 @@ await staff.getByRole('button', { name: 'Record discharge' }).first().click();
 await dialog(staff).getByRole('button', { name: 'Record discharge' }).click();
 await staff.waitForTimeout(1000);
 const k3 = await json(staff, `/api/kitchen?date=${today}`);
-ok(!k3.trays.some((t) => t.demoId === 'CB-1002'), 'discharged patient is not on the kitchen trays');
+ok(!k3.trays.some((t) => t.demoId === 'MZ-1002'), 'discharged patient is not on the kitchen trays');
 await staff.goto(`${base}/patients?include=discharged`);
-ok((await staff.locator('main').textContent()).includes('CB-1002'), 'discharged patient is listed under Discharged with history kept');
+ok((await staff.locator('main').textContent()).includes('MZ-1002'), 'discharged patient is listed under Discharged with history kept');
 
 // ---------------------------------------------------------------- 7. admin approves staff access
 await admin.goto(`${base}/staff-access`);

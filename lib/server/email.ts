@@ -11,7 +11,7 @@ import { SITE_NAME } from '@/lib/site';
 import { LANG_COOKIE, type Lang } from '@/lib/i18n';
 import { EMAIL_LOGO_PNG_BASE64 } from './email-logo';
 
-const LOGO_CID = 'logo@carebite';
+const LOGO_CID = 'logo@mizan';
 
 export const emailConfigured = () => Boolean(process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD);
 const isDev = process.env.NODE_ENV !== 'production';
@@ -69,7 +69,7 @@ const FOOT: Record<Lang, string> = {
 export function renderEmail(kind: 'verify' | 'reset', lang: Lang, url: string, user: { name?: string; username?: string }) {
   const m = TEXT[kind][lang](user.name ?? '', user.username ?? '');
   const dir = lang === 'ar' ? 'rtl' : 'ltr';
-  const font = lang === 'ar' ? "'IBM Plex Sans Arabic', 'Geeza Pro', Tahoma, Arial, sans-serif" : "Nunito, 'Segoe UI', Arial, sans-serif";
+  const font = lang === 'ar' ? "Rubik, 'Geeza Pro', Tahoma, Arial, sans-serif" : "Nunito, 'Segoe UI', Arial, sans-serif";
   const head = lang === 'ar' ? font : "Poppins, 'Segoe UI', Arial, sans-serif";
   const logo = `cid:${LOGO_CID}`;
   const html = `<!doctype html><html lang="${lang}" dir="${dir}"><body style="margin:0;background:#F3EFE8;padding:24px 12px">

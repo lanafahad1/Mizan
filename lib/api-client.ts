@@ -24,7 +24,7 @@ export async function apiFetch<T = unknown>(path: string, { method = 'GET', body
     method,
     credentials: 'same-origin',
     cache: 'no-store',
-    headers: { Accept: 'application/json', 'X-CareBite-Request': '1', ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}) },
+    headers: { Accept: 'application/json', 'X-Mizan-Request': '1', ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}) },
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
   const data = await res.json().catch(() => ({}));

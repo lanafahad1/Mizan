@@ -82,8 +82,8 @@ export const AUTH: Record<string, string> = {
     'يتحكم في كل شيء: صلاحيات الموظفين، وأوامر الحمية والحساسية، والوجبات التي تحتاج إلى مراجعة، والتحقق من القائمة، وكل مهام الموظفين.',
   'Runs meal service: offers and confirms eligible meals, prepares and delivers trays, records intake, maintains the menu, answers requests.':
     'يدير خدمة الوجبات: يعرض الوجبات المناسبة ويؤكدها، ويجهّز الصواني ويوصلها، ويسجّل الكمية المتناولة، ويحدّث القائمة، ويرد على الطلبات.',
-  'Patient account linked to CB-1001: choose meals, give feedback, ask for help.': 'حساب مريض مرتبط بالملف CB-1001: يختار وجباته، ويبدي رأيه، ويطلب المساعدة.',
-  'Patient account linked to CB-1004 (peanut and tree nut allergies).': 'حساب مريض مرتبط بالملف CB-1004 (حساسية من الفول السوداني والمكسرات الشجرية).',
+  'Patient account linked to MZ-1001: choose meals, give feedback, ask for help.': 'حساب مريض مرتبط بالملف MZ-1001: يختار وجباته، ويبدي رأيه، ويطلب المساعدة.',
+  'Patient account linked to MZ-1004 (peanut and tree nut allergies).': 'حساب مريض مرتبط بالملف MZ-1004 (حساسية من الفول السوداني والمكسرات الشجرية).',
   'Member (personal use, no hospital): food diary, weight and blood pressure, personal targets.': 'عضو (استخدام شخصي، دون مستشفى): سجل الطعام، والوزن وضغط الدم، والأهداف الشخصية.',
 
   // login form

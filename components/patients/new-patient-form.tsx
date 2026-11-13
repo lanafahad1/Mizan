@@ -53,7 +53,7 @@ export function NewPatientForm({ reference, blank }: { reference: any; blank: an
         <p>{t('Start with the patient’s dietary requirements. Mizan screens the hospital menu against them first; preferences only rank the meals that pass.')}</p>
       </PageHead>
       <PageBody space="staff">
-        <Notice tone="warn" title={t('Demonstration only')}>{t('Never enter real patient names, record numbers or health information. Use a CB-#### identifier.')}</Notice>
+        <Notice tone="warn" title={t('Demonstration only')}>{t('Never enter real patient names, record numbers or health information. Use a MZ-#### identifier.')}</Notice>
         <FormErrors errors={errors}>
           <form ref={formRef} onSubmit={submit} noValidate className="flex flex-col gap-6" aria-describedby={formError ? 'np-error' : undefined}>
             {STEPS.map(([section, title, hint]) => (

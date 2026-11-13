@@ -46,26 +46,26 @@ export function seedHealthDemo({ repo, service, today, patientIds = {} }) {
   }
 
   // ---- hospital patients
-  const n = patientIds['CB-1001'];
+  const n = patientIds['MZ-1001'];
   if (n) {
-    safely(() => service.updateHealthProfile(asPatient('CB-1001'), 'me', { about: { sex: 'female', age: 52, heightCm: 158, activity: 'sedentary' } }));
+    safely(() => service.updateHealthProfile(asPatient('MZ-1001'), 'me', { about: { sex: 'female', age: 52, heightCm: 158, activity: 'sedentary' } }));
     [92.4, 92.1, 91.9, 91.6].forEach((w, i) => safely(() => service.addReading(staff, n, { type: 'weight', value: w, date: addDays(today, -(3 - i) * 2) })));
     safely(() => service.addReading(staff, n, { type: 'waist', value: 104, date: addDays(today, -6) }));
     [[148, 92, 5], [142, 90, 3], [136, 86, 1]].forEach(([s, d, ago]) => safely(() => service.addReading(staff, n, { type: 'bp', value: s, value2: d, date: addDays(today, -ago) })));
     [[168, 'fasting', 4], [151, 'fasting', 2], [182, 'after-meal', 1]].forEach(([v, c, ago]) => safely(() => service.addReading(staff, n, { type: 'glucose', value: v, context: c, date: addDays(today, -ago) })));
-    const a = safely(() => service.saveAssessment(asPatient('CB-1001'), 'me', { answers: { age: 52, sex: 'female', language: 'ar', heightCm: 158, weightKg: 92.4, weightDate: addDays(today, -6), measuredBy: 'staff', conditions: ['obesity', 't2d', 'hypertension'], prescribedDiet: 'yes', allergies: 'nka', mealsPerDay: 3, sugaryDrinks: 'occasionally', outsideFood: 'yes', appetite: 'usual', activity: 'sedentary', barriers: ['understanding'], helpWith: ['portions', 'home'], goal: 'Understand portions of rice and dates at home.', educationFormat: ['pictures', 'printable'] } }));
+    const a = safely(() => service.saveAssessment(asPatient('MZ-1001'), 'me', { answers: { age: 52, sex: 'female', language: 'ar', heightCm: 158, weightKg: 92.4, weightDate: addDays(today, -6), measuredBy: 'staff', conditions: ['obesity', 't2d', 'hypertension'], prescribedDiet: 'yes', allergies: 'nka', mealsPerDay: 3, sugaryDrinks: 'occasionally', outsideFood: 'yes', appetite: 'usual', activity: 'sedentary', barriers: ['understanding'], helpWith: ['portions', 'home'], goal: 'Understand portions of rice and dates at home.', educationFormat: ['pictures', 'printable'] } }));
     if (a) {
-      safely(() => service.submitAssessment(asPatient('CB-1001'), 'me', a.id));
+      safely(() => service.submitAssessment(asPatient('MZ-1001'), 'me', a.id));
       safely(() => service.reviewAssessment(admin, n, a.id, { decision: 'approved', review: { confirmedConditions: 'Obesity class 2, type 2 diabetes, hypertension. Consistent-carbohydrate, sodium-restricted diet.', kcal: 1500, carbs: 180, sodium: 2000, sugar: 25, sugarType: 'added', education: 'Portion guide (MOH exchange list) and home meal plan at discharge.', nextReviewOn: addDays(today, 3) } }));
     }
-    safely(() => service.addDiaryEntry(asPatient('CB-1001'), 'me', { date: today, meal: 'snack', quick: true, name: 'Dates brought by family (estimate)', values: { kcal: 120, carbs: 30, sugar: 28 } }));
+    safely(() => service.addDiaryEntry(asPatient('MZ-1001'), 'me', { date: today, meal: 'snack', quick: true, name: 'Dates brought by family (estimate)', values: { kcal: 120, carbs: 30, sugar: 28 } }));
   }
-  const f = patientIds['CB-1002'];
+  const f = patientIds['MZ-1002'];
   if (f) {
-    safely(() => service.updateHealthProfile(asPatient('CB-1002'), 'me', { about: { sex: 'male', age: 66, heightCm: 172, activity: 'sedentary' } }));
+    safely(() => service.updateHealthProfile(asPatient('MZ-1002'), 'me', { about: { sex: 'male', age: 66, heightCm: 172, activity: 'sedentary' } }));
     safely(() => service.addReading(staff, f, { type: 'weight', value: 101.5, date: addDays(today, -5) }));
     safely(() => service.addReading(staff, f, { type: 'bp', value: 152, value2: 94, date: addDays(today, -1) }));
-    const a = safely(() => service.saveAssessment(asPatient('CB-1002'), 'me', { answers: { age: 66, sex: 'male', heightCm: 172, weightKg: 101.5, weightDate: addDays(today, -5), measuredBy: 'staff', conditions: ['obesity', 'hypertension', 'cvd'], allergies: 'nka', sugaryDrinks: 'daily', appetite: 'usual', activity: 'sedentary', helpWith: ['choosing', 'labels'], goal: 'Cut down on soft drinks.' } }));
-    if (a) safely(() => service.submitAssessment(asPatient('CB-1002'), 'me', a.id));
+    const a = safely(() => service.saveAssessment(asPatient('MZ-1002'), 'me', { answers: { age: 66, sex: 'male', heightCm: 172, weightKg: 101.5, weightDate: addDays(today, -5), measuredBy: 'staff', conditions: ['obesity', 'hypertension', 'cvd'], allergies: 'nka', sugaryDrinks: 'daily', appetite: 'usual', activity: 'sedentary', helpWith: ['choosing', 'labels'], goal: 'Cut down on soft drinks.' } }));
+    if (a) safely(() => service.submitAssessment(asPatient('MZ-1002'), 'me', a.id));
   }
 }

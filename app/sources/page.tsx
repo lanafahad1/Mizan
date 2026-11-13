@@ -33,7 +33,7 @@ type Group = { id: string; title: string; intro: string; icon: typeof Landmark; 
 const GROUPS: Group[] = [
   { id: 'src-saudi', title: 'Saudi government', intro: 'The basis of every health and food rule.', icon: Landmark, badge: 'mint', keep: (x) => Boolean(x.saudi) },
   { id: 'src-intl', title: 'International', intro: 'Used only where no Saudi government equivalent was found.', icon: Globe, badge: 'rose', keep: (x) => !x.saudi && x.authority !== 'Mizan' },
-  { id: 'src-carebite', title: 'Mizan assumptions', intro: 'Documented prototype choices, not external guidance.', icon: FlaskConical, badge: 'outline', keep: (x) => x.authority === 'Mizan' },
+  { id: 'src-mizan', title: 'Mizan assumptions', intro: 'Documented prototype choices, not external guidance.', icon: FlaskConical, badge: 'outline', keep: (x) => x.authority === 'Mizan' },
 ];
 
 /** First sentence (shown on the card) and the rest (in "More detail"). */

@@ -18,7 +18,7 @@ iloveyou1 sunshine princess football baseball welcome1 welcome123 letmein1 letme
 superman batman123 trustno1 abc12345 abcd1234 abcdefgh aa123456 a1234567 qwer1234 admin123 admin1234
 administrator changeme changeme1 default1 master123 secret123 starwars whatever freedom1 computer internet
 michael1 jennifer shadow12 hello123 charlie1 mustang1 jordan23 liverpool chelsea1 arsenal1 manchester
-carebite carebite1 carebite123 hospital hospital1 nutrition patient1 doctor123 nurse123 ramadan1 saudi123
+mizan123 mizan2026 mizan1234 hospital hospital1 nutrition patient1 doctor123 nurse123 ramadan1 saudi123
 riyadh123 jeddah123 makkah123 madinah1 ksa12345 qwerty12 q1w2e3r4 passport 123qweasd 1234qwer 123123123`.split(/\s+/));
 
 /** Returns an error message, or null when the password is acceptable. */

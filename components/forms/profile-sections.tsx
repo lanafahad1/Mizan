@@ -47,7 +47,7 @@ export function SectionFields({ section, p, reference }: { section: Section; p: 
   if (section === 'details') {
     return (
       <div className="grid gap-4 sm:grid-cols-2">
-        <TextField id="f-demo" name="demoId" labelText="Demonstration patient identifier" defaultValue={p.demoId} placeholder="CB-1010" maxLength={7} autoCapitalize="characters" hint="Format CB-1234. Never enter a real medical record number." />
+        <TextField id="f-demo" name="demoId" labelText="Demonstration patient identifier" defaultValue={p.demoId} placeholder="MZ-1010" maxLength={7} autoCapitalize="characters" hint="Format MZ-1234. Never enter a real medical record number." />
         <TextField id="f-name" name="preferredName" labelText="Preferred name (fictional)" defaultValue={p.preferredName} maxLength={30} />
         <SelectField id="f-age" name="ageRange" labelText="Age range" value={p.ageRange} options={v.ageRanges} />
         <SelectField id="f-ward" name="ward" labelText="Hospital ward" value={p.ward} options={v.wards} />

@@ -12,7 +12,7 @@ const PRIVATE = ['/patients', '/dashboard', '/requests', '/schedule', '/kitchen'
 export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   if (PRIVATE.some((p) => pathname === p || pathname.startsWith(`${p}/`))) {
-    if (!getSessionCookie(request, { cookiePrefix: 'carebite' })) {
+    if (!getSessionCookie(request, { cookiePrefix: 'mizan' })) {
       const url = request.nextUrl.clone();
       url.pathname = '/login';
       url.search = `?next=${encodeURIComponent(pathname + search)}`;

@@ -7,7 +7,7 @@ const EMPTY = () => ({
   catalog: { ingredients: {}, dishes: {}, meals: {}, menu: { cycle: Array.from({ length: 7 }, () => ({})), dates: {} } },
 });
 
-export function createMemoryRepo(storage = null, key = 'carebite-hospital-demo-v5') {
+export function createMemoryRepo(storage = null, key = 'mizan-hospital-demo-v5') {
   let db;
   try { db = storage ? JSON.parse(storage.getItem(key) || 'null') : null; } catch { db = null; }
   db = { ...EMPTY(), ...(db ?? {}) };

@@ -326,7 +326,7 @@
   transform: scaleY(-1);
 }
 
-/* CareBite addition: a closed accordion nested inside an open one stays closed
+/* Mizan addition: a closed accordion nested inside an open one stays closed
    (the descendant selectors above would otherwise open every nested panel). */
 .t-acc[data-open="true"] .t-acc:not([data-open="true"]) .t-acc-panel { grid-template-rows: 0fr; transition: grid-template-rows var(--acc-collapse) var(--acc-ease); }
 .t-acc[data-open="true"] .t-acc:not([data-open="true"]) .t-acc-panel-inner { opacity: 0; filter: blur(2px); }

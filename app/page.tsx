@@ -10,9 +10,9 @@ import { Illustration } from '@/components/illustrations/illustration';
 import type { IllustrationName } from '@/lib/illustrations';
 import { getActor, homeFor } from '@/lib/server/session';
 import { buttonVariants } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Band, CtaBand } from '@/components/public/blocks';
 import { getT } from '@/lib/i18n/server';
+import { HeroAurora } from '@/components/public/hero-aurora';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT();
@@ -33,7 +33,7 @@ const SOURCE_BADGES = ['MOH', 'SFDA', 'Saudi National Diabetes Center', 'GFSA'];
 
 function Space({ icon: Icon, tone, title, who, children, action }: { icon: LucideIcon; tone: 'mint' | 'blush'; title: string; who: string; children: React.ReactNode; action: React.ReactNode }) {
   return (
-    <Card tone={tone} className="h-full gap-3">
+    <div className="mz-glass mz-rise flex h-full flex-col gap-3 rounded-[24px] p-5 sm:p-6" style={{ '--d': tone === 'mint' ? '260ms' : '360ms' } as React.CSSProperties}>
       <div className="flex items-center gap-3">
         <span className={`grid size-11 shrink-0 place-items-center rounded-full ${tone === 'mint' ? 'bg-sage text-heading' : 'bg-rose text-rose-ink'}`}><Icon className="size-5" aria-hidden /></span>
         <div className="flex min-w-0 flex-col">
@@ -43,7 +43,7 @@ function Space({ icon: Icon, tone, title, who, children, action }: { icon: Lucid
       </div>
       <div className="flex-1 text-[.97rem]">{children}</div>
       {action}
-    </Card>
+    </div>
   );
 }
 
@@ -55,15 +55,18 @@ export default async function Home() {
 
   return (
     <>
-      <section className="overflow-hidden bg-[radial-gradient(1200px_500px_at_85%_10%,var(--cb-rose),transparent_60%),radial-gradient(900px_500px_at_0%_100%,var(--cb-mint),transparent_60%)] py-10 sm:py-16">
+      <section className="relative isolate overflow-hidden py-10 sm:py-16">
+        <HeroAurora className="-z-20" />
+        {/* Soft cream glow behind the text keeps it readable over any part of the moving background. */}
+        <div aria-hidden="true" className="mz-hero-scrim pointer-events-none absolute inset-0 -z-10" />
         <div className="container-page grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-12">
           <div className="flex flex-col gap-5">
-            <h1 className="text-display">{hero[0]}<em className="not-italic text-rose-ink">{hero[1]}</em>{hero[2]}</h1>
-            <p className="text-[1.1rem]">{t('Track, plan and enjoy food that fits you, at home or in hospital.')}</p>
+            <h1 className="text-display mz-rise" style={{ '--d': '0ms' } as React.CSSProperties}>{hero[0]}<em className="not-italic text-rose-ink">{hero[1]}</em>{hero[2]}</h1>
+            <p className="mz-rise text-[1.1rem] text-[#3D3B52]" style={{ '--d': '90ms' } as React.CSSProperties}>{t('Track, plan and enjoy food that fits you, at home or in hospital.')}</p>
             {actor ? (
               <Link href={homeFor(actor)} className={buttonVariants({ size: 'lg', className: 'w-full sm:w-fit' })}><ChevronRight aria-hidden className="rtl:-scale-x-100" />{t('Go to my start page')}</Link>
             ) : null}
-            <ul className="flex flex-wrap gap-x-5 gap-y-2 text-[.9rem] text-muted-foreground">
+            <ul className="mz-rise flex flex-wrap gap-x-5 gap-y-2 text-[.9rem] font-semibold text-[#3D3B52]" style={{ '--d': '170ms' } as React.CSSProperties}>
               <li className="inline-flex items-center gap-1.5"><HeartPulse className="size-4 text-heading" aria-hidden />{t('Guided by the Ministry of Health and SFDA')}</li>
               <li className="inline-flex items-center gap-1.5"><Lock className="size-4 text-heading" aria-hidden />{t('Your diary stays private')}</li>
               <li className="inline-flex items-center gap-1.5"><Shield className="size-4 text-heading" aria-hidden />{t('Not clinically validated')}</li>

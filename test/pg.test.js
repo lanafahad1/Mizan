@@ -1,5 +1,5 @@
 // Postgres store tests. They need an empty, disposable database:
-//   TEST_DATABASE_URL=postgres://user:pass@localhost:5432/carebite_test npm test
+//   TEST_DATABASE_URL=postgres://user:pass@localhost:5432/mizan_test npm test
 // Every table in that database's public schema is dropped first.
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';

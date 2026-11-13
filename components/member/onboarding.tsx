@@ -19,7 +19,7 @@ import { useRefreshHealth, n0, OVERVIEW_KEY } from './daily';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-const KEY = 'carebite-welcome';
+const KEY = 'mizan-welcome';
 export function welcomeHidden(): boolean {
   try { return Boolean(window.localStorage.getItem(KEY)); } catch { return false; }
 }

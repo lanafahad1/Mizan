@@ -610,7 +610,7 @@ const MESSAGES: Dict = {
   "Leave blank for the MOH and SFDA default of 2,000 mg (5 g of salt) a day.": "اتركه فارغًا لاستخدام القيمة الافتراضية لوزارة الصحة والهيئة العامة للغذاء والدواء: 2,000 ملجم (5 جم ملح) يوميًا.",
   "Required for renal diets. Set by the admin for the stage of kidney disease.": "مطلوب للحميات الكلوية. يحدده المشرف حسب مرحلة مرض الكلى.",
   "Required for consistent-carbohydrate diets. Set by the admin; snacks get one-third.": "مطلوب لحميات الكربوهيدرات الثابتة. يحدده المشرف، والوجبة الخفيفة لها الثلث.",
-  "Use a demonstration identifier in the form CB-1234. Never enter a real medical record number.": "استخدم معرّفًا تجريبيًا بصيغة CB-1234. لا تدخل أبدًا رقم ملف طبي حقيقي.",
+  "Use a demonstration identifier in the form MZ-1234. Never enter a real medical record number.": "استخدم معرّفًا تجريبيًا بصيغة MZ-1234. لا تدخل أبدًا رقم ملف طبي حقيقي.",
   "Choose an age range.": "اختر الفئة العمرية.",
   "Choose the ward.": "اختر الجناح.",
   "Enter the bed or room, for example 12 or 4B-07.": "اكتب رقم السرير أو الغرفة، مثل 12 أو 4B-07.",

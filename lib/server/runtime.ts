@@ -9,13 +9,11 @@ import { getMigrations } from 'better-auth/db/migration';
 import { betterAuth } from 'better-auth';
 import { createPgStore, ensureSchema, withInitLock } from '@/domain/pg-store.js';
 import { createService } from '@/domain/service.js';
-import { seedCatalog, seedHospitalDemo, linkDemoAccounts, DEMO_ACCOUNTS, DEMO_PENDING_STAFF } from '@/domain/demo-data.js';
+import { seedCatalog, seedHospitalDemo, linkDemoAccounts, DEMO_ACCOUNTS, DEMO_PENDING_STAFF, DEMO_PASSWORD } from '@/domain/demo-data.js';
 import { seedHealthDemo } from '@/domain/health-demo.js';
 import { authOptions, type Auth } from './auth';
+import { createHash } from 'node:crypto';
 import { passwordProblem, USERNAME_RE, USERNAME_RULE } from '@/lib/password-policy';
-
-/** Published password of the synthetic demo accounts (demonstration access only). */
-export const DEMO_PASSWORD = 'CareBite#2026';
 
 // The domain is plain JavaScript; its objects are used untyped from TypeScript.
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -37,11 +35,11 @@ export type Runtime = {
   patientDemoId: (id: string) => Promise<string | null>;
 };
 
-const global = globalThis as unknown as { __carebite?: Promise<Runtime> };
+const global = globalThis as unknown as { __mizan?: Promise<Runtime> };
 
 export function getRuntime(): Promise<Runtime> {
-  global.__carebite ??= init().catch((err) => { global.__carebite = undefined; throw err; });
-  return global.__carebite;
+  global.__mizan ??= init().catch((err) => { global.__mizan = undefined; throw err; });
+  return global.__mizan;
 }
 
 function createPool() {
@@ -114,6 +112,7 @@ async function init(): Promise<Runtime> {
     await (await getMigrations(options)).runMigrations();
     const auth: Auth = betterAuth(options);
     const created = await seedDemoAccounts(auth, one);
+    await refreshDemoAccounts(auth, one);
     const counts = await one('SELECT (SELECT COUNT(*)::int FROM Meals) AS meals, (SELECT COUNT(*)::int FROM Patients) AS patients');
     if (!counts.meals) await write(({ repo }) => seedCatalog(repo, new Date().toISOString()));
     if (created || !counts.patients) await resetDemo();
@@ -149,6 +148,41 @@ async function seedDemoAccounts(auth: Auth, one: One): Promise<boolean> {
   for (const a of DEMO_ACCOUNTS) await make(a, { role: a.role, status: 'active', isDemo: true });
   await make(DEMO_PENDING_STAFF, { role: null, status: 'pending', isDemo: false, requestedRole: DEMO_PENDING_STAFF.requestedRole, requestNote: DEMO_PENDING_STAFF.requestNote });
   return created;
+}
+
+/**
+ * Keep the shared demo accounts of an existing database in line with the code:
+ * their email (the demo addresses moved to @mizan.test) and the published demo
+ * password (DEMO_PASSWORD). Runs at every start and is a no-op once done: the
+ * password is re-hashed only when DEMO_PASSWORD changed (a fingerprint of the
+ * public password is kept in Meta). Only the seeded accounts are touched: the
+ * shared demo accounts (isDemo, matched by username) and the seeded applicant
+ * (layla.applicant) while it still has a reserved .test address, which no real
+ * person's email can have. Real accounts are never changed.
+ */
+async function refreshDemoAccounts(auth: Auth, one: One) {
+  const ctx = await auth.$context;
+  const fingerprint = createHash('sha256').update(`mizan-demo:${DEMO_PASSWORD}`).digest('hex');
+  const passwordCurrent = (await one(`SELECT value FROM Meta WHERE key = 'demo_password'`))?.value === fingerprint;
+  let hash: string | null = null;
+  const seeds: (AccountSeed & { demo: boolean })[] = [...DEMO_ACCOUNTS.map((a: AccountSeed) => ({ ...a, demo: true })), { ...DEMO_PENDING_STAFF, demo: false }];
+  for (const a of seeds) {
+    const row = await one('SELECT id, email, "isDemo" FROM "user" WHERE username = $1', [a.username.toLowerCase()]);
+    if (!row) continue;
+    const seeded = a.demo
+      ? Boolean(row.isDemo)
+      : !row.isDemo && /\.test$/i.test(String(row.email ?? ''));
+    if (!seeded) continue;
+    const email = a.email.toLowerCase();
+    const moveEmail = row.email !== email && !(await one('SELECT 1 FROM "user" WHERE email = $1 AND id <> $2', [email, row.id]));
+    // The applicant's password is reset only together with its seeded email; the demo accounts follow DEMO_PASSWORD.
+    if (a.demo ? !passwordCurrent : moveEmail) {
+      hash ??= await ctx.password.hash(DEMO_PASSWORD);
+      await one(`UPDATE account SET password = $1, "updatedAt" = now() WHERE "userId" = $2 AND "providerId" = 'credential'`, [hash, row.id]);
+    }
+    if (moveEmail) await one('UPDATE "user" SET email = $1, "updatedAt" = now() WHERE id = $2', [email, row.id]);
+  }
+  if (!passwordCurrent) await one(`INSERT INTO Meta (key, value) VALUES ('demo_password', $1) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value`, [fingerprint]);
 }
 
 /**

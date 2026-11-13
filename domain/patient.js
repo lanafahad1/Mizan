@@ -84,7 +84,7 @@ function normalizeDetails(input, errors) {
     bed: clean(input.bed, 8).toUpperCase(),
   };
   // Admission status is changed only through the admit/discharge actions, never through this form.
-  if (!/^CB-\d{4}$/.test(d.demoId)) errors.demoId = 'Use a demonstration identifier in the form CB-1234. Never enter a real medical record number.';
+  if (!/^MZ-\d{4}$/.test(d.demoId)) errors.demoId = 'Use a demonstration identifier in the form MZ-1234. Never enter a real medical record number.';
   if (!d.ageRange) errors.ageRange = 'Choose an age range.';
   if (!d.ward) errors.ward = 'Choose the ward.';
   if (!/^[A-Z0-9-]{1,8}$/.test(d.bed)) errors.bed = 'Enter the bed or room, for example 12 or 4B-07.';

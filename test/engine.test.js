@@ -14,7 +14,7 @@ const catalog = buildCatalog({ dishes: DISHES, meals: MEALS, ingredients: INGRED
 
 function patient(over = {}) {
   const base = {
-    demoId: 'CB-0001', ageRange: '45-59', ward: '3A', bed: '1',
+    demoId: 'MZ-0001', ageRange: '45-59', ward: '3A', bed: '1',
     conditions: { selected: ['none'] },
     dietOrder: { categories: ['regular'], portionsPermitted: ['small', 'regular', 'large'] },
     allergies: { status: 'nka' },

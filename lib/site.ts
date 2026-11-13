@@ -1,6 +1,21 @@
 // Site-wide constants (safe for client and server).
 export const SITE_NAME = 'Mizan';
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? process.env.BETTER_AUTH_URL ?? 'http://localhost:3000').replace(/\/$/, '');
+/** An origin from an environment value ("https://host" or a bare "host"), trimmed and without a trailing slash; '' when unset or invalid. */
+export function originOf(value: string | undefined | null): string {
+  const v = value?.trim();
+  if (!v) return '';
+  try { return new URL(/^https?:\/\//i.test(v) ? v : `https://${v}`).origin; } catch { return ''; }
+}
+
+/**
+ * The site's public address: BETTER_AUTH_URL or NEXT_PUBLIC_SITE_URL when set, otherwise,
+ * on Vercel, the project's production domain (set by Vercel itself), otherwise local dev.
+ * Without the Vercel fallback a deployment missing BETTER_AUTH_URL trusted only
+ * http://localhost:3000, so sign-in failed with "Invalid origin" whenever the browser
+ * already had a cookie (for example the language choice).
+ */
+export const SITE_URL = originOf(process.env.NEXT_PUBLIC_SITE_URL) || originOf(process.env.BETTER_AUTH_URL)
+  || originOf(process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL) || 'http://localhost:3000';
 export const SITE_DESCRIPTION = 'Your plate, your balance. Log what you eat, know your daily calories and plan meals you enjoy, at home or in hospital. Built on guidance from the Saudi Ministry of Health and SFDA. A university Health Informatics project.';
 
 /** Credited on the site: the developer only (owner's decision, 2026-11-10). */

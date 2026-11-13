@@ -4,16 +4,17 @@
 // read a snapshot; every other method runs as one locked write transaction.
 //
 // CSRF: state-changing requests must be same-origin (Origin header), carry the
-// custom X-CareBite-Request header and a JSON body. Session cookies are
+// custom X-Mizan-Request header and a JSON body. Session cookies are
 // SameSite=Lax and HttpOnly.
 import 'server-only';
 import { NextResponse, type NextRequest } from 'next/server';
 import { getRuntime, type Ctx } from './runtime';
+import { AUTH_BASE_URL } from './auth';
 import { actorFromHeaders, toViewer, type Actor } from './session';
 import { createApiRoutes, matchRoute, errorBody } from '@/domain/routes.js';
 import { ServiceError } from '@/domain/service.js';
 import { can } from '@/domain/rbac.js';
-import { DEMO_ACCOUNTS } from '@/domain/demo-data.js';
+import { DEMO_ACCOUNTS, DEMO_PASSWORD } from '@/domain/demo-data.js';
 import { ROLES, label } from '@/domain/constants.js';
 
 const MAX_BODY = 100_000;
@@ -27,7 +28,7 @@ function sameOrigin(req: NextRequest): boolean {
   if (!origin) return false;
   try {
     const o = new URL(origin);
-    const allowed = new Set([req.nextUrl.host, req.headers.get('host'), process.env.BETTER_AUTH_URL ? new URL(process.env.BETTER_AUTH_URL).host : null].filter(Boolean));
+    const allowed = new Set([req.nextUrl.host, req.headers.get('host'), new URL(AUTH_BASE_URL).host].filter(Boolean));
     return allowed.has(o.host);
   } catch { return false; }
 }
@@ -49,7 +50,7 @@ const ROUTES = createApiRoutes(null);
 async function accountRoute(method: string, path: string, actor: Actor | null, body: Record<string, unknown>) {
   const rt = await getRuntime();
   if (method === 'GET' && path === '/api/demo-accounts') {
-    return { password: 'CareBite#2026', accounts: DEMO_ACCOUNTS.map(({ username, name, role, summary, patientDemoId }: { username: string; name: string; role: string; summary: string; patientDemoId?: string }) => ({ username, name, role, roleLabel: label(ROLES, role), summary, patientDemoId: patientDemoId ?? null })) };
+    return { password: DEMO_PASSWORD, accounts: DEMO_ACCOUNTS.map(({ username, name, role, summary, patientDemoId }: { username: string; name: string; role: string; summary: string; patientDemoId?: string }) => ({ username, name, role, roleLabel: label(ROLES, role), summary, patientDemoId: patientDemoId ?? null })) };
   }
   if (!path.startsWith('/api/account')) return undefined;
   if (!actor) throw new ServiceError(401, 'unauthenticated', 'Please log in to continue.');
@@ -77,7 +78,7 @@ export async function handleApi(req: NextRequest, segments: string[]) {
   const path = `/api/${segments.map(encodeURIComponent).join('/')}`;
   try {
     if (method !== 'GET' && method !== 'HEAD') {
-      if (req.headers.get('x-carebite-request') !== '1' || !sameOrigin(req)) return fail(403, 'csrf', 'Request rejected.');
+      if (req.headers.get('x-mizan-request') !== '1' || !sameOrigin(req)) return fail(403, 'csrf', 'Request rejected.');
     }
     const rt = await getRuntime();
     const actor = await actorFromHeaders(req.headers);

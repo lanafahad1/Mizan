@@ -7,7 +7,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { actorFromHeaders } from '@/lib/server/session';
 
 const HEADERS = { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
-const USER_AGENT = 'CareBite-student-project/1.0 (educational)';
+const USER_AGENT = 'Mizan-student-project/1.0 (educational)';
 const FIELDS = 'code,product_name,product_name_ar,brands,quantity,serving_size,serving_quantity,nutriments,allergens_tags';
 const TIMEOUT_MS = 4000;
 

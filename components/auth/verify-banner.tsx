@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/toast';
 import { useT } from '@/components/site/lang';
 
-const KEY = 'carebite-verify-dismissed';
+const KEY = 'mizan-verify-dismissed';
 
 export function VerifyEmailBanner({ email }: { email: string }) {
   const { t } = useT();

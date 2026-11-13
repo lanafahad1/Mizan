@@ -100,7 +100,7 @@ function OverviewList({ initial, initialQuery, canCreate }: ViewProps) {
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="pt-q">{t('Find a patient')}</Label>
-            <Input id="pt-q" type="search" placeholder={t('CB-1001, name or bed')} value={q} onChange={(e) => setQuery({ q: e.target.value })} autoComplete="off" />
+            <Input id="pt-q" type="search" placeholder={t('MZ-1001, name or bed')} value={q} onChange={(e) => setQuery({ q: e.target.value })} autoComplete="off" />
           </div>
         </div>
 

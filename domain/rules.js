@@ -199,21 +199,21 @@ export const SOURCES = {
     links: [{ label: 'Open Database Licence (ODbL) v1.0', url: 'https://opendatacommons.org/licenses/odbl/1-0/' }],
   },
   // ---- Mizan prototype assumptions (documented, not external guidance)
-  'CAREBITE-ALLOC': {
+  'MIZAN-ALLOC': {
     authority: 'Mizan', saudi: false,
     title: 'Mizan meal-share allocation (prototype assumption)',
     publisher: 'Mizan project team',
     url: null,
     summary: 'To screen one meal against a daily limit, the daily amount is divided by meal period: breakfast 25%, lunch 30%, dinner 30%, snack 15%. A snack’s carbohydrate allowance is one-third of the per-meal amount.',
   },
-  'CAREBITE-FLAGS': {
+  'MIZAN-FLAGS': {
     authority: 'Mizan', saudi: false,
     title: 'Mizan intake review prompts (prototype thresholds)',
     publisher: 'Mizan project team',
     url: null,
     summary: 'Thresholds chosen by the project team to prompt a nutrition team review of recorded intake. They are not a validated malnutrition screening tool; a hospital would apply its own nutrition screening and escalation policy.',
   },
-  'CAREBITE-PORTIONS': {
+  'MIZAN-PORTIONS': {
     authority: 'Mizan', saudi: false,
     title: 'Demonstration kitchen portion sizes',
     publisher: 'Mizan project team',
@@ -278,23 +278,23 @@ export const MEDICAL_RULES = [
   { ...base, id: 'DIET-NA', kind: 'limit', nutrient: 'sodium', unit: 'mg', method: 'daily-allocation', param: 'sodiumMgPerDay',
     title: 'Sodium limit per meal',
     logic: 'Sodium in the portion must not exceed the meal-period share of the daily limit in the diet order (default 2,000 mg a day, 5 g of salt, for sodium-restricted, heart-healthy and renal diets).',
-    sources: ['MOH-SALT', 'SFDA-SALT', 'MOH-KIDNEY', 'CAREBITE-ALLOC'] },
+    sources: ['MOH-SALT', 'SFDA-SALT', 'MOH-KIDNEY', 'MIZAN-ALLOC'] },
   { ...base, id: 'DIET-CHO', kind: 'limit', nutrient: 'carbs', unit: 'g', method: 'per-meal', param: 'carbsGPerMeal', required: true,
     title: 'Carbohydrate per meal',
     logic: 'Total carbohydrate in the portion (the SFCT “Total Carbohydrates” value, which includes dietary fibre) must not exceed the per-meal amount the admin sets in the diet order; snacks are limited to one-third of it. There is no fixed default: until the amount is set, meals need admin review. Available carbohydrate is shown alongside for the admin.',
-    sources: ['SDCPG', 'MOH-DIABETES', 'CAREBITE-ALLOC'] },
+    sources: ['SDCPG', 'MOH-DIABETES', 'MIZAN-ALLOC'] },
   { ...base, id: 'DIET-FIBER-RANK', kind: 'rank-per-100kcal', nutrient: 'fiber', unit: 'g', min: 3, points: 6,
     title: 'High-fibre preference',
     logic: 'Rank meals higher when the portion meets SFDA’s “high in fibre” level of at least 3 g of fibre per 100 kcal. Ranking only.',
     sources: ['SFDA-CLAIMS', 'MOH-FOODCHOICES'] },
   { ...base, id: 'DIET-K', kind: 'limit', nutrient: 'potassium', unit: 'mg', method: 'daily-allocation', param: 'potassiumMgPerDay', required: true,
-    title: 'Potassium limit per meal', logic: 'Potassium in the portion must not exceed the meal-period share of the admin’s daily limit.', sources: ['MOH-KIDNEY', 'CAREBITE-ALLOC'] },
+    title: 'Potassium limit per meal', logic: 'Potassium in the portion must not exceed the meal-period share of the admin’s daily limit.', sources: ['MOH-KIDNEY', 'MIZAN-ALLOC'] },
   { ...base, id: 'DIET-P', kind: 'limit', nutrient: 'phosphorus', unit: 'mg', method: 'daily-allocation', param: 'phosphorusMgPerDay', required: true,
-    title: 'Phosphorus limit per meal', logic: 'Phosphorus in the portion must not exceed the meal-period share of the admin’s daily limit.', sources: ['MOH-KIDNEY', 'CAREBITE-ALLOC'] },
+    title: 'Phosphorus limit per meal', logic: 'Phosphorus in the portion must not exceed the meal-period share of the admin’s daily limit.', sources: ['MOH-KIDNEY', 'MIZAN-ALLOC'] },
   { ...base, id: 'DIET-HP-RANK', kind: 'rank', nutrient: 'protein', unit: 'g', min: 20, points: 8,
     title: 'Protein preference', logic: 'Rank meals higher when the portion provides at least 20 g of protein (Mizan prototype threshold). Ranking only.', sources: [] },
   { ...base, id: 'SFDA-SALT-RANK', kind: 'rank-limit', nutrient: 'sodium', unit: 'mg', dailyLimit: 2000, points: 4, everyone: true,
-    title: 'Lower-salt preference (MOH and SFDA)', logic: 'For every patient, rank meals higher when sodium in the portion is within the meal-period share of 2,000 mg (5 g of salt) a day. Ranking only.', sources: ['MOH-SALT', 'SFDA-SALT', 'CAREBITE-ALLOC'] },
+    title: 'Lower-salt preference (MOH and SFDA)', logic: 'For every patient, rank meals higher when sodium in the portion is within the meal-period share of 2,000 mg (5 g of salt) a day. Ranking only.', sources: ['MOH-SALT', 'SFDA-SALT', 'MIZAN-ALLOC'] },
 ];
 
 /** Allergy, restriction, preparation and review rules (ingredient-based; they work without nutrient data). */
@@ -322,16 +322,16 @@ export const SAFETY_RULES = [
   { ...base, id: 'MENU-INFO-REVIEW', outcome: 'review', title: 'Menu information not yet verified', logic: 'When a meal’s ingredients, allergens, portion weights or nutrition source are changed by anyone other than an admin who verifies them, the meal needs admin review for every patient until an admin verifies the information.', sources: [] },
   { ...base, id: 'MENU-UNAVAILABLE', outcome: 'exclude', title: 'Meal unavailable', logic: 'A meal the kitchen marks as unavailable is not screened, offered or confirmed. Upcoming orders for it are put on hold for the nutrition team to replace.', sources: [] },
   { ...base, id: 'CHANGE-HOLD', outcome: 'flag', title: 'Changes after an order', logic: 'When a patient’s diet order, allergies or restrictions, a reported allergy, a meal’s information or its availability changes, every upcoming offered, chosen, confirmed or prepared meal is screened again. A meal that no longer passes is put on hold: it cannot be confirmed, prepared or delivered until the nutrition team replaces, cancels or (admin only) approves it, and the kitchen is alerted when the tray was already on its list. Delivered and past meals are never changed.', sources: [] },
-  { ...base, id: 'PORTION-SCREEN', outcome: 'exclude', title: 'Portions screened separately', logic: 'Each available portion permitted by the diet order is screened on its own. Only portions that pass every rule can be suggested; a meal with no passing portion is excluded.', sources: ['CAREBITE-PORTIONS'] },
+  { ...base, id: 'PORTION-SCREEN', outcome: 'exclude', title: 'Portions screened separately', logic: 'Each available portion permitted by the diet order is screened on its own. Only portions that pass every rule can be suggested; a meal with no passing portion is excluded.', sources: ['MIZAN-PORTIONS'] },
   { ...base, id: 'NO-OPTIONS', outcome: 'flag', title: 'No suitable meal', logic: 'If no meal on the menu passes screening for a meal period, the case is flagged for the nutrition team. Requirements are never relaxed automatically.', sources: [] },
 ];
 
 /** Review prompts raised from recorded intake. Indicators only: they never change screening. */
 export const INTAKE_FLAG_RULES = [
   { ...base, id: 'INTAKE-REFUSAL', outcome: 'flag', window: 6, days: 3, min: 2, title: 'Repeated meal refusal',
-    logic: 'Flag the patient when 2 or more of their last 6 recorded meals (within 3 days) were refused.', sources: ['CAREBITE-FLAGS'] },
+    logic: 'Flag the patient when 2 or more of their last 6 recorded meals (within 3 days) were refused.', sources: ['MIZAN-FLAGS'] },
   { ...base, id: 'INTAKE-LOW', outcome: 'flag', window: 6, days: 3, min: 3, title: 'Low reported intake',
-    logic: 'Flag the patient when 3 or more of their last 6 recorded meals (within 3 days) were recorded as none or some eaten.', sources: ['CAREBITE-FLAGS'] },
+    logic: 'Flag the patient when 3 or more of their last 6 recorded meals (within 3 days) were recorded as none or some eaten.', sources: ['MIZAN-FLAGS'] },
 ];
 
 export function ruleById(id) {

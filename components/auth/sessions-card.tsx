@@ -70,8 +70,8 @@ export function SessionsCard({ shared = false }: { shared?: boolean }) {
     void load();
     // The password form signs out other devices: refresh the list afterwards.
     const onChange = () => void load();
-    window.addEventListener('carebite:sessions-changed', onChange);
-    return () => window.removeEventListener('carebite:sessions-changed', onChange);
+    window.addEventListener('mizan:sessions-changed', onChange);
+    return () => window.removeEventListener('mizan:sessions-changed', onChange);
   }, [load]);
 
   const revokeOthers = async () => {

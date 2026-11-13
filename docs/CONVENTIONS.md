@@ -45,7 +45,7 @@ health space only, never visible to hospital roles. Permissions are named in `do
    Never call `fetch` directly; never put secrets or tokens in client code.
 
 The JSON API is `app/api/[...path]/route.ts` → `lib/server/api-handler.ts` (CSRF: same origin +
-`X-CareBite-Request` header, which `apiSend` adds). Auth endpoints are better-auth at `/api/auth/*`
+`X-Mizan-Request` header, which `apiSend` adds). Auth endpoints are better-auth at `/api/auth/*`
 (use `authClient` from `@/lib/auth-client`).
 
 ## Components you should reuse (do not modify shared files; create area-local ones instead)
@@ -91,8 +91,8 @@ to `<script type="application/ld+json">`). Private pages use `privateMetadata` (
 ## Dev and testing
 - One shared dev server runs at http://localhost:3000 (do **not** start another, restart it, delete
   the database, or call the demo reset endpoint — other contributors are testing at the same time).
-- Demo accounts (password `CareBite#2026`): `admin.demo`, `staff.demo`, `noura.1001` (patient CB-1001),
-  `khalid.1004` (patient CB-1004); `layla.applicant` is a pending staff request.
+- Demo accounts (password `Mizan#2026`): `admin.demo`, `staff.demo`, `noura.1001` (patient MZ-1001),
+  `khalid.1004` (patient MZ-1004); `layla.applicant` is a pending staff request.
 - Type-check: `npx tsc --noEmit -p .` (fix errors in your files; ignore other areas' in-progress errors).
 - Browser check (Playwright, Chromium preinstalled):
   `node /tmp/claude-0/-home-user/f675115f-ca25-54e1-818a-5df21ee58ab7/scratchpad/pw/nx.mjs http://localhost:3000 <outdir> <username|-> /path1 /path2`

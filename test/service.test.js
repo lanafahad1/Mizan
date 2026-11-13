@@ -26,7 +26,7 @@ beforeEach(() => {
 const tomorrow = () => addDays(today, 1);
 const eligibleOn = (demoId, period, date) => recommend({ ...repo.getPatient(ids[demoId]), reportedAllergies: [] }, service.catalog(), { mealIds: menuFor(service.menu(), date)[period], period }).eligible.map((e) => e.mealId);
 /** A fresh admitted patient with a regular diet, so menu screening has eligible meals. */
-function freshPatient(demoId = 'CB-2001', over = {}) {
+function freshPatient(demoId = 'MZ-2001', over = {}) {
   const r = service.createPatient(admin, { demoId, preferredName: 'Test', ageRange: '30-44', ward: '3A', bed: '20', conditions: { selected: ['none'] }, dietOrder: { categories: ['regular'], portionsPermitted: ['small', 'regular', 'large'] }, allergies: { status: 'nka' }, preferences: {}, ...over });
   ids[demoId] = r.patient.id;
   return r.patient;
@@ -34,11 +34,11 @@ function freshPatient(demoId = 'CB-2001', over = {}) {
 
 test('1. a patient updates preferences, chooses an offered meal and sees the nutrition team confirm it', () => {
   const p = freshPatient();
-  const me = asPatient('CB-2001');
+  const me = asPatient('MZ-2001');
   service.updatePatientSection(me, p.id, 'preferences', { cuisines: ['Saudi'], favorites: ['chicken'], dislikes: ['eggplant'], preferredPortion: 'regular' });
   assert.deepEqual(repo.getPatient(p.id).preferences.dislikes, ['eggplant']);
   const date = tomorrow();
-  const options = eligibleOn('CB-2001', 'lunch', date).slice(0, 3);
+  const options = eligibleOn('MZ-2001', 'lunch', date).slice(0, 3);
   service.offerOptions(staff, p.id, { date, period: 'lunch', items: options });
   let day = service.getMyMeals(me, p.id, { date });
   assert.equal(day.periods.find((x) => x.period === 'lunch').message, 'Choose your lunch.');
@@ -56,7 +56,7 @@ test('1. a patient updates preferences, chooses an offered meal and sees the nut
 
 test('staff can confirm directly, and who confirmed is recorded', () => {
   const p = freshPatient();
-  const mealId = eligibleOn('CB-2001', 'dinner', tomorrow())[0];
+  const mealId = eligibleOn('MZ-2001', 'dinner', tomorrow())[0];
   const r = service.confirmMeal(staff, p.id, { date: tomorrow(), period: 'dinner', mealId });
   assert.equal(r.entry.confirmMode, 'direct');
   assert.equal(r.entry.history.at(-1).by, 'Test Staff');
@@ -64,15 +64,15 @@ test('staff can confirm directly, and who confirmed is recorded', () => {
 
 test('2. kitchen staff mark the meal prepared and delivered; delivered is not eaten', () => {
   const p = freshPatient();
-  const mealId = eligibleOn('CB-2001', 'lunch', today)[0];
+  const mealId = eligibleOn('MZ-2001', 'lunch', today)[0];
   const { entry } = service.confirmMeal(staff, p.id, { date: today, period: 'lunch', mealId });
-  assert.throws(() => service.progressEntry(asPatient('CB-2001'), entry.id, { to: 'prepared' }), /Only staff/);
+  assert.throws(() => service.progressEntry(asPatient('MZ-2001'), entry.id, { to: 'prepared' }), /Only staff/);
   assert.throws(() => service.progressEntry(staff, entry.id, { to: 'delivered' }), /prepared before/);
   assert.throws(() => service.recordIntake(staff, p.id, { date: today, period: 'lunch', accepted: true, amount: 'all' }), /delivered/);
   service.progressEntry(staff, entry.id, { to: 'prepared' });
-  assert.equal(service.getMyMeals(asPatient('CB-2001'), p.id, {}).periods.find((x) => x.period === 'lunch').message, 'Your meal is being prepared.');
+  assert.equal(service.getMyMeals(asPatient('MZ-2001'), p.id, {}).periods.find((x) => x.period === 'lunch').message, 'Your meal is being prepared.');
   service.progressEntry(staff, entry.id, { to: 'delivered' });
-  const view = service.getMyMeals(asPatient('CB-2001'), p.id, {});
+  const view = service.getMyMeals(asPatient('MZ-2001'), p.id, {});
   assert.equal(view.periods.find((x) => x.period === 'lunch').message, 'Your meal has been delivered. We hope you enjoy it.');
   assert.ok(view.todo.some((t) => t.kind === 'feedback' && t.period === 'lunch'), 'patient is asked how it was');
   assert.equal(service.getPatient(staff, p.id).intake.length, 0, 'delivery records no intake');
@@ -81,12 +81,12 @@ test('2. kitchen staff mark the meal prepared and delivered; delivered is not ea
 });
 
 test('3. a patient submits an alternative-meal request and sees the response; statuses match on both sides', () => {
-  const me = asPatient('CB-1004');
-  const r = service.createRequest(me, ids['CB-1004'], { type: 'alternative', date: today, period: 'dinner', message: 'Something without olives please.' });
+  const me = asPatient('MZ-1004');
+  const r = service.createRequest(me, ids['MZ-1004'], { type: 'alternative', date: today, period: 'dinner', message: 'Something without olives please.' });
   assert.equal(r.request.statusLabel, 'Pending');
   assert.ok(service.listRequests(staff).requests.some((x) => x.id === r.request.id && x.statusLabel === 'Pending'));
   service.resolveRequest(staff, r.request.id, { status: 'resolved', response: 'We have offered two new options.' });
-  const mine = service.listPatientRequests(me, ids['CB-1004']).requests.find((x) => x.id === r.request.id);
+  const mine = service.listPatientRequests(me, ids['MZ-1004']).requests.find((x) => x.id === r.request.id);
   assert.equal(mine.statusLabel, 'Resolved');
   assert.equal(mine.response, 'We have offered two new options.');
   assert.equal(service.listRequests(staff, { status: 'all' }).requests.find((x) => x.id === r.request.id).status, 'resolved');
@@ -99,7 +99,7 @@ test('4. a reported allergy change reaches the nutrition team and affected meals
   const sesameMeal = 'hummus-veggie-sticks';
   assert.ok(date, 'hummus is on the snack menu within the week');
   service.confirmMeal(staff, p.id, { date, period: 'snack', mealId: sesameMeal });
-  const me = asPatient('CB-2001');
+  const me = asPatient('MZ-2001');
   assert.throws(() => service.updatePatientSection(me, p.id, 'clinical', { ...repo.getPatient(p.id) }), /reviewed by your nutrition team/);
   const rep = service.createRequest(me, p.id, { type: 'clinical-change', reportKind: 'new-allergy', allergen: 'sesame', message: 'I was told to avoid sesame.' });
   assert.equal(rep.request.clinical, true);
@@ -118,7 +118,7 @@ test('4. a reported allergy change reaches the nutrition team and affected meals
   const entry = repo.getEntry(p.id, date, 'snack');
   assert.equal(entry.status, 'on-hold');
   assert.throws(() => service.resolveEntry(admin, p.id, { date, period: 'snack', action: 'keep', note: 'x' }), /conflicts/);
-  const replacement = eligibleOn('CB-2001', 'snack', date).find((m) => m !== sesameMeal);
+  const replacement = eligibleOn('MZ-2001', 'snack', date).find((m) => m !== sesameMeal);
   const conf = service.confirmMeal(staff, p.id, { date, period: 'snack', mealId: replacement });
   assert.equal(conf.entry.status, 'confirmed');
   assert.equal(conf.entry.replaces.mealId, sesameMeal);
@@ -127,17 +127,17 @@ test('4. a reported allergy change reaches the nutrition team and affected meals
 
 test('a held meal cannot be confirmed, prepared or delivered until reviewed', () => {
   const p = freshPatient();
-  const mealId = eligibleOn('CB-2001', 'lunch', today)[0];
+  const mealId = eligibleOn('MZ-2001', 'lunch', today)[0];
   const { entry } = service.confirmMeal(staff, p.id, { date: today, period: 'lunch', mealId });
   service.setAvailability(staff, mealId, { available: false, reason: 'Out of stock today' });
   assert.equal(repo.getEntryById(entry.id).status, 'on-hold');
   assert.throws(() => service.progressEntry(staff, entry.id, { to: 'prepared' }), /on hold/);
-  assert.throws(() => service.selectMeal(asPatient('CB-2001'), p.id, { date: today, period: 'lunch', mealId }), /on hold/);
+  assert.throws(() => service.selectMeal(asPatient('MZ-2001'), p.id, { date: today, period: 'lunch', mealId }), /on hold/);
 });
 
 test('5. a meal becomes unavailable after selection and the team arranges a replacement; the kitchen never gets both', () => {
   const p = freshPatient();
-  const [first, second] = eligibleOn('CB-2001', 'lunch', today);
+  const [first, second] = eligibleOn('MZ-2001', 'lunch', today);
   const { entry } = service.confirmMeal(staff, p.id, { date: today, period: 'lunch', mealId: first });
   service.progressEntry(staff, entry.id, { to: 'prepared' });
   const r = service.setAvailability(staff, first, { available: false, reason: 'Ran out' });
@@ -160,13 +160,13 @@ test('5. a meal becomes unavailable after selection and the team arranges a repl
 });
 
 test('6. a discharged patient leaves future kitchen lists while historical records remain', () => {
-  const pid = ids['CB-1003'];
+  const pid = ids['MZ-1003'];
   const before = service.getPatient(staff, pid);
-  assert.ok(service.getKitchenSummary(staff, { date: today }).trays.some((t) => t.demoId === 'CB-1003'));
+  assert.ok(service.getKitchenSummary(staff, { date: today }).trays.some((t) => t.demoId === 'MZ-1003'));
   const r = service.dischargePatient(staff, pid, { note: 'Discharged home' });
   assert.ok(r.cancelled.length > 0);
-  assert.ok(!service.getKitchenSummary(staff, { date: today }).trays.some((t) => t.demoId === 'CB-1003'));
-  assert.ok(!service.getSchedule(staff, { date: today }).rows.some((x) => x.demoId === 'CB-1003'));
+  assert.ok(!service.getKitchenSummary(staff, { date: today }).trays.some((t) => t.demoId === 'MZ-1003'));
+  assert.ok(!service.getSchedule(staff, { date: today }).rows.some((x) => x.demoId === 'MZ-1003'));
   assert.ok(!service.listPatients(staff).patients.some((x) => x.id === pid));
   assert.ok(service.listPatients(staff, { include: 'discharged' }).patients.some((x) => x.id === pid));
   const after = service.getPatient(staff, pid);
@@ -180,12 +180,12 @@ test('6. a discharged patient leaves future kitchen lists while historical recor
 
 test('7. patient and staff feedback for the same meal do not inflate dashboard counts', () => {
   const p = freshPatient();
-  const mealId = eligibleOn('CB-2001', 'lunch', today)[0];
+  const mealId = eligibleOn('MZ-2001', 'lunch', today)[0];
   const { entry } = service.confirmMeal(staff, p.id, { date: today, period: 'lunch', mealId });
   service.progressEntry(staff, entry.id, { to: 'prepared' });
   service.progressEntry(staff, entry.id, { to: 'delivered' });
   const before = service.getDashboard(staff).week;
-  service.recordIntake(asPatient('CB-2001'), p.id, { date: today, period: 'lunch', accepted: true, amount: 'all', satisfaction: 4 });
+  service.recordIntake(asPatient('MZ-2001'), p.id, { date: today, period: 'lunch', accepted: true, amount: 'all', satisfaction: 4 });
   const mid = service.getDashboard(staff).week;
   service.recordIntake(staff, p.id, { date: today, period: 'lunch', accepted: true, amount: 'most', measuredWasteG: 60 });
   const after = service.getDashboard(staff).week;
@@ -196,28 +196,28 @@ test('7. patient and staff feedback for the same meal do not inflate dashboard c
   assert.equal(o.amount, 'most');
   assert.equal(o.satisfaction, 4);
   assert.equal(o.measuredWasteG, 60);
-  assert.throws(() => service.recordIntake(asPatient('CB-2001'), p.id, { date: today, period: 'lunch', accepted: true, amount: 'all', measuredWasteG: 10 }), /attention/);
+  assert.throws(() => service.recordIntake(asPatient('MZ-2001'), p.id, { date: today, period: 'lunch', accepted: true, amount: 'all', measuredWasteG: 10 }), /attention/);
 });
 
 test('8. each role reaches only its own information and actions', () => {
-  const noura = asPatient('CB-1001');
-  assert.throws(() => service.getPatient(noura, ids['CB-1004']), /only see your own/);
+  const noura = asPatient('MZ-1001');
+  assert.throws(() => service.getPatient(noura, ids['MZ-1004']), /only see your own/);
   assert.throws(() => service.getKitchenSummary(noura), /permission/);
   assert.throws(() => service.listPatients(noura), /permission/);
   // Staff run meal service but cannot change clinical information, approve review items, verify the menu or manage access.
   assert.ok(service.listPatients(staff).patients.length > 0);
   assert.ok(service.getKitchenSummary(staff, { date: today }));
-  assert.throws(() => service.updatePatientSection(staff, ids['CB-1001'], 'clinical', repo.getPatient(ids['CB-1001'])), /Only an admin/);
+  assert.throws(() => service.updatePatientSection(staff, ids['MZ-1001'], 'clinical', repo.getPatient(ids['MZ-1001'])), /Only an admin/);
   assert.throws(() => service.verifyMeal(staff, 'jareesh', { note: 'x' }), /Only an admin/);
   assert.throws(() => service.listStaff(staff), /Only an admin/);
-  assert.throws(() => service.deletePatient(staff, ids['CB-1001'], { confirmDemoId: 'CB-1001' }), /Only an admin/);
+  assert.throws(() => service.deletePatient(staff, ids['MZ-1001'], { confirmDemoId: 'MZ-1001' }), /Only an admin/);
   // The admin controls everything: patients, clinical edits, menu verification and staff access.
   assert.ok(service.listPatients(admin).patients.length > 0);
   assert.ok(service.listStaff(admin));
   assert.throws(() => service.verifyMeal(admin, 'jareesh', { note: 'Checked' }), /already verified/, 'admins reach menu verification');
   const pending = actor(null, 'Applicant', { status: 'pending' });
   assert.throws(() => service.getSchedule(pending), /not active/);
-  const own = service.getPatient(noura, ids['CB-1001']);
+  const own = service.getPatient(noura, ids['MZ-1001']);
   assert.equal(own.audit.length, 0);
   assert.equal(own.patient.dietOrder.notes, '');
 });
@@ -237,7 +237,7 @@ test('staff access is approved by an administrator; demo accounts cannot be chan
 test('menu changes by the kitchen need admin verification and re-screen upcoming orders', () => {
   const p = freshPatient();
   const date = tomorrow();
-  const mealId = eligibleOn('CB-2001', 'lunch', date).find((m) => service.catalog().byId[m].type === 'single');
+  const mealId = eligibleOn('MZ-2001', 'lunch', date).find((m) => service.catalog().byId[m].type === 'single');
   service.confirmMeal(staff, p.id, { date, period: 'lunch', mealId });
   const dish = repo.getCatalogData().dishes.find((d) => d.id === service.catalog().byId[mealId].components[0].dishId);
   const r = service.saveDish(staff, { ...dish, nutritionSource: dish.nutrition.source, sfctId: dish.nutrition.sfctId, ingredients: [...dish.ingredients, { ing: 'sesame-seeds', g: 2 }] });
@@ -251,7 +251,7 @@ test('menu changes by the kitchen need admin verification and re-screen upcoming
 });
 
 test('no suitable options: requirements are never relaxed', () => {
-  const p = freshPatient('CB-2002', { allergies: { status: 'recorded', confirmed: ['gluten', 'milk', 'egg', 'fish', 'sesame', 'soy', 'tree_nut', 'peanut', 'mustard', 'celery'] } });
+  const p = freshPatient('MZ-2002', { allergies: { status: 'recorded', confirmed: ['gluten', 'milk', 'egg', 'fish', 'sesame', 'soy', 'tree_nut', 'peanut', 'mustard', 'celery'] } });
   const plan = service.getDayPlan(staff, p.id, { date: today });
   for (const per of plan.periods) for (const m of per.screening.eligible) assert.ok(!m.allergens.contains.some((a) => ['gluten', 'milk', 'egg'].includes(a)));
   const auto = service.autoSchedule(staff, p.id, { from: today, days: 1 });
@@ -261,7 +261,7 @@ test('no suitable options: requirements are never relaxed', () => {
 test('the demonstration hospital seeds every workflow state', () => {
   const statuses = new Set(repo.listEntries({}).map((e) => e.status));
   for (const s of ['offered', 'selected', 'confirmed', 'prepared', 'delivered', 'on-hold', 'cancelled']) assert.ok(statuses.has(s), s);
-  assert.equal(repo.getPatient(ids['CB-1010']).status, 'discharged');
+  assert.equal(repo.getPatient(ids['MZ-1010']).status, 'discharged');
   const both = service.getDashboard(staff).week.both;
   assert.ok(both > 0, 'some meals have both a patient and a staff record');
 });
