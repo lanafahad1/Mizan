@@ -9,7 +9,8 @@ import { formatDate } from '@/lib/format';
 import { useT } from '@/components/site/lang';
 import { n0, type Week } from './daily';
 
-export function WeekCard({ week }: { week: Week }) {
+/** `links: false` hides the links to the person's own pages (the care team reading a patient's week). */
+export function WeekCard({ week, links = true }: { week: Week; links?: boolean }) {
   const { t, lang } = useT();
   const target = week.target;
   const top = Math.max(target ?? 0, ...week.days.map((d) => d.kcal), 1) * 1.1;
@@ -45,11 +46,11 @@ export function WeekCard({ week }: { week: Week }) {
         <div className="flex flex-col rounded-[14px] bg-muted px-3 py-2.5">
           <dt className="flex items-center gap-1 text-sm text-muted-foreground"><Scale className="size-3.5" aria-hidden />{t('Weight change')}</dt>
           <dd className="m-0 font-display text-xl font-semibold text-heading tabular">
-            {wc == null ? <Link href="/my-health?add=weight" className="font-sans text-sm font-semibold">{t('Add a weight')}</Link> : <span dir="ltr">{wc > 0 ? '+' : ''}{wc.toLocaleString('en-US', { maximumFractionDigits: 1 })} {t('kg')}</span>}
+            {wc == null ? (links ? <Link href="/my-health?add=weight" className="font-sans text-sm font-semibold">{t('Add a weight')}</Link> : <span className="font-sans text-sm font-semibold text-muted-foreground">{t('No weight this week')}</span>) : <span dir="ltr">{wc > 0 ? '+' : ''}{wc.toLocaleString('en-US', { maximumFractionDigits: 1 })} {t('kg')}</span>}
           </dd>
         </div>
       </dl>
-      <Link href="/today" className="self-start text-sm font-semibold">{t('Open your diary')}</Link>
+      {links ? <Link href="/today" className="self-start text-sm font-semibold">{t('Open your diary')}</Link> : null}
     </section>
   );
 }

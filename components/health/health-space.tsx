@@ -137,7 +137,7 @@ export function HealthSpace({ who, initial, reference, canReview = false, assess
         <p className="text-sm text-muted-foreground">
           {o.profile.conditions?.length ? <>{t('Conditions:')} {o.profile.conditions.map((c: string) => label(reference.vocab.conditions, c)).join(t(', '))}. </> : null}
           {o.profile.allergies?.length ? <>{t('Allergies:')} {o.profile.allergies.map((c: string) => label(reference.vocab.allergens, c)).join(t(', '))}. </> : null}
-          {t('Your health space is private. Hospital staff can’t see it.')}
+          {t('Your health space is private. Healthcare providers can’t see it.')}
         </p>
       ) : null}
     </div>

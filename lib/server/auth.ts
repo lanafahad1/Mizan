@@ -159,7 +159,7 @@ export function authOptions(db: Pool, domain: Domain) {
           } else if (body.accountType === 'patient') {
             if (!String(body.linkCode ?? '').trim()) fieldError('linkCode', 'Enter the link code the nutrition team gave you.');
           } else if (body.accountType !== 'member') {
-            fieldError('accountType', 'Choose a member, patient or staff account.');
+            fieldError('accountType', 'Choose a member, patient or healthcare provider account.');
           }
         }
         if (ctx.path === '/reset-password') {

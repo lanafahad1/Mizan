@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { toast } from '@/components/ui/toast';
 import { Panel, When, useFormErrors, FormMessage } from '@/components/staff/ui';
 import { useT } from '@/components/site/lang';
+import { ProviderProfileDialog } from '@/components/care/provider-profile';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type User = any;
@@ -21,8 +22,8 @@ type Decision = 'approve' | 'decline' | 'role' | 'deactivate' | 'reactivate';
 
 const KEY = '/api/admin/staff';
 const DECISIONS: Record<Decision, { title: string; intro: string; needRole?: boolean; noteLabel?: string; button: string; danger?: boolean }> = {
-  approve: { title: 'Approve staff access', intro: 'Check the person’s identity and job through the hospital’s own process first. The role decides what they can see and do.', needRole: true, button: 'Approve' },
-  decline: { title: 'Decline staff access', intro: 'The person will see your reason when they log in.', noteLabel: 'Reason (required)', button: 'Decline', danger: true },
+  approve: { title: 'Approve provider access', intro: 'Check the person’s identity and job through the hospital’s own process first. The role decides what they can see and do.', needRole: true, button: 'Approve' },
+  decline: { title: 'Decline provider access', intro: 'The person will see your reason when they log in.', noteLabel: 'Reason (required)', button: 'Decline', danger: true },
   role: { title: 'Change role', intro: 'The new role applies immediately.', needRole: true, button: 'Change role' },
   deactivate: { title: 'Deactivate account', intro: 'The person is signed out and can no longer log in. Their audit history is kept.', button: 'Deactivate', danger: true },
   reactivate: { title: 'Reactivate account', intro: 'The account gets its previous role back.', button: 'Reactivate' },
@@ -34,15 +35,19 @@ export function StaffAccessView({ initial }: { initial: Data }) {
   const d = data ?? initial;
   const [open, setOpen] = React.useState<{ user: User; decision: Decision } | null>(null);
   const decide = (user: User, decision: Decision) => setOpen({ user, decision });
+  // Specialty of each active healthcare provider (shown to patients on their care team).
+  const { data: providers } = useApi<{ id: string; specialtyLabel: string | null }[]>('/api/providers');
+  const specialty = new Map((providers ?? []).map((p) => [p.id, p.specialtyLabel]));
+  const [profile, setProfile] = React.useState<User | null>(null);
 
   return (
     <>
-      <PageHead space="staff" eyebrow={t('Hospital administration')} title={t('Staff Access')}>
-        <p>{t('Admins issue or approve staff accounts here and give each person their role. Asking for access never grants a role by itself.')}</p>
+      <PageHead space="staff" eyebrow={t('Hospital administration')} title={t('Provider access')}>
+        <p>{t('Admins issue or approve healthcare provider accounts here, give each person their role and can edit their profile. Asking for access never grants a role by itself.')}</p>
       </PageHead>
       <PageBody space="staff">
-        <Notice tone="warn" title={t('Demonstration access only')} role="note">{t('This academic prototype does not verify anyone’s identity or employment. A real hospital would issue staff accounts through its identity system (for example single sign-on) after HR and credential checks.')}</Notice>
-        {error ? <Notice tone="danger" title={t('We couldn’t refresh staff access.')}>{t(error.message)} {t('Check your connection and try again.')}</Notice> : null}
+        <Notice tone="warn" title={t('Demonstration access only')} role="note">{t('This academic prototype does not verify anyone’s identity or employment. A real hospital would issue healthcare provider accounts through its identity system (for example single sign-on) after HR and credential checks.')}</Notice>
+        {error ? <Notice tone="danger" title={t('We couldn’t refresh provider access.')}>{t(error.message)} {t('Check your connection and try again.')}</Notice> : null}
 
         <Panel id="sa-p" icon={Clock} title={t('Waiting for approval ({n})', { n: d.pending.length })}>
           {d.pending.length ? (
@@ -64,20 +69,21 @@ export function StaffAccessView({ initial }: { initial: Data }) {
                 </li>
               ))}
             </ul>
-          ) : <p className="text-muted-foreground">{t('No one is waiting for approval. New staff can ask for access from “Create account → Hospital staff”.')}</p>}
+          ) : <p className="text-muted-foreground">{t('No one is waiting for approval. New healthcare providers can ask for access from “Create account → Healthcare provider”.')}</p>}
         </Panel>
 
-        <Panel id="sa-s" icon={Users} title="Staff accounts">
-          <Table caption={t('Staff accounts')}>
+        <Panel id="sa-s" icon={Users} title="Provider accounts">
+          <Table caption={t('Provider accounts')}>
             <thead><tr><Th scope="col">{t('Person')}</Th><Th scope="col">{t('Role')}</Th><Th scope="col">{t('Status')}</Th><Th scope="col">{t('Decided')}</Th><Th scope="col">{t('Actions')}</Th></tr></thead>
             <tbody>
               {d.staff.map((u) => (
                 <tr key={u.id}>
                   <Th scope="row" className="min-w-40 bg-transparent font-sans text-sm font-semibold normal-case tracking-normal text-foreground">{u.name}<br /><span className="text-xs font-normal text-muted-foreground">@{u.username}{u.isDemo ? ` · ${t('shared demo account')}` : ''}</span></Th>
-                  <Td>{t(u.roleLabel)}</Td>
+                  <Td>{t(u.roleLabel)}{specialty.get(u.id) ? <><br /><span className="text-xs text-muted-foreground">{t(specialty.get(u.id) as string)}</span></> : null}</Td>
                   <Td>{u.status === 'active' ? <Badge variant="ok"><Check aria-hidden />{t(u.statusLabel)}</Badge> : <Badge variant="outline"><XIcon aria-hidden />{t(u.statusLabel)}</Badge>}</Td>
                   <Td className="min-w-40 text-sm">{u.decidedBy ? <>{u.decidedBy}, <When iso={u.decidedAt} withYear /></> : '—'}{u.decisionNote ? <><br /><span className="text-muted-foreground">{u.decisionNote}</span></> : null}</Td>
                   <Td className="relative">
+                    {u.status === 'active' ? <Button size="sm" variant="ghost" className="mb-1.5" onClick={() => setProfile(u)}>{t('Edit profile')}<span className="sr-only">: {u.name}</span></Button> : null}
                     {u.isDemo ? <span className="inline-flex items-center gap-1 text-sm text-muted-foreground"><Lock className="size-3.5" aria-hidden />{t('Locked (demo)')}</span>
                       : u.status === 'active' ? (
                         <div className="flex flex-wrap gap-1.5">
@@ -94,6 +100,7 @@ export function StaffAccessView({ initial }: { initial: Data }) {
         </Panel>
       </PageBody>
       <DecideDialog open={open} roles={d.roles} onClose={() => setOpen(null)} onDone={async () => { setOpen(null); await mutate(); }} />
+      <ProviderProfileDialog userId={profile?.id ?? ''} name={profile?.name ?? ''} open={Boolean(profile)} onClose={() => setProfile(null)} />
     </>
   );
 }

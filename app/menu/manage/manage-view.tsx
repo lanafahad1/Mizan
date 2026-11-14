@@ -87,7 +87,7 @@ export function ManageView({ catalog, plan, initialTab, permissions }: { catalog
   return (
     <>
       <PageHead eyebrow={t('Hospital menu')} title={t('Menu Management')} space="staff">
-        <p>{t(canEdit ? 'Add and edit meals, dishes and ingredients. Set availability and portions, plan meals by date, and record where dietary information comes from and whether it’s verified.' : 'You can view the menu here. Staff and admins keep it up to date.')} {canVerify ? t('As an admin, you also verify dietary information.') : ''}</p>
+        <p>{t(canEdit ? 'Add and edit meals, dishes and ingredients. Set availability and portions, plan meals by date, and record where dietary information comes from and whether it’s verified.' : 'You can view the menu here. Healthcare providers and admins keep it up to date.')} {canVerify ? t('As an admin, you also verify dietary information.') : ''}</p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           {pending ? <Badge variant="warn"><TriangleAlert aria-hidden />{t(pending === 1 ? '{n} meal pending admin verification' : '{n} meals pending admin verification', { n: pending })}</Badge> : <Badge variant="ok"><ShieldCheck aria-hidden />{t('All dietary information verified')}</Badge>}
           {unavailable ? <Badge variant="danger"><XIcon aria-hidden />{t(unavailable === 1 ? '{n} meal unavailable' : '{n} meals unavailable', { n: unavailable })}</Badge> : null}

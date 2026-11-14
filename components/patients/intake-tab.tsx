@@ -55,7 +55,7 @@ export function IntakeTab() {
     <div className="flex flex-col gap-5">
       <section aria-labelledby="in-head" className="flex flex-col gap-3 rounded-xl border border-border bg-card p-5 shadow-soft sm:p-6">
         <h2 id="in-head" tabIndex={-1} className="text-xl outline-none">{t('Intake and feedback')}</h2>
-        <p className="text-sm">{lang === 'ar' ? t('Each delivered meal can have a patient report and a staff observation. They are kept separately and combined into one meal for summaries:') : <>Each delivered meal can have a <b>patient report</b> and a <b>staff observation</b>. They are kept separately and combined into one meal for summaries:</>}</p>
+        <p className="text-sm">{lang === 'ar' ? t('Each delivered meal can have a patient report and a provider observation. They are kept separately and combined into one meal for summaries:') : <>Each delivered meal can have a <b>patient report</b> and a <b>provider observation</b>. They are kept separately and combined into one meal for summaries:</>}</p>
         <ul className="list-disc ps-5 text-sm">{record.outcomeRule.map((x: string, i: number) => <li key={i}>{t(x)}</li>)}</ul>
         <p className="text-sm text-muted-foreground">{t('Record intake once a meal has been delivered (here or from the meal’s period on the Meals tab). Delivery does not mean the meal was eaten.')}</p>
         {record.intakeFlags.length ? (
@@ -67,14 +67,14 @@ export function IntakeTab() {
 
       {canRecord ? (
         <section aria-labelledby="in-record" className="flex flex-col gap-3 rounded-xl border border-sage bg-mint/40 p-5 sm:p-6">
-          <h2 id="in-record" className="text-lg">{t('Record a staff observation · {date}', { date: formatLongDate(day.date, lang) })}</h2>
+          <h2 id="in-record" className="text-lg">{t('Record a provider observation · {date}', { date: formatLongDate(day.date, lang) })}</h2>
           {delivered.length ? (
             <ul className="flex flex-col gap-2">
               {delivered.map((per: any) => (
                 <li key={per.period} className="flex flex-col gap-2 rounded-[14px] border border-border bg-card p-3 sm:flex-row sm:items-center sm:justify-between">
-                  <span><b>{t(per.label)}</b> · {t(per.entry.mealName)} ({t(portionLabel(per.entry.portion))}){per.outcome?.staffRecord ? <span className="text-sm text-muted-foreground"> · {t('staff observation recorded')}</span> : null}</span>
+                  <span><b>{t(per.label)}</b> · {t(per.entry.mealName)} ({t(portionLabel(per.entry.portion))}){per.outcome?.staffRecord ? <span className="text-sm text-muted-foreground"> · {t('provider observation recorded')}</span> : null}</span>
                   <Button size="sm" variant={per.outcome?.staffRecord ? 'outline' : 'default'} onClick={openFor({ date: day.date, period: per.period, mealName: per.entry.mealName, portion: per.entry.portion, deliveredAt: per.entry.deliveredAt, existing: per.outcome?.staffRecord ?? null, hasPatientRecord: Boolean(per.outcome?.patientRecord) })}>
-                    <Activity aria-hidden />{t(per.outcome?.staffRecord ? 'Update staff observation' : 'Record staff observation')}
+                    <Activity aria-hidden />{t(per.outcome?.staffRecord ? 'Update provider observation' : 'Record provider observation')}
                   </Button>
                 </li>
               ))}
@@ -99,25 +99,25 @@ export function IntakeTab() {
                   </div>
                   {canRecord && inWindow(r.date) ? (
                     <Button size="sm" variant="outline" onClick={openFor({ date: r.date, period: r.period, mealName: r.mealName, portion: r.portion, existing: r.staffRecord ?? null, hasPatientRecord: Boolean(r.patientRecord) })}>
-                      <Activity aria-hidden />{t(r.staffRecord ? 'Update staff observation' : 'Add staff observation')}
+                      <Activity aria-hidden />{t(r.staffRecord ? 'Update provider observation' : 'Add provider observation')}
                     </Button>
                   ) : null}
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="flex flex-col gap-1.5 rounded-[14px] bg-blush/50 p-3"><CellLabel>{t('Patient report')}</CellLabel><Observation r={r.patientRecord} staff={false} /></div>
-                  <div className="flex flex-col gap-1.5 rounded-[14px] bg-mint/50 p-3"><CellLabel>{t('Staff observation')}</CellLabel><Observation r={r.staffRecord} staff /></div>
+                  <div className="flex flex-col gap-1.5 rounded-[14px] bg-mint/50 p-3"><CellLabel>{t('Provider observation')}</CellLabel><Observation r={r.staffRecord} staff /></div>
                 </div>
                 <p className="text-sm"><CellLabel>{t('Used in summaries')}</CellLabel>{' '}
                   {lang === 'ar'
-                    ? `${t(r.accepted ? 'Accepted' : 'Refused')}، ${t(amountLabel(r.amount))} (${t(r.amountSource === 'staff' ? 'staff' : 'patient')})${r.satisfaction ? `؛ ${r.satisfaction}/5 (${t(r.satisfactionSource)})` : ''}`
-                    : <>{r.accepted ? 'Accepted' : 'Refused'}, {amountLabel(r.amount).toLowerCase()} ({r.amountSource === 'staff' ? 'staff' : 'patient'}){r.satisfaction ? `; ${r.satisfaction}/5 (${r.satisfactionSource})` : ''}</>}
+                    ? `${t(r.accepted ? 'Accepted' : 'Refused')}، ${t(amountLabel(r.amount))} (${t(r.amountSource === 'staff' ? 'healthcare provider' : 'patient')})${r.satisfaction ? `؛ ${r.satisfaction}/5 (${t(r.satisfactionSource === 'staff' ? 'healthcare provider' : r.satisfactionSource)})` : ''}`
+                    : <>{r.accepted ? 'Accepted' : 'Refused'}, {amountLabel(r.amount).toLowerCase()} ({r.amountSource === 'staff' ? 'healthcare provider' : 'patient'}){r.satisfaction ? `; ${r.satisfaction}/5 (${r.satisfactionSource === 'staff' ? 'healthcare provider' : r.satisfactionSource})` : ''}</>}
                 </p>
               </li>
             ))}
           </ul>
         </section>
       ) : (
-        <EmptyState title="No meals recorded yet">{t('Intake shows up here once the patient or staff record a delivered meal.')}</EmptyState>
+        <EmptyState title="No meals recorded yet">{t('Intake shows up here once the patient or a healthcare provider records a delivered meal.')}</EmptyState>
       )}
     </div>
   );
@@ -142,9 +142,9 @@ export function IntakeDialog({ a, open, finalFocus }: DialogProps<'intake'>) {
   };
   return (
     <Modal open={open} onClose={c.close} wide finalFocus={finalFocus} title={tr('Record intake: {period} {date}', { period: lang === 'ar' ? tr(periodLabel(t.period)) : periodLabel(t.period).toLowerCase(), date: formatDate(t.date, undefined, lang) })}
-      footer={<><Button variant="outline" onClick={c.close}>{tr('Cancel')}</Button><Button type="submit" form="in-form" disabled={busy}>{tr(busy ? 'Saving…' : 'Save staff observation')}</Button></>}>
+      footer={<><Button variant="outline" onClick={c.close}>{tr('Cancel')}</Button><Button type="submit" form="in-form" disabled={busy}>{tr(busy ? 'Saving…' : 'Save provider observation')}</Button></>}>
       <p><b>{tr(t.mealName)}</b>{t.portion ? ` · ${tr('{portion} portion', { portion: tr(portionLabel(t.portion)) })}` : ''}{t.deliveredAt ? <> · {tr('delivered')} <When iso={t.deliveredAt} /></> : null}</p>
-      {t.hasPatientRecord ? <p className="text-sm text-muted-foreground">{tr('The patient has also reported this meal. Both records are kept; the staff observation is used for the amount eaten.')}</p> : null}
+      {t.hasPatientRecord ? <p className="text-sm text-muted-foreground">{tr('The patient has also reported this meal. Both records are kept; the provider observation is used for the amount eaten.')}</p> : null}
       <FormErrors errors={errors}>
         <form id="in-form" ref={formRef} onSubmit={submit} noValidate className="flex flex-col gap-4">
           <input type="hidden" name="date" value={t.date} />

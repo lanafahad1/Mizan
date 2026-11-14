@@ -25,16 +25,16 @@ export default async function AccessPendingPage() {
   const waitingText = viewer.requestedRole
     ? viewer.requestedRole === 'admin'
       ? 'Thanks, {name}. An admin will look at your request for admin access and assign your role. Until then, you won’t see any patient or menu information.'
-      : 'Thanks, {name}. An admin will look at your request for staff access and assign your role. Until then, you won’t see any patient or menu information.'
+      : 'Thanks, {name}. An admin will look at your request for provider access and assign your role. Until then, you won’t see any patient or menu information.'
     : 'Thanks, {name}. An admin will look at your request and assign your role. Until then, you won’t see any patient or menu information.';
   return (
     <div className="container-page container-narrow flex flex-col gap-5 pb-16 pt-8 sm:pt-12">
-      <span className="eyebrow">{t('Staff access')}</span>
+      <span className="eyebrow">{t('Provider access')}</span>
       <Badge variant={declined || deactivated ? 'danger' : 'warn'} className="self-start">
         {declined || deactivated ? <OctagonAlert aria-hidden /> : <Clock aria-hidden />}{t(viewer.statusLabel)}
       </Badge>
       <h1 className="text-[1.9rem] leading-tight sm:text-[2.5rem]">
-        {declined ? t('Your staff access request was declined') : deactivated ? t('This account has been deactivated') : t('Your staff access request is waiting for approval')}
+        {declined ? t('Your provider access request was declined') : deactivated ? t('This account has been deactivated') : t('Your provider access request is waiting for approval')}
       </h1>
       {declined ? (
         <p className="text-[1.05rem]">
@@ -51,7 +51,7 @@ export default async function AccessPendingPage() {
         </div>
       )}
       <Notice title={t('Demonstration access.')}>
-        {t('In this demo, the demo admin (admin.demo) approves requests. Mizan doesn’t check identity; a real hospital would issue staff accounts through its own identity system.')}
+        {t('In this demo, the demo admin (admin.demo) approves requests. Mizan doesn’t check identity; a real hospital would issue healthcare provider accounts through its own identity system.')}
       </Notice>
       <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         <AccessPendingActions waiting={!declined && !deactivated} />

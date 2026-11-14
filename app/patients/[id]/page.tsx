@@ -22,12 +22,18 @@ export default async function PatientPage({ params, searchParams }: Props) {
   const t = param(sp.tab);
   const tab: Tab = (TABS as readonly string[]).includes(t ?? '') ? (t as Tab) : 'meals';
   const date = isoDate(param(sp.date));
-  const [record, day, reference, health, healthRef] = await Promise.all([
+  const [record, day, reference, health, healthRef, progress, careRef, team] = await Promise.all([
     serviceCall((s) => s.getPatient(actor, id)),
     serviceCall((s) => s.getDayPlan(actor, id, { date })),
     getReference(),
     serviceCall((s) => s.getHealthOverview(actor, id)),
     healthReference(),
+    serviceCall((s) => s.getProgress(actor, id)),
+    serviceCall((s) => s.careReference()),
+    serviceCall((s) => s.getCareTeam(actor, id)),
   ]);
-  return <PatientView id={String(record.patient.id)} initialRecord={record} initialDay={day} reference={reference} permissions={viewer?.permissions ?? []} initialTab={tab} initialHealth={health} healthRef={healthRef} />;
+  return (
+    <PatientView id={String(record.patient.id)} initialRecord={record} initialDay={day} reference={reference} permissions={viewer?.permissions ?? []} initialTab={tab} initialHealth={health} healthRef={healthRef}
+      initialProgress={progress} careRef={careRef} initialTeam={team} today={progress.today} />
+  );
 }

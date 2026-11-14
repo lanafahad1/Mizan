@@ -152,7 +152,7 @@ export function ConfirmDialog({ a, open, finalFocus }: DialogProps<'confirm'>) {
   };
   return (
     <Modal open={open} onClose={c.close} wide finalFocus={finalFocus} title={t(`${verb} {period} for {id}`, { period: lang === 'ar' ? t(per.label) : per.label.toLowerCase(), id: c.record.patient.demoId })}
-      description={`${formatLongDate(c.date, lang)}. ${t(patientChose ? 'The patient chose a meal; you can confirm it or confirm a different one.' : 'Confirming directly records that the nutrition team chose this meal.')} ${t('You will be recorded as the confirming staff member.')}`}
+      description={`${formatLongDate(c.date, lang)}. ${t(patientChose ? 'The patient chose a meal; you can confirm it or confirm a different one.' : 'Confirming directly records that the nutrition team chose this meal.')} ${t('You will be recorded as the confirming healthcare provider.')}`}
       footer={<Footer form="cf-form" busy={busy} label={a.replace ? 'Replace and confirm' : 'Confirm meal'} busyLabel="Confirming…" disabled={!allowed.length} />}>
       {!list.length ? (
         <Notice tone="warn" role="status" title={t('No meal passes screening for this period.')}>{t('Mizan does not relax the diet order or allergy rules. Arrange an alternative with the kitchen or review the diet order.')}</Notice>

@@ -25,7 +25,7 @@ export default async function DisclaimerPage() {
             <li>{t('Nutrition values come only from SFDA laboratory analysis of traditional dishes, where imported; the hospital’s own preparation may differ. Where no values are imported, none are shown or estimated.')}</li>
             <li>{t('Mizan never labels a meal “allergy-safe”. The kitchen checks packaged ingredient labels.')}</li>
             <li>{t('Dashboard figures are indicators from recorded meals. They don’t show cause and effect.')}</li>
-            <li>{t('All patients, staff and records in this demonstration are fictional.')}</li>
+            <li>{t('All patients, healthcare providers and records in this demonstration are fictional.')}</li>
             <li>{t('In an emergency, such as a severe allergic reaction, alert clinical staff or emergency services immediately.')}</li>
           </ul>
         </div>

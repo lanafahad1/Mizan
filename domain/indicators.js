@@ -16,9 +16,9 @@ import { INTAKE_FLAG_RULES } from './rules.js';
 import { addDays } from './dates.js';
 
 export const OUTCOME_RULE = [
-  'Each meal is counted once, even when both the patient and staff recorded it.',
-  'Accepted or refused, and the estimated amount eaten: the staff observation when recorded, otherwise the patient’s report.',
-  'Satisfaction: the patient’s own rating when given, otherwise a rating staff recorded on the patient’s behalf.',
+  'Each meal is counted once, even when both the patient and a healthcare provider recorded it.',
+  'Accepted or refused, and the estimated amount eaten: the provider observation when recorded, otherwise the patient’s report.',
+  'Satisfaction: the patient’s own rating when given, otherwise a rating a healthcare provider recorded on the patient’s behalf.',
 ];
 
 export const byMealTime = (a, b) => a.date.localeCompare(b.date) || PERIOD_IDS.indexOf(a.period) - PERIOD_IDS.indexOf(b.period);

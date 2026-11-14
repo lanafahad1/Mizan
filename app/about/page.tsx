@@ -49,13 +49,17 @@ export default async function AboutPage() {
       </section>
 
       <Band tone="white" aria-labelledby="mission-h" className="py-8 sm:py-10 lg:py-12">
-        <div className="container-page grid gap-4 md:grid-cols-3">
+        <div className="container-page grid gap-4 md:grid-cols-2">
+          <Panel tone="blush">
+            <h2 className="text-[1.3rem]">{t('Our vision')}</h2>
+            <p className="font-display text-[1.1rem] font-medium text-heading">{t('Helping people with obesity and chronic disease live healthier, one meal at a time.')}</p>
+          </Panel>
           <Panel tone="mint">
             <h2 id="mission-h" className="text-[1.3rem]">{t('Our mission')}</h2>
             <p>{t('To show how Health Informatics can link your health information with Saudi nutrition guidance and food data, so that people living with, or at risk of, obesity and chronic disease can eat more healthily.')}</p>
           </Panel>
-          <Benefit icon={User} as="h2" title={t('Member')}>{t('For anyone looking after their own health, healthcare workers included: a food diary, goals for calories, protein, carbs and fat, health readings, a personal health assessment, meal ideas and a shopping list. It’s private: hospital staff can never see it.')}</Benefit>
-          <Benefit icon={Hospital} as="h2" title={t('Hospital care')}>{t('For patients, staff and admins: a care-team assessment, daily nutrient targets, meals checked against several conditions at once, and a plan for eating at home after discharge. It uses a fictional hospital and made-up data.')}</Benefit>
+          <Benefit icon={User} as="h2" title={t('Member')}>{t('For anyone looking after their own health, healthcare workers included: a food diary, goals for calories, protein, carbs and fat, health readings, a personal health assessment, meal ideas and a shopping list. It’s private: healthcare providers can never see it.')}</Benefit>
+          <Benefit icon={Hospital} as="h2" title={t('Hospital care')}>{t('For patients, healthcare providers and admins: a care-team assessment, daily nutrient targets, goals, notes and messages with the care team, meals checked against several conditions at once, and a plan for eating at home after discharge. It uses a fictional hospital and made-up data.')}</Benefit>
         </div>
       </Band>
 
@@ -105,8 +109,9 @@ export default async function AboutPage() {
 
           <Details title={t('Privacy and safety by design: minimum necessary information')}>
             <CheckList>
-              <CheckItem icon={Lock}>{t('The member space is private: hospital staff can never see it.')}</CheckItem>
+              <CheckItem icon={Lock}>{t('The member space is private: healthcare providers can never see it.')}</CheckItem>
               <CheckItem icon={Shield}>{t('In hospital care, only an admin can change clinical dietary restrictions; patients send requests instead.')}</CheckItem>
+              <CheckItem icon={Lock}>{t('Notes, goals and messages are seen only by the patient and their hospital’s healthcare providers and admins; notes marked “care team only” are never shown to the patient. Email alerts only say there is a new message, never what it says.')}</CheckItem>
               <CheckItem icon={Database}>{t('Fictional demonstration identifiers (MZ-####), never medical record numbers.')}</CheckItem>
               <CheckItem icon={List}>{t('An audit log of every change to a patient’s record and meals.')}</CheckItem>
             </CheckList>

@@ -91,7 +91,7 @@ function stageActions(per: Per, c: PatientCtx, t: T) {
   );
   const intakeTarget = () => ({ date, period: per.period, mealName: e.mealName, portion: e.portion, deliveredAt: e.deliveredAt, existing: per.outcome?.staffRecord ?? null, hasPatientRecord: Boolean(per.outcome?.patientRecord) });
   const intakeBtn = () => (c.can('intake:record') ? (
-    <Button className="w-full sm:w-auto" onClick={openFrom({ kind: 'intake', target: intakeTarget() })}><Activity aria-hidden />{t(per.outcome?.staffRecord ? 'Update staff intake record' : 'Record intake')}</Button>
+    <Button className="w-full sm:w-auto" onClick={openFrom({ kind: 'intake', target: intakeTarget() })}><Activity aria-hidden />{t(per.outcome?.staffRecord ? 'Update provider intake record' : 'Record intake')}</Button>
   ) : null);
   const waiting = (Icon: React.ComponentType<{ 'aria-hidden'?: boolean; className?: string }>, text: string) => <span className="inline-flex items-center gap-1.5 font-display font-semibold text-heading"><Icon className="size-4" aria-hidden />{t(text)}</span>;
 
@@ -266,8 +266,8 @@ function PeriodCard({ per }: { per: Per }) {
       {o ? (
         <p className="flex items-start gap-1.5 text-sm text-muted-foreground"><Activity className="mt-0.5 size-4 shrink-0" aria-hidden />
           <span>{lang === 'ar'
-            ? `${o.accepted ? t('Intake: {amount} eaten ({source})', { amount: t(amountLabel(o.amount)), source: t(o.amountSource === 'staff' ? 'staff observation' : 'patient report') }) : t('Intake: refused')}${o.satisfaction ? ` · ${t('satisfaction {n}/5', { n: o.satisfaction })}` : ''}.`
-            : <>Intake: {o.accepted ? `${amountLabel(o.amount).toLowerCase()} eaten (${o.amountSource === 'staff' ? 'staff observation' : 'patient report'})` : 'refused'}{o.satisfaction ? ` · satisfaction ${o.satisfaction}/5` : ''}.</>}</span>
+            ? `${o.accepted ? t('Intake: {amount} eaten ({source})', { amount: t(amountLabel(o.amount)), source: t(o.amountSource === 'staff' ? 'provider observation' : 'patient report') }) : t('Intake: refused')}${o.satisfaction ? ` · ${t('satisfaction {n}/5', { n: o.satisfaction })}` : ''}.`
+            : <>Intake: {o.accepted ? `${amountLabel(o.amount).toLowerCase()} eaten (${o.amountSource === 'staff' ? 'provider observation' : 'patient report'})` : 'refused'}{o.satisfaction ? ` · satisfaction ${o.satisfaction}/5` : ''}.</>}</span>
         </p>
       ) : null}
       {sc && !per.npo ? (

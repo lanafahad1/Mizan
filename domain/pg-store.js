@@ -34,6 +34,8 @@ export const WRITE_LOCK = 72_420_002;
 
 const STATUS = "('offered','selected','confirmed','prepared','delivered','on-hold','cancelled')";
 const PERIOD = "('breakfast','lunch','dinner','snack')";
+const HEALTH_KINDS = "('profile','assessment','reading','food','custom-food','home-plan','goal','note','checkin')";
+const SPECIALTY = "('dietitian','physician','nurse','diabetes-educator','other')";
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS Meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
@@ -401,13 +403,56 @@ CREATE INDEX IF NOT EXISTS idx_audit_patient ON AuditLog(patient_id, id);
 CREATE TABLE IF NOT EXISTS HealthRecords (
   id INTEGER PRIMARY KEY,
   owner TEXT NOT NULL CHECK (owner ~ '^(p|m):.+$'),
-  kind TEXT NOT NULL CHECK (kind IN ('profile','assessment','reading','food','custom-food','home-plan')),
+  kind TEXT NOT NULL CHECK (kind IN ${HEALTH_KINDS}),
   date TEXT,
   data TEXT NOT NULL,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_health_owner ON HealthRecords(owner, kind, date);
+
+-- Care team ----------------------------------------------------------------------------------
+-- A healthcare provider's (or admin's) profile shown to patients. user_id is a better-auth "user"
+-- id (that table is created after this schema, so there is no foreign key; the domain ignores
+-- rows of deleted accounts and removes them when an account is deleted).
+CREATE TABLE IF NOT EXISTS ProviderProfiles (
+  user_id TEXT PRIMARY KEY,
+  specialty TEXT CHECK (specialty IN ${SPECIALTY}),
+  bio TEXT NOT NULL DEFAULT '' CHECK (length(bio) <= 160),
+  updated_at TEXT NOT NULL,
+  updated_by TEXT
+);
+-- The healthcare providers following a patient (assigned by an admin).
+CREATE TABLE IF NOT EXISTS CareTeam (
+  patient_id INTEGER NOT NULL REFERENCES Patients(id) ON DELETE CASCADE,
+  user_id TEXT NOT NULL,
+  added_at TEXT NOT NULL,
+  added_by TEXT,
+  PRIMARY KEY (patient_id, user_id)
+);
+CREATE INDEX IF NOT EXISTS idx_careteam_user ON CareTeam(user_id);
+-- One conversation per patient with their care team (text only).
+CREATE TABLE IF NOT EXISTS Messages (
+  id INTEGER PRIMARY KEY,
+  patient_id INTEGER NOT NULL REFERENCES Patients(id) ON DELETE CASCADE,
+  sender_user_id TEXT,
+  sender_role TEXT NOT NULL CHECK (sender_role IN ('patient','staff','admin')),
+  sender_name TEXT NOT NULL,
+  body TEXT NOT NULL CHECK (length(body) BETWEEN 1 AND 1000),
+  created_at TEXT NOT NULL,
+  read_by_patient_at TEXT,
+  read_by_team_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_messages_patient ON Messages(patient_id, id);
+-- Email alerts about new messages: the recipient's language in that conversation and when they
+-- were last alerted (at most one alert an hour per conversation and recipient).
+CREATE TABLE IF NOT EXISTS MessageAlerts (
+  patient_id INTEGER NOT NULL REFERENCES Patients(id) ON DELETE CASCADE,
+  user_id TEXT NOT NULL,
+  lang TEXT CHECK (lang IN ('en','ar')),
+  last_alert_at TEXT,
+  PRIMARY KEY (patient_id, user_id)
+);
 `;
 
 const J = (v) => JSON.stringify(v ?? null);
@@ -569,6 +614,29 @@ const healthFromRow = (r) => ({ ...P(r.data, {}), id: String(r.id), owner: r.own
 
 const auditFromRow = (r) => ({ id: String(r.id), at: r.at, actorId: S(r.actor_id), actorRole: r.actor_role, actorName: r.actor_name, patientId: S(r.patient_id), action: r.action, detail: r.detail });
 
+// Care team tables.
+const providerToRow = (p) => ({ user_id: String(p.userId), specialty: p.specialty ?? null, bio: p.bio ?? '', updated_at: p.updatedAt, updated_by: p.updatedBy ?? null });
+const providerFromRow = (r) => ({ userId: String(r.user_id), specialty: r.specialty ?? null, bio: r.bio ?? '', updatedAt: r.updated_at, updatedBy: r.updated_by ?? null });
+const careTeamToRow = (m) => ({ patient_id: Number(m.patientId), user_id: String(m.userId), added_at: m.addedAt, added_by: m.addedBy ?? null });
+const careTeamFromRow = (r) => ({ patientId: String(r.patient_id), userId: String(r.user_id), addedAt: r.added_at, addedBy: r.added_by ?? null });
+const messageToRow = (m, id) => ({
+  id: Number(id), patient_id: Number(m.patientId), sender_user_id: m.senderUserId == null ? null : String(m.senderUserId), sender_role: m.senderRole, sender_name: m.senderName,
+  body: m.body, created_at: m.createdAt, read_by_patient_at: m.readByPatientAt ?? null, read_by_team_at: m.readByTeamAt ?? null,
+});
+const messageFromRow = (r) => ({
+  id: String(r.id), patientId: String(r.patient_id), senderUserId: S(r.sender_user_id), senderRole: r.sender_role, senderName: r.sender_name, body: r.body,
+  createdAt: r.created_at, readByPatientAt: r.read_by_patient_at ?? null, readByTeamAt: r.read_by_team_at ?? null,
+});
+const alertToRow = (a) => ({ patient_id: Number(a.patientId), user_id: String(a.userId), lang: a.lang ?? null, last_alert_at: a.lastAlertAt ?? null });
+const alertFromRow = (r) => ({ patientId: String(r.patient_id), userId: String(r.user_id), lang: r.lang ?? null, lastAlertAt: r.last_alert_at ?? null });
+/** Tables keyed by their columns rather than an id: snapshot bucket → table, key columns, row mappers. */
+const KEYED = {
+  providerProfiles: { table: 'ProviderProfiles', key: ['user_id'], toRow: providerToRow, fromRow: providerFromRow, keyOf: (r) => String(r.user_id) },
+  careTeam: { table: 'CareTeam', key: ['patient_id', 'user_id'], toRow: careTeamToRow, fromRow: careTeamFromRow, keyOf: (r) => `${Number(r.patient_id)}|${r.user_id}` },
+  messageAlerts: { table: 'MessageAlerts', key: ['patient_id', 'user_id'], toRow: alertToRow, fromRow: alertFromRow, keyOf: (r) => `${Number(r.patient_id)}|${r.user_id}` },
+};
+const keyedMap = (bucket, rows) => new Map(rows.map((r) => [KEYED[bucket].keyOf(r), KEYED[bucket].fromRow(r)]));
+
 const ingredientToRow = (i, seq) => ({
   id: i.id, seq, name: i.name, same_food: i.sameFood ?? null, ingredient_group: i.group ?? 'other', local_commodity: i.local ?? null, allergens: J(i.allergens ?? []), may_contain: J(i.mayContain ?? []),
   flags: J(i.flags ?? []), label_check: i.labelCheck ? 1 : 0, note: i.note ?? null, updated_at: i.updatedAt ?? null, updated_by: i.updatedBy ?? null,
@@ -709,6 +777,13 @@ async function migrate(client) {
   if (art) await client.query(`UPDATE Meta SET value = (value::int + 1)::text WHERE key = 'catalog_version'`);
   // 6. Mizan no longer records weighed plate waste (it was part of the earlier food-waste project).
   await client.query(`ALTER TABLE MealIntake DROP COLUMN IF EXISTS measured_waste_g`);
+  // 7. Care team features: health records may also be goals, care-team notes and weekly check-ins.
+  //    (The new ProviderProfiles, CareTeam, Messages and MessageAlerts tables are created by SCHEMA.)
+  const kinds = await client.query(`SELECT pg_get_constraintdef(oid) AS def FROM pg_constraint WHERE conrelid = 'healthrecords'::regclass AND conname = 'healthrecords_kind_check'`);
+  if (!kinds.rows.length || !kinds.rows[0].def.includes("'checkin'")) {
+    await client.query(`ALTER TABLE HealthRecords DROP CONSTRAINT IF EXISTS healthrecords_kind_check`);
+    await client.query(`ALTER TABLE HealthRecords ADD CONSTRAINT healthrecords_kind_check CHECK (kind IN ${HEALTH_KINDS})`);
+  }
 }
 
 /** INSERT rows in chunks; with conflict key columns, existing rows are updated instead. */
@@ -748,14 +823,19 @@ const HOSPITAL_SQL = `
   'intake', ${agg('row_to_json(i)', 'MealIntake i', 'i.id')},
   'requests', ${agg('row_to_json(r)', 'PatientRequests r', 'r.id')},
   'health', ${agg('row_to_json(h)', 'HealthRecords h', 'h.id')},
+  'providerProfiles', ${agg('row_to_json(x)', 'ProviderProfiles x', 'x.user_id')},
+  'careTeam', ${agg('row_to_json(x)', 'CareTeam x', 'x.patient_id, x.user_id')},
+  'messages', ${agg('row_to_json(m)', 'Messages m', 'm.id')},
+  'messageAlerts', ${agg('row_to_json(x)', 'MessageAlerts x', 'x.patient_id, x.user_id')},
   'audit', ${agg(`json_build_object('id', a.id, 'at', a.at, 'actor_id', a.actor_id, 'actor_role', a.actor_role, 'actor_name', a.actor_name, 'patient_id', a.patient_id, 'action', a.action, 'detail', a.detail)`,
     `(SELECT x.*, row_number() OVER (PARTITION BY x.patient_id, split_part(x.action, '.', 1) ORDER BY x.id DESC) AS rn FROM AuditLog x) a WHERE a.rn <= ${AUDIT_WINDOW}`, 'a.id')},
   'maxIds', json_build_object('patients', (SELECT coalesce(max(id), 0) FROM Patients), 'entries', (SELECT coalesce(max(id), 0) FROM MealSchedule),
     'intake', (SELECT coalesce(max(id), 0) FROM MealIntake), 'requests', (SELECT coalesce(max(id), 0) FROM PatientRequests), 'audit', (SELECT coalesce(max(id), 0) FROM AuditLog),
-    'health', (SELECT coalesce(max(id), 0) FROM HealthRecords)),`;
+    'health', (SELECT coalesce(max(id), 0) FROM HealthRecords), 'messages', (SELECT coalesce(max(id), 0) FROM Messages)),`;
 // Public pages need only the menu catalogue.
 const NO_HOSPITAL_SQL = `'users', '[]'::json, 'patients', '[]'::json, 'entries', '[]'::json, 'intake', '[]'::json, 'requests', '[]'::json, 'audit', '[]'::json, 'health', '[]'::json,
-  'maxIds', json_build_object('patients', 0, 'entries', 0, 'intake', 0, 'requests', 0, 'audit', 0, 'health', 0),`;
+  'providerProfiles', '[]'::json, 'careTeam', '[]'::json, 'messages', '[]'::json, 'messageAlerts', '[]'::json,
+  'maxIds', json_build_object('patients', 0, 'entries', 0, 'intake', 0, 'requests', 0, 'audit', 0, 'health', 0, 'messages', 0),`;
 const snapshotSql = (hospital) => `SELECT json_build_object(${hospital ? HOSPITAL_SQL : NO_HOSPITAL_SQL}
   'catalogVersion', (SELECT value FROM Meta WHERE key = 'catalog_version'),
   'catalog', CASE WHEN (SELECT value FROM Meta WHERE key = 'catalog_version') IS DISTINCT FROM $1::text THEN json_build_object(
@@ -806,6 +886,10 @@ export async function loadSnapshot(db, catalogCache = null, { hospital = true } 
     requests: new Map(s.requests.map((r) => [String(r.id), requestFromRow(r)])),
     audit: new Map(s.audit.map((r) => [String(r.id), auditFromRow(r)])),
     health: new Map(s.health.map((r) => [String(r.id), healthFromRow(r)])),
+    providerProfiles: keyedMap('providerProfiles', s.providerProfiles),
+    careTeam: keyedMap('careTeam', s.careTeam),
+    messages: new Map(s.messages.map((r) => [String(r.id), messageFromRow(r)])),
+    messageAlerts: keyedMap('messageAlerts', s.messageAlerts),
     maxIds: s.maxIds,
     catalogCache: catalog,
   };
@@ -823,8 +907,10 @@ export function createSnapshotRepo(snapshot, { readOnly = false } = {}) {
     users: new Map(snapshot.users), patients: new Map(snapshot.patients), entries: new Map(snapshot.entries),
     intake: new Map(snapshot.intake), requests: new Map(snapshot.requests), audit: new Map(snapshot.audit),
     health: new Map(snapshot.health),
+    providerProfiles: new Map(snapshot.providerProfiles), careTeam: new Map(snapshot.careTeam), messages: new Map(snapshot.messages), messageAlerts: new Map(snapshot.messageAlerts),
   };
   const maxIds = { ...snapshot.maxIds };
+  const pk = (patientId, userId) => `${Number(patientId)}|${userId}`;
   const nextId = (table) => String(++maxIds[table]);
   const base = snapshot.catalogCache.catalog;
   let cat = base;
@@ -902,7 +988,7 @@ export function createSnapshotRepo(snapshot, { readOnly = false } = {}) {
       guard();
       const key = String(Number(id));
       s.patients.delete(key);
-      for (const bucket of ['entries', 'intake', 'requests', 'audit']) for (const [k, x] of s[bucket]) if (x.patientId === key) s[bucket].delete(k);
+      for (const bucket of ['entries', 'intake', 'requests', 'audit', 'careTeam', 'messages', 'messageAlerts']) for (const [k, x] of s[bucket]) if (x.patientId === key) s[bucket].delete(k);
       for (const [k, x] of s.health) if (x.owner === `p:${key}`) s.health.delete(k);
     },
 
@@ -1024,6 +1110,61 @@ export function createSnapshotRepo(snapshot, { readOnly = false } = {}) {
     deleteHealth(id) { guard(); s.health.delete(String(Number(id))); },
     deleteHealthOwner(owner) { guard(); for (const [k, x] of s.health) if (x.owner === owner) s.health.delete(k); },
 
+    // ---- healthcare provider profiles and care teams
+    getProviderProfile: (userId) => clone(s.providerProfiles.get(String(userId)) ?? null),
+    listProviderProfiles: () => clone([...s.providerProfiles.values()].sort((a, b) => cmp(a.userId, b.userId))),
+    saveProviderProfile(p) {
+      guard();
+      const rec = providerFromRow(providerToRow(p));
+      s.providerProfiles.set(rec.userId, rec);
+      return clone(rec);
+    },
+    listCareTeam(q = {}) {
+      return clone([...s.careTeam.values()].filter((m) => (!q.patientId || m.patientId === String(Number(q.patientId))) && (!q.userId || m.userId === String(q.userId)))
+        .sort((a, b) => Number(a.patientId) - Number(b.patientId) || cmp(a.addedAt, b.addedAt) || cmp(a.userId, b.userId)));
+    },
+    addCareTeam(m) {
+      guard();
+      const rec = careTeamFromRow(careTeamToRow(m));
+      s.careTeam.set(pk(rec.patientId, rec.userId), rec);
+      return clone(rec);
+    },
+    removeCareTeam(patientId, userId) { guard(); s.careTeam.delete(pk(patientId, String(userId))); },
+    deleteUserCareData(userId) {
+      guard();
+      const u = String(userId);
+      s.providerProfiles.delete(u);
+      for (const bucket of ['careTeam', 'messageAlerts']) for (const [k, x] of s[bucket]) if (x.userId === u) s[bucket].delete(k);
+    },
+
+    // ---- messages between a patient and their care team
+    listMessages(q = {}) {
+      return clone([...s.messages.values()].filter((m) => !q.patientId || m.patientId === String(Number(q.patientId))).sort((a, b) => Number(a.id) - Number(b.id)));
+    },
+    addMessage(m) {
+      guard();
+      const id = nextId('messages');
+      s.messages.set(id, messageFromRow(messageToRow(m, id)));
+      return clone(s.messages.get(id));
+    },
+    updateMessage(id, f) {
+      guard();
+      const key = String(Number(id));
+      const m = s.messages.get(key);
+      if (!m) return null;
+      const next = { ...m };
+      for (const k of ['readByPatientAt', 'readByTeamAt']) if (k in f) next[k] = f[k] ?? null;
+      s.messages.set(key, messageFromRow(messageToRow(next, key)));
+      return clone(s.messages.get(key));
+    },
+    getMessageAlert: (patientId, userId) => clone(s.messageAlerts.get(pk(patientId, String(userId))) ?? null),
+    saveMessageAlert(a) {
+      guard();
+      const rec = alertFromRow(alertToRow(a));
+      s.messageAlerts.set(pk(rec.patientId, rec.userId), rec);
+      return clone(rec);
+    },
+
     // ---- audit log
     addAudit(a) {
       guard();
@@ -1040,7 +1181,7 @@ export function createSnapshotRepo(snapshot, { readOnly = false } = {}) {
     clearHospitalData() {
       guard();
       for (const u of users()) if (u.patientId != null) setUser(u.id, { ...u, patientId: null });
-      for (const bucket of ['patients', 'entries', 'intake', 'requests', 'audit']) s[bucket].clear();
+      for (const bucket of ['patients', 'entries', 'intake', 'requests', 'audit', 'careTeam', 'messages', 'messageAlerts']) s[bucket].clear();
       // Hospital health records go too; members' private records are kept.
       for (const [k, x] of s.health) if (x.owner.startsWith('p:')) s.health.delete(k);
       // The snapshot holds only recent audit rows, so the tables are emptied in full when saved.
@@ -1053,7 +1194,7 @@ export function createSnapshotRepo(snapshot, { readOnly = false } = {}) {
   if (snapshot.hospital === false) {
     // A catalogue-only snapshot: reaching hospital data is a programming error, not an empty hospital.
     for (const name of Object.keys(repo)) {
-      if (/User|Admins|Patient|Entr|Intake|Request|Audit|Health|clearHospital/.test(name)) repo[name] = () => { throw new Error(`${name}: this request loaded only the menu catalogue.`); };
+      if (/User|Admins|Patient|Entr|Intake|Request|Audit|Health|Provider|CareTeam|Message|clearHospital/.test(name)) repo[name] = () => { throw new Error(`${name}: this request loaded only the menu catalogue.`); };
     }
   }
   return repo;
@@ -1078,7 +1219,7 @@ function diff(before, after) {
 /** Write what changed in a snapshot repository, in dependency order. Call inside the write transaction. */
 export async function saveChanges(client, repo) {
   const { snapshot, s, cat, base, catalogReplaced, effects } = repo._changes();
-  const d = Object.fromEntries(['users', 'patients', 'entries', 'intake', 'requests', 'audit', 'health'].map((k) => [k, diff(snapshot[k], s[k])]));
+  const d = Object.fromEntries(['users', 'patients', 'entries', 'intake', 'requests', 'audit', 'health', 'messages', ...Object.keys(KEYED)].map((k) => [k, diff(snapshot[k], s[k])]));
   const ids = (keys) => keys.map(Number);
 
   // Accounts: only the Mizan fields that changed; better-auth owns everything else.
@@ -1091,13 +1232,20 @@ export async function saveChanges(client, repo) {
   }
 
   if (effects.some((e) => e.type === 'clearHospital')) {
-    for (const t of ['AuditLog', 'PatientRequests', 'MealIntake', 'MealSchedule', 'Patients']) await client.query(`DELETE FROM ${t}`);
+    for (const t of ['MessageAlerts', 'Messages', 'CareTeam', 'AuditLog', 'PatientRequests', 'MealIntake', 'MealSchedule', 'Patients']) await client.query(`DELETE FROM ${t}`);
     await client.query(`DELETE FROM HealthRecords WHERE owner LIKE 'p:%'`);
   }
 
   // Removed records, dependants first (deleting a patient also cascades in the database).
   if (d.audit.removed.length) await client.query('DELETE FROM AuditLog WHERE id = ANY($1)', [ids(d.audit.removed)]);
   if (d.health.removed.length) await client.query('DELETE FROM HealthRecords WHERE id = ANY($1)', [ids(d.health.removed)]);
+  if (d.messages.removed.length) await client.query('DELETE FROM Messages WHERE id = ANY($1)', [ids(d.messages.removed)]);
+  for (const [bucket, def] of Object.entries(KEYED)) {
+    for (const k of d[bucket].removed) {
+      const row = def.toRow(snapshot[bucket].get(k));
+      await client.query(`DELETE FROM ${def.table} WHERE ${def.key.map((c, i) => `${c} = $${i + 1}`).join(' AND ')}`, def.key.map((c) => row[c]));
+    }
+  }
   if (d.requests.removed.length) await client.query('DELETE FROM PatientRequests WHERE id = ANY($1)', [ids(d.requests.removed)]);
   if (d.intake.removed.length) await client.query('DELETE FROM MealIntake WHERE id = ANY($1)', [ids(d.intake.removed)]);
   if (d.entries.removed.length) await client.query('DELETE FROM MealSchedule WHERE id = ANY($1)', [ids(d.entries.removed)]);
@@ -1142,6 +1290,12 @@ export async function saveChanges(client, repo) {
   await flat('PatientRequests', 'requests', requestToRow);
   await flat('AuditLog', 'audit', auditToRow);
   await flat('HealthRecords', 'health', healthToRow);
+  await flat('Messages', 'messages', messageToRow);
+  for (const [bucket, def] of Object.entries(KEYED)) {
+    if (!d[bucket].changed.length) continue;
+    const rows = d[bucket].changed.map((k) => def.toRow(s[bucket].get(k)));
+    await insertRows(client, def.table, cols(rows[0]), rows, def.key);
+  }
 
   // Menu catalogue.
   let catalogChanged = false;

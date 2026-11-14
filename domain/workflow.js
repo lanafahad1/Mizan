@@ -379,7 +379,7 @@ export function createWorkflow(ctx) {
       confirmMode: patientChoice ? (entry.selectedByRole === 'patient' ? 'patient-choice' : 'staff-choice') : 'direct',
       confirmedBy: actor.name, confirmedByRole: actor.role, confirmedAt: stamp(), preparedBy: null, preparedAt: null, deliveredBy: null, deliveredByRole: null, deliveredAt: null, cancelledReason: null,
     });
-    event(entry, actor, replacing ? 'replaced' : 'confirmed', entry.confirmMode === 'direct' ? 'Confirmed directly by the nutrition team (no patient choice recorded)' : entry.confirmMode === 'patient-choice' ? 'Patient’s choice confirmed' : 'Choice recorded by staff, confirmed');
+    event(entry, actor, replacing ? 'replaced' : 'confirmed', entry.confirmMode === 'direct' ? 'Confirmed directly by the nutrition team (no patient choice recorded)' : entry.confirmMode === 'patient-choice' ? 'Patient’s choice confirmed' : 'Choice recorded by the care team, confirmed');
     const saved = save(entry);
     resolveSlotRequests(actor, p.id, date, period, `Confirmed ${entry.mealName}.`);
     audit(actor, p.id, 'schedule.confirm', `${replacing ? 'Replaced and confirmed' : 'Confirmed'} ${entry.mealName} (${chosen}) for ${period} on ${date}${entry.confirmMode === 'direct' ? ' directly' : ''}${offer.screenedAs === 'review' ? ' after admin review' : ''}.`);
@@ -444,8 +444,8 @@ export function createWorkflow(ctx) {
 
   // ------------------------------------------------------------ kitchen: preparation and delivery
   function progressEntry(actor, entryId, { to } = {}) {
-    if (to === 'prepared') requirePermission(actor, 'kitchen:progress', 'Only staff can mark a meal as prepared.');
-    else if (to === 'delivered') requirePermission(actor, 'kitchen:progress', 'Only staff can mark a meal as delivered.');
+    if (to === 'prepared') requirePermission(actor, 'kitchen:progress', 'Only healthcare providers can mark a meal as prepared.');
+    else if (to === 'delivered') requirePermission(actor, 'kitchen:progress', 'Only healthcare providers can mark a meal as delivered.');
     else invalid('Choose prepared or delivered.');
     const e0 = repo.getEntryById(entryId);
     if (!e0) throw new ctx.ServiceError(404, 'entry_not_found', 'That meal order does not exist.');
@@ -472,7 +472,7 @@ export function createWorkflow(ctx) {
   }
 
   function undoProgress(actor, entryId) {
-    requirePermission(actor, 'kitchen:progress', 'Only staff can undo a kitchen step.');
+    requirePermission(actor, 'kitchen:progress', 'Only healthcare providers can undo a kitchen step.');
     const e0 = repo.getEntryById(entryId);
     if (!e0) throw new ctx.ServiceError(404, 'entry_not_found', 'That meal order does not exist.');
     if (e0.date !== today()) conflict('date_out_of_range', 'Only today’s kitchen steps can be undone.');
@@ -490,7 +490,7 @@ export function createWorkflow(ctx) {
   }
 
   function ackChange(actor, entryId, changeId) {
-    requirePermission(actor, 'kitchen:progress', 'Only staff acknowledge kitchen alerts.');
+    requirePermission(actor, 'kitchen:progress', 'Only healthcare providers acknowledge kitchen alerts.');
     const e0 = repo.getEntryById(entryId);
     if (!e0) throw new ctx.ServiceError(404, 'entry_not_found', 'That meal order does not exist.');
     const c = (e0.changes ?? []).find((x) => x.id === changeId);

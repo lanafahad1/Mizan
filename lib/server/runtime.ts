@@ -26,8 +26,11 @@ export type Runtime = {
   readContext: () => Promise<Ctx>;
   /** A read-only snapshot of the menu catalogue only (public pages). */
   catalogContext: () => Promise<Ctx>;
-  /** Run a change in one transaction under the write lock; nothing is saved if it throws. */
-  write: <T>(fn: (ctx: Ctx) => T | Promise<T>) => Promise<T>;
+  /**
+   * Run a change in one transaction under the write lock; nothing is saved if it throws.
+   * `notify` receives the email alerts the change queued (send them only after it resolves).
+   */
+  write: <T>(fn: (ctx: Ctx) => T | Promise<T>, opts?: { notify?: (alert: any) => void }) => Promise<T>;
   resetDemo: () => Promise<void>;
   // Small direct lookups that do not need a snapshot.
   getUser: (id: string) => Promise<{ isDemo: boolean; role: string | null; status: string } | null>;
@@ -69,7 +72,8 @@ async function init(): Promise<Runtime> {
   };
   const readContext = async () => { const repo = await store.read(); return { repo, service: readService(repo) }; };
   const catalogContext = async () => { const repo = await store.read({ hospital: false }); return { repo, service: readService(repo) }; };
-  const write = <T,>(fn: (ctx: Ctx) => T | Promise<T>) => store.write((repo: Repo) => fn({ repo, service: createService({ repo }) })) as Promise<T>;
+  const write = <T,>(fn: (ctx: Ctx) => T | Promise<T>, opts: { notify?: (alert: any) => void } = {}) =>
+    store.write((repo: Repo) => fn({ repo, service: createService({ repo, notify: (opts.notify ?? null) as never }) })) as Promise<T>;
 
   const getUser = async (id: string) => {
     const r = await one('SELECT role, status, "isDemo" FROM "user" WHERE id = $1', [id]);
@@ -83,7 +87,7 @@ async function init(): Promise<Runtime> {
     recordAccountLink: (user, patientId) => write(({ service }) => service.recordAccountLink(user, patientId)),
     getUserById: getUser,
     countActiveAdmins,
-    deleteMemberData: (userId) => write(({ repo }) => repo.deleteHealthOwner(`m:${userId}`)),
+    deleteMemberData: (userId) => write(({ repo }) => { repo.deleteHealthOwner(`m:${userId}`); repo.deleteUserCareData(userId); }),
   });
 
   const resetDemo = () => write(({ repo, service }) => {
@@ -116,6 +120,10 @@ async function init(): Promise<Runtime> {
     const counts = await one('SELECT (SELECT COUNT(*)::int FROM Meals) AS meals, (SELECT COUNT(*)::int FROM Patients) AS patients');
     if (!counts.meals) await write(({ repo }) => seedCatalog(repo, new Date().toISOString()));
     if (created || !counts.patients) await resetDemo();
+    // Once: a database made before the care-team features gets the demonstration hospital re-seeded, so the
+    // demo care teams, goals, notes and messages exist. Hospital data is fictional; member data is never touched.
+    else if (!(await one(`SELECT 1 FROM Meta WHERE key = 'demo_care_v1'`))) await resetDemo();
+    await one(`INSERT INTO Meta (key, value) VALUES ('demo_care_v1', '1') ON CONFLICT (key) DO NOTHING`);
     await seedAdminFromEnv(auth, one);
     return auth;
   });
@@ -167,7 +175,7 @@ async function refreshDemoAccounts(auth: Auth, one: One) {
   let hash: string | null = null;
   const seeds: (AccountSeed & { demo: boolean })[] = [...DEMO_ACCOUNTS.map((a: AccountSeed) => ({ ...a, demo: true })), { ...DEMO_PENDING_STAFF, demo: false }];
   for (const a of seeds) {
-    const row = await one('SELECT id, email, "isDemo" FROM "user" WHERE username = $1', [a.username.toLowerCase()]);
+    const row = await one('SELECT id, email, name, "isDemo" FROM "user" WHERE username = $1', [a.username.toLowerCase()]);
     if (!row) continue;
     const seeded = a.demo
       ? Boolean(row.isDemo)
@@ -181,6 +189,8 @@ async function refreshDemoAccounts(auth: Auth, one: One) {
       await one(`UPDATE account SET password = $1, "updatedAt" = now() WHERE "userId" = $2 AND "providerId" = 'credential'`, [hash, row.id]);
     }
     if (moveEmail) await one('UPDATE "user" SET email = $1, "updatedAt" = now() WHERE id = $2', [email, row.id]);
+    // Shared demo accounts keep the name the code gives them (e.g. "Demo Healthcare Provider").
+    if (a.demo && row.name !== a.name) await one('UPDATE "user" SET name = $1, "updatedAt" = now() WHERE id = $2', [a.name, row.id]);
   }
   if (!passwordCurrent) await one(`INSERT INTO Meta (key, value) VALUES ('demo_password', $1) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value`, [fingerprint]);
 }

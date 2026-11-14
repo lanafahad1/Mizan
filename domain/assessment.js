@@ -23,13 +23,13 @@ export const ASSESSMENT_SECTIONS = [
     ],
   },
   {
-    id: 'body', title: 'Body measurements', intro: 'Add what you know. Measurements taken by staff are the most accurate.',
+    id: 'body', title: 'Body measurements', intro: 'Add what you know. Measurements taken by your care team are the most accurate.',
     fields: [
       { id: 'heightCm', label: 'Height', type: 'number', unit: 'cm', min: 100, max: 250, step: 0.5 },
       { id: 'weightKg', label: 'Current weight', type: 'number', unit: 'kg', min: 20, max: 400, step: 0.1 },
       { id: 'weightDate', label: 'Date the weight was measured', type: 'date' },
       { id: 'waistCm', label: 'Waist circumference, if you know it', type: 'number', unit: 'cm', min: 30, max: 250, step: 0.5 },
-      { id: 'measuredBy', label: 'Who took these measurements?', type: 'choice', options: [{ id: 'staff', label: 'Measured by staff' }, { id: 'self', label: 'I measured myself' }] },
+      { id: 'measuredBy', label: 'Who took these measurements?', type: 'choice', options: [{ id: 'staff', label: 'Measured by the care team' }, { id: 'self', label: 'I measured myself' }] },
       { id: 'weightChange', label: 'Has your weight changed recently without you trying?', type: 'choice', options: YES_NO_UNSURE, details: 'weightChangeDetails' },
     ],
   },

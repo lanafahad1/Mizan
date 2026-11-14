@@ -66,7 +66,7 @@ test('2. kitchen staff mark the meal prepared and delivered; delivered is not ea
   const p = freshPatient();
   const mealId = eligibleOn('MZ-2001', 'lunch', today)[0];
   const { entry } = service.confirmMeal(staff, p.id, { date: today, period: 'lunch', mealId });
-  assert.throws(() => service.progressEntry(asPatient('MZ-2001'), entry.id, { to: 'prepared' }), /Only staff/);
+  assert.throws(() => service.progressEntry(asPatient('MZ-2001'), entry.id, { to: 'prepared' }), /Only healthcare providers/);
   assert.throws(() => service.progressEntry(staff, entry.id, { to: 'delivered' }), /prepared before/);
   assert.throws(() => service.recordIntake(staff, p.id, { date: today, period: 'lunch', accepted: true, amount: 'all' }), /delivered/);
   service.progressEntry(staff, entry.id, { to: 'prepared' });

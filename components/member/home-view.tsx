@@ -141,6 +141,13 @@ export function HomeView({ name, hour: serverHour, overview, diary, week, activi
 
       {/* 5. This week */}
       <WeekCard week={w} />
+      <Link href="/my-progress" className="mz-lift -mt-2 flex min-h-14 items-center gap-3 rounded-[16px] border border-border bg-card px-4 py-3 text-foreground no-underline hover:border-primary">
+        <span className="flex min-w-0 flex-1 flex-col leading-tight">
+          <b className="font-display text-[.95rem] font-medium text-heading">{t('My progress')}</b>
+          <span className="text-sm text-muted-foreground">{t('Your weight over time, a weight goal and the days you logged in a row')}</span>
+        </span>
+        <ChevronRight className="size-4 shrink-0 text-muted-foreground rtl:rotate-180" aria-hidden />
+      </Link>
 
       {/* 6. A MOH tip and an idea for the next meal */}
       <div className="grid gap-3 md:grid-cols-2">

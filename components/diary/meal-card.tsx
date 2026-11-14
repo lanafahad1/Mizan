@@ -18,10 +18,12 @@ import { amountText, fmt, foodName, MEAL_IDS, MEAL_LABELS, mealIn, tMsg, withUni
  * an "Add" button and, when the meal is empty but the day before had it, a
  * one-tap "Repeat yesterday's …".
  */
-export function MealCard({ meal, onAdd, onDelete, onSaved, deleting, repeat }: {
-  meal: DiaryMeal; onAdd: () => void; onDelete: (e: DiaryEntry) => void; deleting: string | null;
+export function MealCard({ meal, onAdd, onDelete, onSaved, deleting, repeat, readOnly = false }: {
+  meal: DiaryMeal; onAdd?: () => void; onDelete?: (e: DiaryEntry) => void; deleting?: string | null;
+  /** The care team reading a patient's diary: no add, edit or remove. */
+  readOnly?: boolean;
   /** After "Edit amount" or "Move to…" saved the entry. */
-  onSaved: (e: DiaryEntry, changed: { amountLabel: string; meal: MealId }) => void;
+  onSaved?: (e: DiaryEntry, changed: { amountLabel: string; meal: MealId }) => void;
   /** Offer to copy the day before's entries for this meal (only when this meal is empty). */
   repeat?: { count: number; busy: boolean; onRepeat: () => void; yesterday: boolean } | null;
 }) {
@@ -37,9 +39,11 @@ export function MealCard({ meal, onAdd, onDelete, onSaved, deleting, repeat }: {
         <h2 id={headingId} className="text-lg">{label}</h2>
         <div className="flex items-center gap-2">
           {!empty ? <span className="font-display text-sm font-medium text-heading tabular">{t('{n} kcal', { n: fmt(meal.totals.kcal ?? 0) })}</span> : null}
-          <Button variant="outline" size="sm" className="min-h-11 sm:min-h-9" onClick={onAdd}>
-            <Plus aria-hidden />{t('Add')}<span className="sr-only"> {t('to {meal}', { meal: inSentence })}</span>
-          </Button>
+          {readOnly ? null : (
+            <Button variant="outline" size="sm" className="min-h-11 sm:min-h-9" onClick={onAdd}>
+              <Plus aria-hidden />{t('Add')}<span className="sr-only"> {t('to {meal}', { meal: inSentence })}</span>
+            </Button>
+          )}
         </div>
       </header>
 
@@ -47,7 +51,7 @@ export function MealCard({ meal, onAdd, onDelete, onSaved, deleting, repeat }: {
         <div className="flex items-center gap-3 px-4 pb-4 pt-1 sm:px-5">
           <Illustration name="empty-diary" className="size-14" />
           <div className="flex min-w-0 flex-1 flex-col items-start gap-1.5">
-            <p className="text-sm text-muted-foreground">{t('Nothing here yet. Add what you had.')}</p>
+            <p className="text-sm text-muted-foreground">{readOnly ? t('Nothing logged for this meal.') : t('Nothing here yet. Add what you had.')}</p>
             {repeat ? (
               <Button variant="secondary" size="sm" className="min-h-11 sm:min-h-9" onClick={repeat.onRepeat} disabled={repeat.busy}>
                 <Repeat2 aria-hidden />
@@ -59,14 +63,14 @@ export function MealCard({ meal, onAdd, onDelete, onSaved, deleting, repeat }: {
         </div>
       ) : (
         <ul className="flex flex-col pb-1.5">
-          {meal.entries.map((e) => <EntryRow key={e.id} entry={e} meal={meal.id} onDelete={() => onDelete(e)} onSaved={(c) => onSaved(e, c)} deleting={deleting === e.id} />)}
+          {meal.entries.map((e) => <EntryRow key={e.id} entry={e} meal={meal.id} onDelete={() => onDelete?.(e)} onSaved={(c) => onSaved?.(e, c)} deleting={deleting === e.id} readOnly={readOnly} />)}
         </ul>
       )}
     </section>
   );
 }
 
-function EntryRow({ entry: e, meal, onDelete, onSaved, deleting }: { entry: DiaryEntry; meal: MealId; onDelete: () => void; onSaved: (c: { amountLabel: string; meal: MealId }) => void; deleting: boolean }) {
+function EntryRow({ entry: e, meal, onDelete, onSaved, deleting, readOnly }: { entry: DiaryEntry; meal: MealId; onDelete: () => void; onSaved: (c: { amountLabel: string; meal: MealId }) => void; deleting: boolean; readOnly: boolean }) {
   const { t, lang } = useT();
   const [open, setOpen] = React.useState(false);
   const [editing, setEditing] = React.useState(false);
@@ -98,7 +102,10 @@ function EntryRow({ entry: e, meal, onDelete, onSaved, deleting }: { entry: Diar
             ))}
           </dl>
           <div><SourceBadge basis={e.basis} sourceId={e.sourceId} /></div>
-          {e.readOnly ? (
+          {readOnly ? (
+            e.hospital ? <span className="text-sm text-muted-foreground">{t('From the hospital meal record (intake).')}</span>
+              : e.by ? <span className="text-sm text-muted-foreground">{t('Logged by {name}.', { name: e.byRole === 'patient' || e.source === 'self' ? t('the patient') : e.by })}</span> : null
+          ) : e.readOnly ? (
             <span className="text-sm text-muted-foreground">{t('This comes from your hospital meal record, which your care team keeps up to date.')}</span>
           ) : editing ? (
             <EntryEditor entry={e} meal={meal} onCancel={() => setEditing(false)} onSaved={(c) => { setEditing(false); onSaved(c); }} />

@@ -38,7 +38,7 @@ export function RequestsTab() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <p className="max-w-3xl text-muted-foreground">{t('Requests from the patient or recorded by staff on their behalf. Reports about allergies or the diet order are answered by an admin and never change the record by themselves.')}</p>
+        <p className="max-w-3xl text-muted-foreground">{t('Requests from the patient or recorded by a healthcare provider on their behalf. Reports about allergies or the diet order are answered by an admin and never change the record by themselves.')}</p>
         {!c.discharged && c.can('request:create') ? (
           <Button variant="outline" size="sm" className="w-full shrink-0 sm:w-auto" onClick={(ev) => c.open({ kind: 'request' }, { from: ev.currentTarget })}><Plus aria-hidden />{t('New request')}</Button>
         ) : null}

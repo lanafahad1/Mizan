@@ -6,9 +6,11 @@
 //
 // Two spaces:
 // Hospital care has three roles:
-//   admin   — controls everything, including clinical information and staff access
-//   staff   — runs daily meal service; no clinical edits, review approvals or access management
-//   patient — their own meals, profile, feedback and requests
+//   admin   — controls everything, including clinical information and provider access
+//   staff   — shown as "Healthcare provider": follows patients' food and progress, sets goals,
+//             writes notes and messages patients, and runs the daily meal service; no clinical
+//             edits, review approvals or access management (the id stays "staff")
+//   patient — their own meals, profile, feedback, requests, care-team notes, goals and messages
 // Member space has one role:
 //   member  — a person using Mizan for their own lifestyle, with no hospital link.
 //             A member holds only the personal health permissions; member data is
@@ -67,6 +69,12 @@ export const PERMISSIONS = Object.freeze({
   'health:team-record': TEAM, // the care team adds readings and diary entries for a patient
   'assessment:review': ADMIN, // approve an assessment and set a patient's nutrition targets
   'homeplan:edit': TEAM,
+  // care team: notes, goals, check-ins, messages and progress of hospital patients (never members)
+  'care:read': TEAM, // read any hospital patient's notes (all), goals, check-ins, messages and progress
+  'care:write': TEAM, // write notes, set goals and message a patient
+  'care:own': ['patient'], // a patient's own thread, visible notes, goals and weekly check-in
+  'care-team:manage': ADMIN, // assign healthcare providers to a patient's care team
+  'provider:profile': TEAM, // a healthcare provider edits their own specialty and short bio
 });
 
 /** Profile sections and the permission that edits each. */

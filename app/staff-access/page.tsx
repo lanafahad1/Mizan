@@ -6,7 +6,7 @@ import { StaffAccessView } from './staff-access-view';
 
 export async function generateMetadata() {
   const t = await getT();
-  return privateMetadata(t('Staff Access'));
+  return privateMetadata(t('Provider access'));
 }
 
 export default async function StaffAccessPage() {

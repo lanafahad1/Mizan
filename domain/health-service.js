@@ -85,6 +85,16 @@ export function createHealthService({ repo, today, stamp, requirePermission, acc
     return { owner: `p:${patient.id}`, kind: 'patient', patient, self: false };
   }
   const byWho = (actor) => ({ by: actor.name, byRole: actor.role });
+  /**
+   * Daily calories and carbs a healthcare provider set as goals (domain/care-service.js) are the
+   * patient's targets for those two nutrients; other targets stay as reviewed.
+   */
+  function withGoals(sp, targets) {
+    if (sp.kind !== 'patient') return targets ?? null;
+    const g = repo.listHealth({ owner: sp.owner, kind: 'goal' }).at(-1);
+    if (!g || (g.kcal == null && g.carbs == null)) return targets ?? null;
+    return { ...(targets ?? {}), ...(g.kcal != null ? { kcal: g.kcal } : {}), ...(g.carbs != null ? { carbs: g.carbs } : {}) };
+  }
   const auditIf = (sp, actor, action, detail) => { if (sp.kind === 'patient') audit(actor, sp.patient.id, action, detail); };
 
   // ------------------------------------------------------------ profile and targets
@@ -236,7 +246,7 @@ export function createHealthService({ repo, today, stamp, requirePermission, acc
     const sp = space(actor, who);
     const end = to && isValidIso(to) && to <= today() ? to : today();
     const from = addDays(end, -6);
-    const target = profileOf(sp).targets?.kcal ?? null;
+    const target = withGoals(sp, profileOf(sp).targets)?.kcal ?? null;
     const days = [];
     for (let d = from; d <= end; d = addDays(d, 1)) {
       const own = repo.listHealth({ owner: sp.owner, kind: 'food', date: d });
@@ -576,7 +586,7 @@ export function createHealthService({ repo, today, stamp, requirePermission, acc
     const estimated = own.some((e) => e.basis === 'self-entered' || e.basis === 'community');
     return {
       date: day, today: today(), owner: sp.kind, meals, totals, missing, estimated, nutrients: DIARY_NUTRIENTS,
-      targets: profile.targets ?? null, targetsBasis: profile.targetsBasis ?? null,
+      targets: withGoals(sp, profile.targets), targetsBasis: withGoals(sp, profile.targets) !== (profile.targets ?? null) ? 'care-team' : profile.targetsBasis ?? null,
       recent: recentFoods(sp.owner),
       favorites: profile.favorites ?? [],
       daily: Object.fromEntries(DAILY_TRACKERS.map((t) => [t.id, dailyOf(sp.owner, t.id, day)?.value ?? null])),

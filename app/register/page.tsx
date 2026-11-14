@@ -10,7 +10,7 @@ import { safeNext } from '@/components/auth/nav';
 
 export async function generateMetadata() {
   const t = await getT();
-  return pageMetadata({ title: t('Create account'), description: t('Create a free Mizan account to look after your own food and health, or join hospital care as a patient or staff member.'), path: '/register', noindex: true });
+  return pageMetadata({ title: t('Create account'), description: t('Create a free Mizan account to look after your own food and health, or join hospital care as a patient or healthcare provider.'), path: '/register', noindex: true });
 }
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };

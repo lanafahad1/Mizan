@@ -9,7 +9,7 @@ test('hospital care has exactly three roles; the member space has one', () => {
 });
 
 test('admin holds every hospital permission (controls everything except personal spaces)', () => {
-  assert.deepEqual(permissionsFor('admin').sort(), Object.keys(PERMISSIONS).filter((p) => p !== 'health:own').sort());
+  assert.deepEqual(permissionsFor('admin').sort(), Object.keys(PERMISSIONS).filter((p) => p !== 'health:own' && p !== 'care:own').sort());
 });
 
 test('members hold only their own health space and no hospital permission', () => {
@@ -19,11 +19,17 @@ test('members hold only their own health space and no hospital permission', () =
 
 test('staff run meal service but cannot make clinical decisions or manage access', () => {
   for (const p of ['patient:list', 'meal:offer', 'meal:confirm', 'kitchen:progress', 'menu:edit', 'intake:record', 'request:resolve', 'patient:admission']) assert.ok(can('staff', p), p);
-  for (const p of ['patient:edit-clinical', 'meal:approve-review', 'menu:verify', 'staff:manage', 'patient:delete', 'patient:create', 'request:resolve-clinical', 'demo:reset']) assert.ok(!can('staff', p), p);
+  for (const p of ['patient:edit-clinical', 'meal:approve-review', 'menu:verify', 'staff:manage', 'patient:delete', 'patient:create', 'request:resolve-clinical', 'demo:reset', 'care-team:manage']) assert.ok(!can('staff', p), p);
+});
+
+test('healthcare providers (staff) and admins follow patients: notes, goals and messages; patients only their own', () => {
+  for (const p of ['care:read', 'care:write', 'provider:profile']) { assert.ok(can('staff', p), p); assert.ok(can('admin', p), p); assert.ok(!can('patient', p), p); assert.ok(!can('member', p), p); }
+  assert.ok(can('patient', 'care:own') && !can('staff', 'care:own') && !can('member', 'care:own'));
+  assert.ok(can('admin', 'care-team:manage') && !can('staff', 'care-team:manage'));
 });
 
 test('patients reach only patient-facing permissions', () => {
-  assert.deepEqual(permissionsFor('patient').sort(), ['health:own', 'intake:record', 'meal:choose', 'patient:edit-appetite', 'patient:edit-preferences', 'patient:read', 'request:create'].sort());
+  assert.deepEqual(permissionsFor('patient').sort(), ['care:own', 'health:own', 'intake:record', 'meal:choose', 'patient:edit-appetite', 'patient:edit-preferences', 'patient:read', 'request:create'].sort());
   assert.ok(!can('patient', SECTION_PERMISSION.clinical));
 });
 

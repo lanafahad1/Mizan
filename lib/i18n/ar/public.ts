@@ -377,7 +377,7 @@ export const PUBLIC: Record<string, string> = {
   'Packaged products vary by brand; check labels. Meals are never called “allergy-safe”.': 'تختلف المنتجات المعبأة حسب العلامة التجارية؛ افحص الملصقات. ولا توصف الوجبات أبدًا بأنها «آمنة من الحساسية».',
   'Alerts appear inside Mizan only: no emails, text messages or pager alerts, and no connection to any hospital system (electronic health record, pharmacy or kitchen equipment).':
     'تظهر التنبيهات داخل ميزان فقط: لا رسائل بريد إلكتروني ولا رسائل نصية ولا تنبيهات نداء، ولا اتصال بأي نظام في المستشفى (السجل الصحي الإلكتروني أو الصيدلية أو معدات المطبخ).',
-  'Accounts are demonstration access: no identity is verified. All hospital patients, staff and records are fictional.': 'الحسابات للدخول التجريبي فقط: لا يُتحقق من أي هوية. وجميع مرضى المستشفى وموظفيه وسجلاته افتراضية.',
+  'Accounts are demonstration access: no identity is verified. All hospital patients, healthcare providers and records are fictional.': 'الحسابات للدخول التجريبي فقط: لا يُتحقق من أي هوية. وجميع مرضى المستشفى ومقدّمي الرعاية فيه وسجلاته افتراضية.',
   'How hospital intake and feedback are summarised': 'كيف تُلخَّص الكمية المتناولة والتقييمات في المستشفى',
   'No source can replace advice from a qualified healthcare professional.': 'لا يغني أي مصدر عن استشارة مختص رعاية صحية مؤهل.',
   'How to cite this project': 'كيف تستشهد بهذا المشروع',

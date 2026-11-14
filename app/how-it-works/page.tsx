@@ -100,15 +100,16 @@ export default async function HowItWorks() {
         <div className="container-page grid gap-4 lg:grid-cols-2">
           <Journey icon={User} tone="mint" t={t} title="Member" intro="For anyone who wants to eat well, healthcare workers included" steps={MEMBER_STEPS}
             footer={<>
-              <p className="flex items-start gap-2 text-sm"><Lock className="mt-0.5 size-4 shrink-0 text-heading" aria-hidden />{t('Your space is private: hospital staff can never see it.')}</p>
+              <p className="flex items-start gap-2 text-sm"><Lock className="mt-0.5 size-4 shrink-0 text-heading" aria-hidden />{t('Your space is private: healthcare providers can never see it.')}</p>
               <div className="flex flex-col gap-2 sm:flex-row">
                 <Link href="/register?space=member" className={buttonVariants({ className: 'w-full sm:w-fit' })}>{t('Start as a member')} <ChevronRight aria-hidden className="rtl:-scale-x-100" /></Link>
                 <Link href="/tools/calculator" className={buttonVariants({ variant: 'outline', className: 'w-full sm:w-fit' })}>{t('Try the calculator')}</Link>
               </div>
             </>} />
-          <Journey icon={Hospital} tone="blush" t={t} title="Hospital care" intro="For patients, staff and admins" steps={HOSPITAL_STEPS}
+          <Journey icon={Hospital} tone="blush" t={t} title="Hospital care" intro="For patients, healthcare providers and admins" steps={HOSPITAL_STEPS}
             footer={<>
               <p className="flex items-start gap-2 text-sm"><Shield className="mt-0.5 size-4 shrink-0 text-heading" aria-hidden />{t('Likes and dislikes never override medical restrictions. A demonstration hospital with fictional data.')}</p>
+              <p className="flex items-start gap-2 text-sm"><Lock className="mt-0.5 size-4 shrink-0 text-heading" aria-hidden />{t('Notes, goals and messages are seen only by the patient and their hospital’s healthcare providers and admins; notes marked “care team only” are never shown to the patient. Email alerts only say there is a new message, never what it says.')}</p>
               <Link href="/login?space=hospital" className={buttonVariants({ variant: 'outline', className: 'w-full sm:w-fit' })}>{t('Hospital sign-in')} <ChevronRight aria-hidden className="rtl:-scale-x-100" /></Link>
             </>} />
         </div>

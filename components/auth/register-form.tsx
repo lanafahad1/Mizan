@@ -155,7 +155,7 @@ export function RegisterForm({ next, space, initialType = 'patient', onSwitchSpa
           <legend className="mb-2 font-display text-sm font-medium text-heading">{t('Account type')}</legend>
           <div className="grid gap-2 sm:grid-cols-2">
             <OptionCard name="accountType" value="patient" checked={type === 'patient'} onChange={() => { setType('patient'); setErrors({}); }} title={t('Patient')} description={t('Use the link code from your nutrition team to open your own meal profile.')} />
-            <OptionCard name="accountType" value="staff" checked={type === 'staff'} onChange={() => { setType('staff'); setErrors({}); }} title={t('Hospital staff')} description={t('Ask for staff access. An admin approves it and assigns your role.')} />
+            <OptionCard name="accountType" value="staff" checked={type === 'staff'} onChange={() => { setType('staff'); setErrors({}); }} title={t('Healthcare provider')} description={t('Ask for provider access. An admin approves it and assigns your role.')} />
           </div>
           {errors.accountType ? <p role="alert" className="text-sm font-semibold text-destructive">{err('accountType')}</p> : null}
           {type === 'staff' ? (
@@ -186,7 +186,7 @@ export function RegisterForm({ next, space, initialType = 'patient', onSwitchSpa
       ) : (
         <>
           <Notice tone="warn" title={t('Demonstration access.')}>
-            {t('This sends an access request. It isn’t a working staff account until an admin approves it and assigns your role. Mizan doesn’t check identity; a real hospital would issue staff accounts through its own identity system.')}
+            {t('This sends an access request. It isn’t a working provider account until an admin approves it and assigns your role. Mizan doesn’t check identity; a real hospital would issue provider accounts through its own identity system.')}
           </Notice>
           <Field id="reg-name" label={t('Your full name')} error={err('name')} hint={t('The name your admin knows you by. It appears in the audit log next to the changes you make.')}>
             <Input name="name" value={v.name} onChange={set('name')} autoComplete="name" maxLength={40} />
@@ -195,7 +195,7 @@ export function RegisterForm({ next, space, initialType = 'patient', onSwitchSpa
             <NativeSelect name="requestedRole" value={v.requestedRole} onChange={set('requestedRole')}>
               <option value="">{t('Choose…')}</option>
               <option value="admin">{t('Admin')}</option>
-              <option value="staff">{t('Staff')}</option>
+              <option value="staff">{t('Healthcare provider')}</option>
             </NativeSelect>
           </Field>
           <Field id="reg-note" label={t('Department or job title')} error={err('requestNote')} hint={t('For example: Clinical nutrition, Ward 3A.')}>

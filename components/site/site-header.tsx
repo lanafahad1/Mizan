@@ -22,6 +22,10 @@ export async function SiteHeader() {
   const bar = active && (viewer?.role === 'member' || viewer?.role === 'patient') ? viewer.role : null;
   const space: Space = !viewer || !active ? 'public' : bar ? 'member' : 'staff';
   const account = bar === 'patient' ? PATIENT_ACCOUNT_NAV : [];
+  // Messages with the unread count: patients (their care team) and healthcare providers and admins (patients).
+  const messages = !active || !viewer ? null
+    : viewer.role === 'patient' ? (viewer.patientId ? '/my-messages' : null)
+      : viewer.permissions.includes('care:read') ? '/messages' : null;
   return (
     <>
       <header style={{ viewTransitionName: 'site-header' }} className="sticky top-[env(safe-area-inset-top,0px)] z-40 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/85">
@@ -32,6 +36,7 @@ export async function SiteHeader() {
           nav={nav.map(({ href, label }) => ({ href, label }))}
           more={more.map(({ href, label }) => ({ href, label }))}
           account={account.map(({ href, label }) => ({ href, label }))}
+          messages={messages}
           logo={<Logo href={home} />}
           viewer={viewer ? { name: viewer.name, username: viewer.username, roleLabel: viewer.roleLabel, role: viewer.role, patientDemoId: viewer.patientDemoId, isDemo: viewer.isDemo } : null}
         />

@@ -21,7 +21,7 @@ export function publicUser(u, repo) {
   if (!u) return null;
   const patient = u.patientId ? repo.getPatient(u.patientId) : null;
   return {
-    id: u.id, username: u.username, name: u.name, email: u.email, role: u.role ?? null, roleLabel: u.role ? label(ROLES, u.role) : 'Staff access requested',
+    id: u.id, username: u.username, name: u.name, email: u.email, role: u.role ?? null, roleLabel: u.role ? label(ROLES, u.role) : 'Provider access requested',
     status: u.status ?? 'active', statusLabel: label(ACCOUNT_STATUS, u.status ?? 'active'), requestedRole: u.requestedRole ?? null, decisionNote: u.decisionNote ?? '',
     patientId: patient ? patient.id : null, patientDemoId: patient?.demoId ?? null, isDemo: Boolean(u.isDemo), createdAt: u.createdAt,
   };
@@ -68,7 +68,7 @@ export function createAccountApi({ repo, service, hashPassword, verifyPassword, 
       ? repo.createUser({ username, email, name: name || patient.preferredName || username, role: 'patient', status: 'active', patientId: null, passwordHash: await hashPassword(String(body.password)), isDemo: false, createdAt: at, updatedAt: at })
       : repo.createUser({ username, email, name, role: null, status: 'pending', requestedRole: body.requestedRole, requestNote: clean(body.requestNote, 200), patientId: null, passwordHash: await hashPassword(String(body.password)), isDemo: false, createdAt: at, updatedAt: at });
     if (patient) service.redeemLinkCode(created, body.linkCode);
-    else repo.addAudit({ at, actorId: created.id, actorRole: 'system', actorName: name, patientId: null, action: 'staff.request', detail: `@${username} asked for staff access as ${label(ROLES, body.requestedRole)}.` });
+    else repo.addAudit({ at, actorId: created.id, actorRole: 'system', actorName: name, patientId: null, action: 'staff.request', detail: `@${username} asked for provider access as ${label(ROLES, body.requestedRole)}.` });
     return { status: 201, body: out(repo.getUserById(created.id), type === 'staff' ? { pending: true } : {}), session: { start: created.id } };
   }
 

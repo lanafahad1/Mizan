@@ -11,6 +11,7 @@ import { toast } from '@/components/ui/toast';
 import { LangSwitch, useT } from './lang';
 import { containerClass } from './page-head';
 import type { Space } from '@/lib/site';
+import { MessagesLink } from '@/components/care/messages-link';
 
 type Item = { href: string; label: string };
 type ViewerLite = { name: string; username: string; roleLabel: string; role: string | null; patientDemoId: string | null; isDemo: boolean } | null;
@@ -21,7 +22,7 @@ const isActive = (path: string, href: string) => (href === '/' ? path === '/' : 
  * `tabBar`: the space has the top tab strip on phones/tablets (members and patients), so no menu button.
  * `account`: extra links in the account menu (the patient's food profile). `space`: the header width.
  */
-export function MainNav({ nav, more, viewer, home, logo, tabBar = false, account = [], space }: { nav: Item[]; more: Item[]; viewer: ViewerLite; home: string; logo: React.ReactNode; tabBar?: boolean; account?: Item[]; space?: Space }) {
+export function MainNav({ nav, more, viewer, home, logo, tabBar = false, account = [], space, messages = null }: { nav: Item[]; more: Item[]; viewer: ViewerLite; home: string; logo: React.ReactNode; tabBar?: boolean; account?: Item[]; space?: Space; messages?: string | null }) {
   const path = usePathname();
   const router = useRouter();
   const { t } = useT();
@@ -69,6 +70,7 @@ export function MainNav({ nav, more, viewer, home, logo, tabBar = false, account
           <LangSwitch />
           {viewer ? (
             <>
+              {messages ? <MessagesLink href={messages} /> : null}
               <span className={cn('hidden rounded-full px-2.5 py-1 text-xs font-extrabold tracking-wide sm:inline', viewer.role === 'admin' ? 'bg-warning-soft text-warning' : viewer.role === 'patient' ? 'bg-rose text-rose-ink' : 'bg-mint text-heading')}>{t(viewer.roleLabel)}</span>
               <DropdownMenu>
                 <DropdownMenuTrigger aria-label={t('Account menu for {username}', { username: viewer.username })} className="grid size-10 shrink-0 place-items-center rounded-full bg-pink font-display text-sm font-semibold text-rose-ink hover:bg-pink-deep">{initials}</DropdownMenuTrigger>

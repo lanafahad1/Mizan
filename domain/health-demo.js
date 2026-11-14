@@ -3,6 +3,7 @@
 
 import { addDays } from './dates.js';
 import { searchFoods } from './food-db.js';
+import { seedCareDemo } from './care-demo.js';
 
 const safely = (fn) => { try { return fn(); } catch { return null; } };
 
@@ -11,7 +12,7 @@ const food = (q, kinds = null) => searchFoods(q, { kinds, limit: 1 })[0] ?? null
 
 export function seedHealthDemo({ repo, service, today, patientIds = {} }) {
   const admin = { id: null, role: 'admin', name: 'Demo Admin', status: 'active' };
-  const staff = { id: null, role: 'staff', name: 'Demo Staff Member', status: 'active' };
+  const staff = { id: null, role: 'staff', name: 'Demo Healthcare Provider', status: 'active' };
   const asPatient = (demoId) => ({ id: null, role: 'patient', name: demoId, status: 'active', patientId: patientIds[demoId] });
 
   // ---- member: Sara, using Mizan on her own
@@ -68,4 +69,7 @@ export function seedHealthDemo({ repo, service, today, patientIds = {} }) {
     const a = safely(() => service.saveAssessment(asPatient('MZ-1002'), 'me', { answers: { age: 66, sex: 'male', heightCm: 172, weightKg: 101.5, weightDate: addDays(today, -5), measuredBy: 'staff', conditions: ['obesity', 'hypertension', 'cvd'], allergies: 'nka', sugaryDrinks: 'daily', appetite: 'usual', activity: 'sedentary', helpWith: ['choosing', 'labels'], goal: 'Cut down on soft drinks.' } }));
     if (a) safely(() => service.submitAssessment(asPatient('MZ-1002'), 'me', a.id));
   }
+
+  // ---- care team: provider profiles, care teams, goals, notes, check-ins and a conversation
+  seedCareDemo({ repo, today, patientIds });
 }

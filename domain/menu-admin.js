@@ -127,7 +127,7 @@ export function createMenuAdmin(ctx, workflow) {
   function usedIn(dishId) { return catalog().list.filter((m) => m.dishIds.includes(dishId)).map((m) => ({ id: m.id, name: m.name })); }
 
   function getManageCatalog(actor) {
-    requirePermission(actor, 'menu:manage-view', 'Only hospital staff can view menu management.');
+    requirePermission(actor, 'menu:manage-view', 'Only healthcare providers and admins can view menu management.');
     const cat = catalog();
     const raw = repo.getCatalogData();
     return {
@@ -173,7 +173,7 @@ export function createMenuAdmin(ctx, workflow) {
 
   // ------------------------------------------------------------ ingredients
   function saveIngredient(actor, input = {}) {
-    requirePermission(actor, 'menu:edit', 'Only staff and admins can edit ingredients.');
+    requirePermission(actor, 'menu:edit', 'Only healthcare providers and admins can edit ingredients.');
     const data = repo.getCatalogData();
     const existing = input.id ? data.ingredients.find((i) => i.id === input.id) : null;
     if (input.id && !existing) throw new ctx.ServiceError(404, 'ingredient_not_found', 'That ingredient does not exist.');
@@ -202,7 +202,7 @@ export function createMenuAdmin(ctx, workflow) {
 
   // ------------------------------------------------------------ dishes (components)
   function saveDish(actor, input = {}) {
-    requirePermission(actor, 'menu:edit', 'Only staff and admins can edit dishes.');
+    requirePermission(actor, 'menu:edit', 'Only healthcare providers and admins can edit dishes.');
     const data = repo.getCatalogData();
     const existing = input.id ? data.dishes.find((d) => d.id === input.id) : null;
     if (input.id && !existing) throw new ctx.ServiceError(404, 'dish_not_found', 'That dish does not exist.');
@@ -245,7 +245,7 @@ export function createMenuAdmin(ctx, workflow) {
 
   // ------------------------------------------------------------ meals (what is offered)
   function saveMeal(actor, input = {}) {
-    requirePermission(actor, 'menu:edit', 'Only staff and admins can edit meals.');
+    requirePermission(actor, 'menu:edit', 'Only healthcare providers and admins can edit meals.');
     const data = repo.getCatalogData();
     const existing = input.id ? data.meals.find((m) => m.id === input.id) : null;
     if (input.id && !existing) throw new ctx.ServiceError(404, 'meal_not_found', 'That meal does not exist.');
@@ -284,7 +284,7 @@ export function createMenuAdmin(ctx, workflow) {
   }
 
   function setAvailability(actor, mealId, input = {}) {
-    requirePermission(actor, 'menu:edit', 'Only staff and admins can change meal availability.');
+    requirePermission(actor, 'menu:edit', 'Only healthcare providers and admins can change meal availability.');
     const raw = repo.getCatalogData().meals.find((m) => m.id === mealId);
     if (!raw) throw new ctx.ServiceError(404, 'meal_not_found', 'That meal does not exist.');
     const available = input.available === true;
@@ -325,7 +325,7 @@ export function createMenuAdmin(ctx, workflow) {
   }
 
   function setMenu(actor, input = {}) {
-    requirePermission(actor, 'menu:edit', 'Only staff and admins can change the menu.');
+    requirePermission(actor, 'menu:edit', 'Only healthcare providers and admins can change the menu.');
     const period = input.period;
     assertPeriod(period);
     const valid = new Set(catalog().list.map((m) => m.id));

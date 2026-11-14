@@ -22,8 +22,9 @@ const conditionLabel = (id: string) => CONDITIONS.find((c: { id: string }) => c.
 export default async function DashboardPage({ searchParams }: Props) {
   const actor = await requirePermission('dashboard:view', '/dashboard');
   const date = isoDate(param((await searchParams).date));
-  const [initial, chronic] = await Promise.all([
+  const [initial, attention, chronic] = await Promise.all([
     serviceCall((s) => s.getDashboard(actor, { date })),
+    serviceCall((s) => s.careAttention(actor)),
     serviceCall((s): Chronic => {
       const admitted: any[] = s.listPatients(actor, {}).patients;
       const people = new Map<string, { demoId: string; name: string }>();
@@ -58,5 +59,5 @@ export default async function DashboardPage({ searchParams }: Props) {
       };
     }),
   ]);
-  return <DashboardView initial={initial} requestedDate={date ?? null} chronic={chronic} />;
+  return <DashboardView initial={initial} requestedDate={date ?? null} chronic={chronic} attention={attention} />;
 }

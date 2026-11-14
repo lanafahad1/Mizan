@@ -1,7 +1,7 @@
 'use client';
 // Top tabs for members and patients on phones and tablets (< lg), right under the site header:
-// members  Home · Diary · Health · Eat well
-// patients My meals · Diary · Health · Requests (food profile: account menu)
+// members  Home · Diary · Progress · Health · Eat well
+// patients My meals · Diary · Progress · Messages · Health · Requests (food profile: account menu)
 // The current page is underlined in the primary colour; the strip scrolls sideways if it has to.
 // A small "+ Add" pill at the end opens the quick actions (log food, water, steps, activity, weight).
 import * as React from 'react';
@@ -25,9 +25,10 @@ type Tab = { href: string; label: string; also?: string[] };
 // One set of words for both spaces: Diary (/today), Health (/my-health). Keep in step with MEMBER_NAV / PATIENT_NAV in lib/site.ts.
 const DIARY: Tab = { href: '/today', label: 'Diary', also: ['/my-foods'] };
 const HEALTH: Tab = { href: '/my-health', label: 'Health' };
+const PROGRESS: Tab = { href: '/my-progress', label: 'Progress' };
 const TABS: Record<'member' | 'patient', Tab[]> = {
-  member: [{ href: '/home', label: 'Home' }, DIARY, HEALTH, { href: '/eat-well', label: 'Eat well', also: ['/meal-ideas', '/my-plan'] }],
-  patient: [{ href: '/my-meals', label: 'My meals', also: ['/my-schedule', '/meal'] }, DIARY, HEALTH, { href: '/my-requests', label: 'Requests' }],
+  member: [{ href: '/home', label: 'Home' }, DIARY, PROGRESS, HEALTH, { href: '/eat-well', label: 'Eat well', also: ['/meal-ideas', '/my-plan'] }],
+  patient: [{ href: '/my-meals', label: 'My meals', also: ['/my-schedule', '/meal'] }, DIARY, PROGRESS, { href: '/my-messages', label: 'Messages' }, HEALTH, { href: '/my-requests', label: 'Requests' }],
 };
 const on = (path: string, href: string) => path === href || path.startsWith(`${href}/`);
 

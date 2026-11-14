@@ -1,4 +1,4 @@
-// Account emails (email confirmation and password reset), sent through Gmail SMTP
+// Account emails (email confirmation and password reset) and new-message alerts, sent through Gmail SMTP
 // with an app password. Configuration lives only in environment variables:
 //   GMAIL_USER          the Gmail address that sends the emails
 //   GMAIL_APP_PASSWORD  a 16-character Google app password (needs 2-step verification)
@@ -7,7 +7,7 @@
 // development the link is printed in the server log so it can still be tested.
 import 'server-only';
 import nodemailer from 'nodemailer';
-import { SITE_NAME } from '@/lib/site';
+import { SITE_NAME, SITE_URL, originOf } from '@/lib/site';
 import { LANG_COOKIE, type Lang } from '@/lib/i18n';
 import { EMAIL_LOGO_PNG_BASE64 } from './email-logo';
 
@@ -34,7 +34,8 @@ export function langOf(request?: Request): Lang {
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string);
 
 type Mail = { heading: string; intro: string; button: string; note: string; subject: string };
-const TEXT: Record<'verify' | 'reset', Record<Lang, (name: string, username: string) => Mail>> = {
+export type EmailKind = 'verify' | 'reset' | 'message-patient' | 'message-team';
+const TEXT: Record<EmailKind, Record<Lang, (name: string, username: string) => Mail>> = {
   verify: {
     en: (name) => ({
       subject: 'Confirm your email for Mizan', heading: `Welcome to Mizan${name ? `, ${name}` : ''}`,
@@ -59,6 +60,32 @@ const TEXT: Record<'verify' | 'reset', Record<Lang, (name: string, username: str
       button: 'اختر كلمة مرور جديدة', note: 'يعمل الرابط مرة واحدة ولمدة ساعة. عند تغيير كلمة المرور، سيُسجَّل خروجك من أجهزتك الأخرى. إذا لم تطلب ذلك، فتجاهل هذه الرسالة وستبقى كلمة المرور كما هي.',
     }),
   },
+  // New-message alerts say only that there is a message: never what it says. (The second
+  // argument carries the patient's demonstration id for the care team's alert.)
+  'message-patient': {
+    en: (name) => ({
+      subject: 'You have a new message from your care team', heading: `You have a new message${name ? `, ${name}` : ''}`,
+      intro: 'Your care team sent you a message in Mizan. Open Mizan to read it and reply.',
+      button: 'Read the message', note: 'For your privacy, this email never includes what the message says. For emergencies call 997 or go to the nearest emergency department.',
+    }),
+    ar: (name) => ({
+      subject: 'لديك رسالة جديدة من فريق الرعاية', heading: `لديك رسالة جديدة${name ? `، ${name}` : ''}`,
+      intro: 'أرسل لك فريق الرعاية رسالة في ميزان. افتح ميزان لقراءتها والرد عليها.',
+      button: 'اقرأ الرسالة', note: 'حفاظًا على خصوصيتك، لا تتضمن هذه الرسالة نص الرسالة أبدًا. في حالات الطوارئ اتصل بالرقم 997 أو توجّه إلى أقرب قسم طوارئ.',
+    }),
+  },
+  'message-team': {
+    en: (_n, demoId) => ({
+      subject: `New message from patient ${demoId}`, heading: `New message from patient ${demoId}`,
+      intro: 'A patient sent a message to their care team in Mizan. Open the conversation to read it and reply.',
+      button: 'Open the conversation', note: 'For privacy, this email never includes the message itself.',
+    }),
+    ar: (_n, demoId) => ({
+      subject: `رسالة جديدة من المريض ${demoId}`, heading: `رسالة جديدة من المريض ${demoId}`,
+      intro: 'أرسل مريض رسالة إلى فريق رعايته في ميزان. افتح المحادثة لقراءتها والرد عليها.',
+      button: 'افتح المحادثة', note: 'حفاظًا على الخصوصية، لا تتضمن هذه الرسالة نص الرسالة أبدًا.',
+    }),
+  },
 };
 const FOOT: Record<Lang, string> = {
   en: 'Your plate, your balance · A university Health Informatics project. You’re getting this because a Mizan account uses this address. Mizan will never ask for your password by email.',
@@ -66,7 +93,7 @@ const FOOT: Record<Lang, string> = {
 };
 
 /** Email HTML: one centred card, inline styles only (email clients ignore stylesheets), RTL for Arabic. */
-export function renderEmail(kind: 'verify' | 'reset', lang: Lang, url: string, user: { name?: string; username?: string }) {
+export function renderEmail(kind: EmailKind, lang: Lang, url: string, user: { name?: string; username?: string }) {
   const m = TEXT[kind][lang](user.name ?? '', user.username ?? '');
   const dir = lang === 'ar' ? 'rtl' : 'ltr';
   const font = lang === 'ar' ? "Rubik, 'Geeza Pro', Tahoma, Arial, sans-serif" : "Nunito, 'Segoe UI', Arial, sans-serif";
@@ -101,6 +128,28 @@ export async function sendAccountEmail(kind: 'verify' | 'reset', to: string, url
   // .invalid, example.com/org/net): never try to deliver to them.
   if (/(\.(test|local|example|invalid|localhost)|(^|\.)example\.(com|org|net))$/i.test(to.split('@')[1] ?? '')) return false;
   await transport().sendMail({ from: { name: process.env.EMAIL_FROM_NAME || SITE_NAME, address: process.env.GMAIL_USER as string }, to, subject: mail.subject, html: mail.html, text: mail.text,
+    attachments: [{ filename: 'mizan.png', content: Buffer.from(EMAIL_LOGO_PNG_BASE64, 'base64'), cid: LOGO_CID, contentType: 'image/png' }] });
+  return true;
+}
+
+/** A new-message alert queued by the domain (domain/care-service.js): who gets it and where it links. */
+export type MessageAlert = { type: 'message'; kind: 'patient' | 'team'; to: string; name?: string; lang?: string; demoId: string; path: string };
+
+/**
+ * Email that there is a new message (never its text). The domain already skipped demo accounts,
+ * reserved test domains and alerts sent in the last hour; test domains are skipped here as well.
+ */
+export async function sendMessageAlert(a: MessageAlert) {
+  const lang: Lang = a.lang === 'ar' ? 'ar' : 'en';
+  const base = originOf(process.env.BETTER_AUTH_URL) || SITE_URL;
+  const url = `${base}${a.path.startsWith('/') ? a.path : `/${a.path}`}`;
+  const mail = renderEmail(a.kind === 'patient' ? 'message-patient' : 'message-team', lang, url, { name: a.name ?? '', username: a.demoId });
+  if (!emailConfigured()) {
+    if (isDev) console.info(`[email not configured] new-message alert for ${a.to}: ${url}`);
+    return false;
+  }
+  if (/(\.(test|local|example|invalid|localhost)|(^|\.)example\.(com|org|net))$/i.test(a.to.split('@')[1] ?? '')) return false;
+  await transport().sendMail({ from: { name: process.env.EMAIL_FROM_NAME || SITE_NAME, address: process.env.GMAIL_USER as string }, to: a.to, subject: mail.subject, html: mail.html, text: mail.text,
     attachments: [{ filename: 'mizan.png', content: Buffer.from(EMAIL_LOGO_PNG_BASE64, 'base64'), cid: LOGO_CID, contentType: 'image/png' }] });
   return true;
 }

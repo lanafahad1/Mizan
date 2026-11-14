@@ -58,7 +58,7 @@ export function FeedbackDialog({ pid, target, onClose, reference, onSaved }: { p
               </form>
             </FormErrors>
           ) : null}
-          <p className="text-sm text-muted-foreground">{t('Your answers help us choose meals you’ll enjoy. They never change your diet or allergy rules. Staff may also note what they saw, but each meal is only counted once.')}</p>
+          <p className="text-sm text-muted-foreground">{t('Your answers help us choose meals you’ll enjoy. They never change your diet or allergy rules. Your care team may also note what they saw, but each meal is only counted once.')}</p>
         </DialogBody>
         <DialogFooter>
           <DialogClose className={buttonVariants({ variant: 'outline' })}>{t('Cancel')}</DialogClose>

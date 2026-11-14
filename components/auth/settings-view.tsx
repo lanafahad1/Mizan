@@ -18,6 +18,7 @@ import { PageHead } from '@/components/site/page-head';
 import { useT } from '@/components/site/lang';
 import { ShowPassword, FormError, SubmitButton, focusFirstInvalid, type AuthError } from './form-bits';
 import { SessionsCard } from './sessions-card';
+import { ProviderProfileCard } from '@/components/care/provider-profile';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const USERNAME_MSG = `Usernames use ${USERNAME_RULE.charAt(0).toLowerCase()}${USERNAME_RULE.slice(1)}`;
@@ -389,6 +390,7 @@ export function SettingsView({ viewer, memberSince }: { viewer: Viewer; memberSi
         {/* Phones read top to bottom: details, password, meal profile, devices, data, then the destructive actions. */}
         <div className="flex min-w-0 flex-col gap-5 lg:gap-6">
           <AccountDetails viewer={viewer} memberSince={memberSince} />
+          {viewer.permissions.includes('provider:profile') ? <ProviderProfileCard /> : null}
           <PasswordCard viewer={viewer} />
           {viewer.role === 'patient' ? <LinkCard viewer={viewer} /> : null}
         </div>

@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
 import Link from 'next/link';
-import { ChevronLeft, Check, X, User, TriangleAlert, Calendar, Activity, MessageSquare, List, HeartPulse } from 'lucide-react';
+import { ChevronLeft, Check, X, User, TriangleAlert, Calendar, Activity, MessageSquare, List, HeartPulse, Utensils, TrendingUp, NotebookPen, MessageCircle } from 'lucide-react';
 import { useApi, apiPath } from '@/lib/api-client';
 import { PageBody, containerClass } from '@/components/site/page-head';
 import { cn } from '@/lib/utils';
@@ -24,21 +24,30 @@ import { RequestsTab, RequestDialog, RespondDialog } from './requests-tab';
 import { ChangesTab } from './changes-tab';
 import { HealthSpace, type HealthRef } from '@/components/health/health-space';
 import { useT } from '@/components/site/lang';
+import { FoodTab } from '@/components/care/food-tab';
+import { ProgressView, type Progress } from '@/components/care/progress';
+import { TeamNotes } from '@/components/care/notes';
+import { Conversation, type Thread } from '@/components/care/conversation';
+import { CareTeamLine } from '@/components/care/care-team';
+import { C, type CareRef } from '@/components/care/common';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const TAB_META: Record<Tab, [string, React.ComponentType<{ 'aria-hidden'?: boolean }>]> = {
-  meals: ['Meals', Calendar], health: ['Health & targets', HeartPulse], profile: ['Profile & admission', User], intake: ['Intake & feedback', Activity], requests: ['Requests', MessageSquare], changes: ['Changes & activity', List],
+  meals: ['Meals', Calendar], food: ['Food', Utensils], progress: ['Progress', TrendingUp], notes: ['Notes', NotebookPen], messages: ['Messages', MessageCircle], health: ['Health & targets', HeartPulse], profile: ['Profile & admission', User], intake: ['Intake & feedback', Activity], requests: ['Requests', MessageSquare], changes: ['Changes & activity', List],
 };
 
-type ViewProps = { id: string; initialRecord: any; initialDay: any; reference: any; permissions: string[]; initialTab: Tab; initialHealth: any; healthRef: HealthRef };
+type ViewProps = {
+  id: string; initialRecord: any; initialDay: any; reference: any; permissions: string[]; initialTab: Tab; initialHealth: any; healthRef: HealthRef;
+  initialProgress: Progress; careRef: CareRef; initialTeam: any; today: string;
+};
 
 /** Patient Nutrition Profile. A page-scoped SWR cache means the server's data is always the starting point. */
 export function PatientView(props: ViewProps) {
   return <FreshCache><PatientProfile {...props} /></FreshCache>;
 }
 
-function PatientProfile({ id, initialRecord, initialDay, reference, permissions, initialTab, initialHealth, healthRef }: ViewProps) {
+function PatientProfile({ id, initialRecord, initialDay, reference, permissions, initialTab, initialHealth, healthRef, initialProgress, careRef, initialTeam, today }: ViewProps) {
   const { t: tr } = useT();
   const [tab, setTab] = React.useState<Tab>(initialTab);
   const [date, setDateState] = React.useState<string>(initialDay.date);
@@ -105,10 +114,12 @@ function PatientProfile({ id, initialRecord, initialDay, reference, permissions,
     goToTab: (t) => { changeTab(t as Tab); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' })); },
   };
   const openReq = record.requests.filter((r: any) => r.status === 'open').length;
+  const { data: thread } = useApi<Thread>(C(id, '/messages'), undefined, { refreshInterval: 30_000 });
+  const unreadMsg = tab === 'messages' ? 0 : thread?.unread ?? 0;
 
   return (
     <Ctx.Provider value={ctx}>
-      <PatientBanner record={record} discharged={discharged} />
+      <PatientBanner record={record} discharged={discharged} careTeam={<CareTeamLine who={id} canManage={permissions.includes('care-team:manage')} initial={initialTeam} />} />
       <PageBody space="staff">
         {recordError ? <Notice tone="danger" title={tr('We couldn’t refresh this patient.')}>{tr(recordError.message)} {tr('The information below may be out of date.')}</Notice> : null}
         <Tabs value={tab} onValueChange={(v) => changeTab(v as Tab)}>
@@ -119,12 +130,22 @@ function PatientProfile({ id, initialRecord, initialDay, reference, permissions,
                 <TabsTab key={t} value={t} id={`tab-${t}`}>
                   <Icon aria-hidden />{tr(labelText)}
                   {t === 'requests' && openReq ? <span className="ms-0.5 rounded-full bg-rose px-1.5 text-xs font-bold text-rose-ink" aria-label={tr('{n} pending', { n: openReq })}>{openReq}</span> : null}
+                  {t === 'messages' && unreadMsg ? <span className="ms-0.5 rounded-full bg-destructive px-1.5 text-xs font-bold text-white" aria-label={tr('{n} unread', { n: unreadMsg })}>{unreadMsg}</span> : null}
                 </TabsTab>
               );
             })}
           </TabsList>
           <div className="pt-5">
             <TabsPanel value="meals">{dayError && !dayData ? <Notice tone="danger" title={tr('We couldn’t load the meals for this day.')}>{tr(dayError.message)} {tr('Choose another day or try again.')}</Notice> : <MealsTab />}</TabsPanel>
+            <TabsPanel value="food"><FoodTab id={id} today={today} /></TabsPanel>
+            <TabsPanel value="progress"><ProgressView who={id} initial={initialProgress} team canEditGoals={permissions.includes('care:write')} careRef={careRef} /></TabsPanel>
+            <TabsPanel value="notes"><TeamNotes who={id} canWrite={permissions.includes('care:write')} /></TabsPanel>
+            <TabsPanel value="messages">
+              <div className="mx-auto flex max-w-3xl flex-col gap-3">
+                <p className="m-0 text-sm text-muted-foreground">{tr('One conversation with {name}. Any healthcare provider or admin can read and reply.', { name: record.patient.brief.preferredName || record.patient.brief.demoId })}</p>
+                <Conversation who={id} side="team" initial={thread} />
+              </div>
+            </TabsPanel>
             <TabsPanel value="health"><HealthSpace who={id} initial={initialHealth} reference={healthRef} canReview={permissions.includes('assessment:review')} assessmentHref="" /></TabsPanel>
             <TabsPanel value="profile"><ProfileTab /></TabsPanel>
             <TabsPanel value="intake"><IntakeTab /></TabsPanel>
@@ -138,7 +159,7 @@ function PatientProfile({ id, initialRecord, initialDay, reference, permissions,
   );
 }
 
-function PatientBanner({ record, discharged }: { record: any; discharged: boolean }) {
+function PatientBanner({ record, discharged, careTeam }: { record: any; discharged: boolean; careTeam?: React.ReactNode }) {
   const { t, lang } = useT();
   const p = record.patient;
   const b = p.brief;
@@ -152,6 +173,7 @@ function PatientBanner({ record, discharged }: { record: any; discharged: boolea
           <h1 id="patient-title" tabIndex={-1} className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[2rem] leading-tight outline-none sm:text-[2.4rem]">
             <span>{b.preferredName || b.demoId}</span> <span className="text-base"><Pid>{b.demoId}</Pid></span>
           </h1>
+          {careTeam}
           <div className="flex flex-wrap items-center gap-2">
             {discharged ? <Badge variant="outline"><X aria-hidden />{t('Discharged {date}', { date: p.dischargedOn ?? '' })}</Badge> : <Badge variant="ok"><Check aria-hidden />{t('Admitted {date}', { date: p.admittedOn ?? '' })}</Badge>}
             <DietNames codes={b.dietCodes} labels={b.dietLabels} />

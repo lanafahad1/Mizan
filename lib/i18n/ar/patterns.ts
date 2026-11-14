@@ -240,8 +240,8 @@ add(re`Removed the link to (\d+) personal accounts?\. The account itself and the
 for (const [wasteEn, wasteAr] of [['; ([\\d,.]+) g weighed waste', '؛ الهدر الموزون $W جم'], ['', '']]) {
   for (const [appEn, appAr] of [['; current appetite updated', '؛ وحُدّثت الشهية الحالية'], ['', '']]) {
     const tail = `${wasteEn}${appEn}\\.$`;
-    add(new RegExp(`^(Staff observation|Patient report) for ${PERIOD} on ${DATE}: accepted, (.+) eaten${tail}`), `{t:$1} لفترة {t:$2} بتاريخ $3: مقبولة، الكمية المأكولة: {t:$4}${wasteAr.replace('$W', '$5')}${appAr}.`);
-    add(new RegExp(`^(Staff observation|Patient report) for ${PERIOD} on ${DATE}: refused${tail}`), `{t:$1} لفترة {t:$2} بتاريخ $3: مرفوضة${wasteAr.replace('$W', '$4')}${appAr}.`);
+    add(new RegExp(`^(Staff observation|Provider observation|Patient report) for ${PERIOD} on ${DATE}: accepted, (.+) eaten${tail}`), `{t:$1} لفترة {t:$2} بتاريخ $3: مقبولة، الكمية المأكولة: {t:$4}${wasteAr.replace('$W', '$5')}${appAr}.`);
+    add(new RegExp(`^(Staff observation|Provider observation|Patient report) for ${PERIOD} on ${DATE}: refused${tail}`), `{t:$1} لفترة {t:$2} بتاريخ $3: مرفوضة${wasteAr.replace('$W', '$4')}${appAr}.`);
   }
 }
 add(re`Recorded discharge on ${DATE} \((.+)\)\. Past meals, intake and requests are kept\.`, 'سُجّل الخروج بتاريخ $1 ($2). الوجبات السابقة وكميات الأكل والطلبات محفوظة.');
@@ -267,6 +267,21 @@ add(re`Declined staff access for @(\S+)\.`, 'رُفض طلب صلاحية @$1.')
 add(re`Deactivated @(\S+)\.`, 'تم إيقاف @$1.');
 add(re`Reactivated @(\S+)\.`, 'تمت إعادة تفعيل @$1.');
 add(re`@(\S+) asked for staff access as (.+)\.`, 'طلب @$1 صلاحية موظف بدور {t:$2}.');
+add(re`Approved provider access for @(\S+) as (.+)\.`, 'تمت الموافقة على صلاحية مقدّم الرعاية @$1 بدور {t:$2}.');
+add(re`Declined provider access for @(\S+)\.`, 'رُفض طلب صلاحية @$1.');
+add(re`@(\S+) asked for provider access as (.+)\.`, 'طلب @$1 صلاحية مقدّم رعاية بدور {t:$2}.');
+
+// ---------------------------------------------------------------- care team (domain/care-service.js)
+add(re`Added (.+) to the care team\.`, 'أُضيف $1 إلى فريق الرعاية.');
+add(re`Removed (.+) from the care team\.`, 'أُزيل $1 من فريق الرعاية.');
+add(re`(.+) is already on this care team\.`, '$1 موجود بالفعل في فريق الرعاية هذا.');
+add(re`Updated the healthcare provider profile of (.+) \((.+)\)\.`, 'حُدّث ملف مقدّم الرعاية الصحية $1 ({t:$2}).');
+add(re`Updated the healthcare provider profile of (.+)\.`, 'حُدّث ملف مقدّم الرعاية الصحية $1.');
+add(re`Set goals: (.+)\.`, 'حُدّدت الأهداف: {t:$1}.');
+add(re`(target weight|daily steps|water|daily calories|daily carbs|fasting blood sugar, highest|blood pressure, upper number, highest|blood pressure, lower number, highest) ([\d.,]+) (kg|steps|cups|kcal|g|mg/dL|mmHg)`, '{t:$1} $2 {t:$3}');
+add(re`Keep the bio to (\d+) characters or fewer\.`, 'اجعل النبذة $1 حرفًا أو أقل.');
+add(re`Keep the note to (\d+) characters or fewer\.`, 'اجعل الملاحظة $1 حرفًا أو أقل.');
+add(re`Keep the message to (\d+) characters or fewer\.`, 'اجعل الرسالة $1 حرفًا أو أقل.');
 
 // ---------------------------------------------------------------- menu management
 add(re`Ingredient (.+) allergen or diet data changed`, 'تغيّرت بيانات الحساسية أو الحمية للمكوّن {t:$1}');
@@ -326,6 +341,9 @@ add(re`Laboratory-analysed values from the SFDA Saudi Food Composition Tables fo
 add(re`Laboratory-analysed values from the SFDA Saudi Food Composition Tables for (.+)\.`, 'قيم محلّلة مخبريًا من جداول تركيب الأغذية السعودية الصادرة عن الهيئة العامة للغذاء والدواء لـ {t:$1}.');
 add(re`(.+) marked unavailable \((.+)\)`, '{t:$1}: أصبحت غير متوفرة ($2)');
 add(re`(.+) marked unavailable`, '{t:$1}: أصبحت غير متوفرة');
+
+// ---------------------------------------------------------------- care team: goal ranges ("Enter 30–300 kg.")
+add(re`Enter ([\d,.]+)–([\d,.]+) (kg|steps|cups|kcal|g|mg/dL|mmHg)\.`, 'أدخل من $1 إلى $2 {t:$3}.');
 
 // ---------------------------------------------------------------- last: short generic forms
 add(re`(.+) allergy`, 'حساسية {t:$1}');

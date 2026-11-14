@@ -33,6 +33,7 @@ import { SFCT_LIBRARY, SFCT_META } from '../data/sfct-dishes.js';
 import { createWorkflow } from './workflow.js';
 import { createMenuAdmin } from './menu-admin.js';
 import { createHealthService } from './health-service.js';
+import { createCareService } from './care-service.js';
 
 export class ServiceError extends Error {
   constructor(status, code, message, details) {
@@ -47,7 +48,11 @@ const INTAKE_DAYS = 14;
 const LINK_CODE_HOURS = 72;
 export { ENTRY_STATUS };
 
-export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(), randomCode = defaultRandomCode, catalogState = null }) {
+/**
+ * `notify(alert)` receives the email alerts a change asks for (new-message alerts); the server
+ * sends them once the change is saved. Without it, no alert is queued.
+ */
+export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(), randomCode = defaultRandomCode, catalogState = null, notify = null }) {
   const today = () => todayIso(now());
   const stamp = () => now().toISOString();
   let seq = 0;
@@ -466,7 +471,7 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
       }
     }
     const what = input.accepted ? `accepted, ${label(INTAKE_AMOUNTS, amount).toLowerCase()} eaten` : 'refused';
-    audit(actor, p.id, 'intake.record', `${staff ? 'Staff observation' : 'Patient report'} for ${period} on ${date}: ${what}${appetiteUpdated ? '; current appetite updated' : ''}.`);
+    audit(actor, p.id, 'intake.record', `${staff ? 'Provider observation' : 'Patient report'} for ${period} on ${date}: ${what}${appetiteUpdated ? '; current appetite updated' : ''}.`);
     const outcome = outcomesOf(p.id).find((o) => o.date === date && o.period === period);
     return { intake: record, outcome, appetiteUpdated, flags: staff ? intakeFlags(outcomesOf(p.id), today()) : [] };
   }
@@ -623,7 +628,7 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
     createdAt: u.createdAt, decidedBy: u.decidedBy ?? null, decidedAt: u.decidedAt ?? null, decisionNote: u.decisionNote ?? '',
   });
   function listStaff(actor) {
-    requirePermission(actor, 'staff:manage', 'Only an admin can manage staff access.');
+    requirePermission(actor, 'staff:manage', 'Only an admin can manage provider access.');
     // Patients and members (personal accounts) are not staff and are never listed here.
     const users = repo.listUsers().filter((u) => u.role !== 'patient' && u.role !== 'member');
     return {
@@ -633,9 +638,9 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
     };
   }
   function decideStaff(actor, userId, input = {}) {
-    requirePermission(actor, 'staff:manage', 'Only an admin can manage staff access.');
+    requirePermission(actor, 'staff:manage', 'Only an admin can manage provider access.');
     const u = repo.getUserById(String(userId));
-    if (!u || u.role === 'patient') throw new ServiceError(404, 'user_not_found', 'That staff account does not exist.');
+    if (!u || u.role === 'patient') throw new ServiceError(404, 'user_not_found', 'That provider account does not exist.');
     if (u.id === actor.id) deny('You cannot change your own access.');
     if (u.isDemo) deny('Shared demonstration accounts cannot be changed.');
     const decision = input.decision;
@@ -650,13 +655,13 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
       if (decision === 'role' && u.status !== 'active') conflict('not_active', 'Only active accounts can have their role changed.');
       if (decision === 'approve' && u.status !== 'pending') conflict('not_pending', 'This request has already been decided.');
       return decision === 'approve'
-        ? save({ role: input.role, status: 'active', decisionNote: note }, 'staff.approve', `Approved staff access for @${u.username} as ${label(ROLES, input.role)}.`)
+        ? save({ role: input.role, status: 'active', decisionNote: note }, 'staff.approve', `Approved provider access for @${u.username} as ${label(ROLES, input.role)}.`)
         : save({ role: input.role }, 'staff.role', `Changed @${u.username} from ${label(ROLES, u.role)} to ${label(ROLES, input.role)}.`);
     }
     if (decision === 'decline') {
       if (u.status !== 'pending') conflict('not_pending', 'Only pending requests can be declined. Deactivate an active account instead.');
       if (!note) invalid('Give a short reason for declining.', { note: 'Give a short reason for declining.' });
-      return save({ status: 'declined', role: null, decisionNote: note }, 'staff.decline', `Declined staff access for @${u.username}.`);
+      return save({ status: 'declined', role: null, decisionNote: note }, 'staff.decline', `Declined provider access for @${u.username}.`);
     }
     if (decision === 'deactivate' || decision === 'reactivate') {
       if (decision === 'reactivate' && !u.role) conflict('no_role', 'Approve this request with a role instead.');
@@ -699,7 +704,9 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
       out.mealSchedule = repo.listEntries({ patientId: p.id }).map((e) => ({ date: e.date, period: e.period, status: e.status, meal: e.mealName, portion: e.portion, history: e.history }));
       out.intakeAndFeedback = repo.listIntake({ patientId: p.id }).filter((r) => r.source === 'patient');
       out.requests = repo.listRequests({ patientId: p.id });
-      out.health = repo.listHealth({ owner: `p:${p.id}` });
+      // Notes written for the care team only are not part of the patient's export.
+      out.health = repo.listHealth({ owner: `p:${p.id}` }).filter((r) => !(r.kind === 'note' && r.visibility !== 'patient'));
+      out.messages = repo.listMessages({ patientId: p.id }).map(({ id, body, createdAt, senderName, senderRole }) => ({ id, from: senderRole === 'patient' ? 'you' : senderName, body, createdAt }));
     }
     // A member's private health space (profile, targets, assessments, readings, food diary, own foods).
     if (actor.role === 'member') out.health = repo.listHealth({ owner: `m:${actor.id}` });
@@ -707,13 +714,14 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
   }
 
   const health = createHealthService({ repo, today, stamp, requirePermission, accessPatient, invalid, deny, notFound, audit, catalog });
+  const care = createCareService({ ...ctx, notFound, health: health.api, notify });
 
   return {
     listPatients, getPatient, createPatient, updatePatientSection, deletePatient, dischargePatient, readmitPatient,
     createLinkCode, checkLinkCode, redeemLinkCode, claimLinkCode, recordAccountLink, unlinkAccounts,
     recordIntake, createRequest, listRequests, listPatientRequests, resolveRequest,
     getDashboard, getReference, exportData, listStaff, decideStaff,
-    ...workflow.api, ...menuAdmin.api, ...health.api,
+    ...workflow.api, ...menuAdmin.api, ...health.api, ...care.api,
     reloadCatalog, catalog, menu, today,
   };
 }

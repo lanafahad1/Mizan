@@ -14,6 +14,8 @@ export type DiaryEntry = {
   nutrients: Nutrients; basis: string | null; sourceId?: string | null; foodId?: string;
   hospital?: boolean; readOnly?: boolean;
   meal?: MealId;
+  /** Who logged it: 'self' (the person) or 'staff' (the care team), and their name. */
+  source?: 'self' | 'staff'; by?: string; byRole?: string;
   /** How the amount was entered (foods only; quick-add entries have none). */
   amount?: EntryAmount | null;
 };

@@ -19,17 +19,17 @@ const HOSPITAL_ROLES = ['admin', 'staff', 'patient'];
 
 const SPACE: Record<Space, { title: string; description: string; icon: LucideIcon; tone: string }> = {
   member: { title: 'Member', description: 'Track your own food, weight and health. Private to you.', icon: HeartPulse, tone: 'bg-mint text-sage-deep' },
-  hospital: { title: 'Hospital care', description: 'Patients and hospital staff.', icon: Hospital, tone: 'bg-rose text-rose-ink' },
+  hospital: { title: 'Hospital care', description: 'Patients and healthcare providers.', icon: Hospital, tone: 'bg-rose text-rose-ink' },
 };
 
 const STEP_TEXT: Record<Mode, Record<Space, { heading: string; help: string }>> = {
   login: {
     member: { heading: 'Member log in', help: 'Use the username or email of your member account.' },
-    hospital: { heading: 'Hospital care log in', help: 'Patients and staff: log in with your username or the email you signed up with.' },
+    hospital: { heading: 'Hospital care log in', help: 'Patients and healthcare providers: log in with your username or the email you signed up with.' },
   },
   register: {
     member: { heading: 'Create a member account', help: 'Free and just for you: log your food, track your readings and set your own goals. It isn’t linked to any hospital, and only you can see it.' },
-    hospital: { heading: 'Join hospital care', help: 'Your hospital runs this space. Patients join with the one-time link code from their nutrition team. Staff send an access request, and an admin approves it.' },
+    hospital: { heading: 'Join hospital care', help: 'Your hospital runs this space. Patients join with the one-time link code from their nutrition team. Healthcare providers send an access request, and an admin approves it.' },
   },
 };
 
@@ -215,9 +215,9 @@ function AuthAside({ space, accounts, next }: { space: Space | null; accounts: D
         <InfoPanel id="spaces-h" icon={ShieldCheck} title={t('Two spaces, kept apart')}>
           <dl className="flex flex-col gap-3 text-sm">
             <div><dt className="font-display font-semibold text-heading">{t('Member')}</dt><dd>{t('Your own food diary, readings and goals. Not linked to any hospital, and private to you.')}</dd></div>
-            <div><dt className="font-display font-semibold text-heading">{t('Hospital care')}</dt><dd>{t('Patients join with a link code from their nutrition team. Staff send an access request that an admin approves.')}</dd></div>
+            <div><dt className="font-display font-semibold text-heading">{t('Hospital care')}</dt><dd>{t('Patients join with a link code from their nutrition team. Healthcare providers send an access request that an admin approves.')}</dd></div>
           </dl>
-          <p className="text-sm text-muted-foreground">{t('Work in a hospital and want personal use too? Keep your staff account for work and create a separate Member account for yourself.')}</p>
+          <p className="text-sm text-muted-foreground">{t('Work in a hospital and want personal use too? Keep your provider account for work and create a separate Member account for yourself.')}</p>
         </InfoPanel>
       </div>
     );
@@ -239,7 +239,7 @@ function AuthAside({ space, accounts, next }: { space: Space | null; accounts: D
           <ul className="flex list-disc flex-col gap-1.5 ps-5 text-sm">
             <li>{t('Only you can see your food diary, readings and goals. No hospital account can read them.')}</li>
             <li>{t('You don’t need a link code, and your account isn’t linked to any hospital.')}</li>
-            <li>{t('Hospital staff: keep your work account for work and use a separate member account for yourself.')}</li>
+            <li>{t('Healthcare providers: keep your work account for work and use a separate member account for yourself.')}</li>
             <li>{t('Your password is stored scrambled (hashed with scrypt), and you stay logged in through a secure HttpOnly cookie that page scripts can’t read.')}</li>
           </ul>
         </InfoPanel>
@@ -255,14 +255,14 @@ function AuthAside({ space, accounts, next }: { space: Space | null; accounts: D
     <div className="flex min-w-0 flex-col gap-5">
       <DemoPanel
         title={t('Explore the demonstration hospital')}
-        intro={<><strong className="font-semibold text-foreground">{t('Demonstration access:')}</strong> {t('every patient, staff member and record is fictional, and no identity is checked. Each account shows what that role can see and do. Everyone using the same demo account sees the same changes.')}</>}
+        intro={<><strong className="font-semibold text-foreground">{t('Demonstration access:')}</strong> {t('every patient, healthcare provider and record is fictional, and no identity is checked. Each account shows what that role can see and do. Everyone using the same demo account sees the same changes.')}</>}
         accounts={hospital}
         next={next}
       />
       <InfoPanel id="protect-h" icon={Lock} title={t('How accounts are protected')}>
         <ul className="flex list-disc flex-col gap-1.5 ps-5 text-sm">
-          <li>{t('Three roles: patients see only their own meals, staff run the daily meal service, and admins manage everything, including clinical information and staff access.')}</li>
-          <li>{t('An admin assigns staff roles. Nobody picks their own role at sign-up.')}</li>
+          <li>{t('Three roles: patients see their own meals and progress, healthcare providers follow patients and run the daily meal service, and admins manage everything, including clinical information and provider access.')}</li>
+          <li>{t('An admin assigns provider roles. Nobody picks their own role at sign-up.')}</li>
           <li>{t('Only an admin can change diet orders, allergies or medical restrictions. Patients can ask for a change by sending a request.')}</li>
           <li>{t('Your password is stored scrambled (hashed with scrypt), and you stay logged in through a secure HttpOnly cookie that page scripts can’t read.')}</li>
         </ul>

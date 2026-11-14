@@ -194,7 +194,8 @@ export function axisLabelIndexes(n: number, width: number, minGap = 64, max = 5)
 
 /** Single-series line over days. A null value leaves a gap ("no records"); x labels are thinned so they never overlap. */
 /** `yMin` (default 0) lets measurements such as body weight use a scale that starts near their values. */
-export function LineChart({ points, yMax, yMin = 0, fmt, unit, color = VIZ.c1, ticks = 4, missing = 'no records' }: { points: DayPoint[]; yMax: number; yMin?: number; fmt: (v: number) => string; unit: string; color?: string; ticks?: number; missing?: string }) {
+/** `goal`, when given, draws a dashed line at that value with its label (for example a target weight). */
+export function LineChart({ points, yMax, yMin = 0, fmt, unit, color = VIZ.c1, ticks = 4, missing = 'no records', goal }: { points: DayPoint[]; yMax: number; yMin?: number; fmt: (v: number) => string; unit: string; color?: string; ticks?: number; missing?: string; goal?: { value: number; label: string } | null }) {
   const { t, lang } = useT();
   const { ref, width: w } = useWidth();
   const m = { t: 18, r: 46, b: 30, l: 44 };
@@ -221,6 +222,12 @@ export function LineChart({ points, yMax, yMin = 0, fmt, unit, color = VIZ.c1, t
             <Frame w={w} h={h} m={m} yMax={yMax} yMin={yMin} ticks={ticks} fmt={fmt} />
             {active != null ? <line x1={xs[active]} x2={xs[active]} y1={m.t} y2={m.t + ih} stroke={VIZ.cross} strokeWidth={1} /> : null}
             {shownLabels.map((i) => <text key={i} x={xs[i]} y={h - 10} textAnchor="middle" fontSize={12} fill={VIZ.muted}>{axisText(points[i])}</text>)}
+            {goal && goal.value >= yMin && goal.value <= yMax ? (
+              <g>
+                <line x1={m.l} x2={w - m.r} y1={y(goal.value)} y2={y(goal.value)} stroke={VIZ.ink} strokeWidth={1.25} strokeDasharray="5 4" opacity={0.65} />
+                <text x={m.l + 6} y={y(goal.value) - 6} fontSize={11.5} fontWeight={700} fill={VIZ.ink} paintOrder="stroke" stroke={VIZ.surface} strokeWidth={3} strokeLinejoin="round">{goal.label}</text>
+              </g>
+            ) : null}
             <path d={path} fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
             {points.map((p, i) => (p.value != null ? <circle key={i} cx={xs[i]} cy={y(p.value)} r={active === i ? 5.5 : 4} fill={color} stroke={VIZ.surface} strokeWidth={2} /> : <text key={i} x={xs[i]} y={m.t + ih - 6} textAnchor="middle" fontSize={12} fill={VIZ.muted}>–</text>))}
             {lastI >= 0 ? <text x={xs[lastI] + 8} y={y(points[lastI].value as number) + 4} fontSize={12} fontWeight={700} fill={VIZ.ink}>{fmt(points[lastI].value as number)}</text> : null}

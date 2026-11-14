@@ -15,6 +15,7 @@ import { formatDate, formatLongDate } from '@/lib/format';
 import { useT } from '@/components/site/lang';
 import { Panel, KpiTile, KpiRow } from '@/components/staff/ui';
 import { Figure, Legend, LineChart, HBarChart, StackedChart, VIZ, type Series } from '@/components/staff/charts';
+import { NeedsAttention, type Attention } from '@/components/care/attention';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Dashboard = any;
@@ -103,7 +104,7 @@ function ChronicSection({ c }: { c: Chronic }) {
   );
 }
 
-export function DashboardView({ initial, requestedDate, chronic }: { initial: Dashboard; requestedDate: string | null; chronic: Chronic }) {
+export function DashboardView({ initial, requestedDate, chronic, attention }: { initial: Dashboard; requestedDate: string | null; chronic: Chronic; attention?: Attention }) {
   const key = apiPath('/api/dashboard', { date: requestedDate });
   const { data, error } = useApi<Dashboard>(key, initial);
   const { t: tr, lang } = useT();
@@ -123,7 +124,8 @@ export function DashboardView({ initial, requestedDate, chronic }: { initial: Da
       </PageHead>
       <PageBody className="max-w-[1320px]">
         {error ? <Notice tone="danger" title={tr('We couldn’t refresh the dashboard.')}>{tr(error.message)} {tr('The figures below may be out of date. Check your connection and try again.')}</Notice> : null}
-        <Notice tone="info" title={tr('What needs your attention')} role="note">{tr(d.notice)}</Notice>
+        <NeedsAttention initial={attention} />
+        <Notice tone="info" title={tr('About these figures')} role="note">{tr(d.notice)}</Notice>
         <p className="eyebrow m-0 text-[.8rem]">{tr('Chronic conditions')}</p>
         <ChronicSection c={chronic} />
 
@@ -211,7 +213,7 @@ export function DashboardView({ initial, requestedDate, chronic }: { initial: Da
               title={<span className="inline-flex items-center gap-2"><Info className="size-4" aria-hidden />{tr('How meals are counted ({records} records → {meals} meals)', { records: w.records, meals: w.recorded })}</span>}>
               <div className="flex flex-col gap-2 px-3.5 pb-3.5 text-sm">
                 <ul className="m-0 list-disc ps-5">{d.outcomeRule.map((x: string) => <li key={x}>{tr(x)}</li>)}</ul>
-                <p>{tr('Last 7 days: {both} meals recorded by both the patient and staff, {patient} by the patient only, {staff} by staff only.', { both: w.both, patient: w.patientOnly, staff: w.staffOnly })} {w.notRecorded ? tr(w.notRecorded === 1 ? '{n} delivered meal has no intake record yet (missing data, not counted).' : '{n} delivered meals have no intake record yet (missing data, not counted).', { n: w.notRecorded }) : tr('Every delivered meal has an intake record.')}</p>
+                <p>{tr('Last 7 days: {both} meals recorded by both the patient and a healthcare provider, {patient} by the patient only, {staff} by a healthcare provider only.', { both: w.both, patient: w.patientOnly, staff: w.staffOnly })} {w.notRecorded ? tr(w.notRecorded === 1 ? '{n} delivered meal has no intake record yet (missing data, not counted).' : '{n} delivered meals have no intake record yet (missing data, not counted).', { n: w.notRecorded }) : tr('Every delivered meal has an intake record.')}</p>
               </div>
             </Accordion>
             <KpiRow>

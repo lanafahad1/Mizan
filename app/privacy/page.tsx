@@ -28,18 +28,19 @@ export default async function PrivacyPage() {
           <h2>{t('What we store, and why')}</h2>
           <ul>
             <li><b>{t('Accounts:')}</b> {t('username, email, display name, role and a hashed password.')}</li>
-            <li><b>{t('Account emails:')}</b> {t('your email is used only to confirm it and to send a password-reset link when you ask for one. Mizan sends no newsletters or marketing, and never asks for your password by email.')}</li>
+            <li><b>{t('Account emails:')}</b> {t('your email is used only to confirm it, to send a password-reset link when you ask for one and, for patients and healthcare providers, a short alert when there is a new message (never the message itself). Mizan sends no newsletters or marketing, and never asks for your password by email.')}</li>
             <li><b>{t('Patient nutrition profile:')}</b> {t('a demonstration identifier (MZ-####), ward and bed, age range, relevant conditions, the prescribed diet order, allergies and intolerances (recorded separately), medically required exclusions, food preferences and appetite. Used only to screen, rank and prepare meals.')}</li>
             <li><b>{t('Meals and feedback:')}</b> {t('offered options, selections and confirmations, appetite before meals, intake, reasons, satisfaction and requests to the nutrition team.')}</li>
+            <li><b>{t('Care team:')}</b> {t('goals, notes and messages between a patient and their care team, and the weekly check-in answers. Patients see their own goals, their messages and the notes written for them; the hospital’s healthcare providers and admins see all of them, including notes marked “care team only”. When a healthcare provider opens a patient’s food diary, it is recorded in the audit log.')}</li>
             <li><b>{t('Audit log:')}</b> {t('who changed a patient’s record or meals, and when.')}</li>
             <li>{t('Mizan does not store real names, medical record numbers, national ID numbers, contact details or device identifiers.')}</li>
           </ul>
           <h2>{t('Who can see what')}</h2>
           <ul>
-            <li>{bold('<b>Admins</b> control the whole platform. They see and edit full nutrition profiles, are the only role that can change diet orders, allergies and medical restrictions or approve meals that need review, and approve staff access and assign roles.')}</li>
-            <li>{bold('<b>Staff</b> see patient profiles and update details, preferences, appetite, schedules and intake, run the kitchen (menu, preparation and delivery) and answer non-clinical requests. They cannot change clinical information.')}</li>
+            <li>{bold('<b>Admins</b> control the whole platform. They see and edit full nutrition profiles, are the only role that can change diet orders, allergies and medical restrictions or approve meals that need review, approve provider access, assign roles and choose each patient’s care team.')}</li>
+            <li>{bold('<b>Healthcare providers</b> see patient profiles and update details, preferences, appetite, schedules and intake, follow each patient’s food, weight and progress, set goals, write notes and message patients, run the kitchen (menu, preparation and delivery) and answer non-clinical requests. They cannot change clinical information.')}</li>
             <li>{bold('<b>Kitchen tray tickets</b> show only what preparation needs: ward, bed, demonstration ID, diet, allergy alerts and preparation instructions.')}</li>
-            <li>{bold('<b>Patients</b> see only their own profile, schedule, options, feedback and requests. Staff notes are not shown to them.')}</li>
+            <li>{bold('<b>Patients</b> see only their own profile, schedule, options, feedback, requests, goals, messages and the notes written for them. Notes marked “care team only” are not shown to them.')}</li>
           </ul>
           <h2>{t('How your information is protected')}</h2>
           <ul>

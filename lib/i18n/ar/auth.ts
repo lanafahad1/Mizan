@@ -74,7 +74,7 @@ export const AUTH: Record<string, string> = {
   'Staff': 'موظف',
   'Patient': 'مريض',
   'Demo Admin': 'المشرف التجريبي',
-  'Demo Staff Member': 'الموظف التجريبي',
+  'Demo Healthcare Provider': 'مقدّم الرعاية التجريبي',
   'Noura': 'نورة',
   'Khalid': 'خالد',
   'Sara': 'سارة',

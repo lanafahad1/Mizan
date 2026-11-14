@@ -45,12 +45,14 @@ export const STAFF_NAV: NavItem[] = [
   { href: '/schedule', label: 'Schedule', permission: 'schedule:view' },
   { href: '/kitchen', label: 'Kitchen', permission: 'kitchen:view' },
   { href: '/menu/manage', label: 'Menu', permission: 'menu:manage-view' },
-  { href: '/staff-access', label: 'Staff Access', permission: 'staff:manage' },
+  { href: '/messages', label: 'Messages', permission: 'care:read' },
+  { href: '/staff-access', label: 'Provider access', permission: 'staff:manage' },
 ];
 /** Patient space. Same pattern and words as the member space (Diary, Health); the food profile sits in the account menu. */
 export const PATIENT_NAV: NavItem[] = [
   { href: '/my-meals', label: 'My meals' },
   { href: '/today', label: 'Diary' },
+  { href: '/my-progress', label: 'Progress' },
   { href: '/my-health', label: 'Health' },
   { href: '/my-requests', label: 'Requests' },
   { href: '/eat-well', label: 'Eat well' },
@@ -64,6 +66,7 @@ export const PATIENT_ACCOUNT_NAV: NavItem[] = [
 export const MEMBER_NAV: NavItem[] = [
   { href: '/home', label: 'Home' },
   { href: '/today', label: 'Diary' },
+  { href: '/my-progress', label: 'Progress' },
   { href: '/my-health', label: 'Health' },
   { href: '/eat-well', label: 'Eat well' },
 ];

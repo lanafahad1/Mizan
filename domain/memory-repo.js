@@ -4,6 +4,7 @@
 
 const EMPTY = () => ({
   seq: 1, users: {}, patients: {}, entries: [], intake: [], requests: [], audit: [], health: [],
+  providerProfiles: {}, careTeam: [], messages: [], messageAlerts: [],
   catalog: { ingredients: {}, dishes: {}, meals: {}, menu: { cycle: Array.from({ length: 7 }, () => ({})), dates: {} } },
 });
 
@@ -42,6 +43,7 @@ export function createMemoryRepo(storage = null, key = 'mizan-hospital-demo-v5')
       delete db.patients[pid];
       for (const bucket of ['entries', 'intake', 'requests']) db[bucket] = db[bucket].filter((x) => x.patientId !== pid);
       db.health = db.health.filter((x) => x.owner !== `p:${pid}`);
+      for (const bucket of ['careTeam', 'messages', 'messageAlerts']) db[bucket] = db[bucket].filter((x) => x.patientId !== pid);
       persist();
     },
     // ---- editable menu catalogue
@@ -116,6 +118,36 @@ export function createMemoryRepo(storage = null, key = 'mizan-hospital-demo-v5')
     },
     deleteHealth(recId) { db.health = db.health.filter((r) => r.id !== String(recId)); persist(); },
     deleteHealthOwner(owner) { db.health = db.health.filter((r) => r.owner !== owner); persist(); },
+    // ---- healthcare provider profiles and care teams
+    getProviderProfile(userId) { return clone(db.providerProfiles[String(userId)] ?? null); },
+    listProviderProfiles() { return clone(Object.values(db.providerProfiles)); },
+    saveProviderProfile(p) { const rec = { userId: String(p.userId), specialty: p.specialty ?? null, bio: p.bio ?? '', updatedAt: p.updatedAt, updatedBy: p.updatedBy ?? null }; db.providerProfiles[rec.userId] = rec; persist(); return clone(rec); },
+    listCareTeam(q = {}) {
+      return clone(db.careTeam.filter((m) => (!q.patientId || m.patientId === String(q.patientId)) && (!q.userId || m.userId === String(q.userId)))
+        .sort((a, b) => Number(a.patientId) - Number(b.patientId) || (a.addedAt < b.addedAt ? -1 : a.addedAt > b.addedAt ? 1 : 0) || (a.userId < b.userId ? -1 : 1)));
+    },
+    addCareTeam(m) { const rec = { patientId: String(m.patientId), userId: String(m.userId), addedAt: m.addedAt, addedBy: m.addedBy ?? null }; db.careTeam = db.careTeam.filter((x) => !(x.patientId === rec.patientId && x.userId === rec.userId)); db.careTeam.push(rec); persist(); return clone(rec); },
+    removeCareTeam(patientId, userId) { db.careTeam = db.careTeam.filter((x) => !(x.patientId === String(patientId) && x.userId === String(userId))); persist(); },
+    /** An account was deleted: its provider profile, care-team places and alert bookkeeping go too. */
+    deleteUserCareData(userId) {
+      const u = String(userId);
+      delete db.providerProfiles[u];
+      db.careTeam = db.careTeam.filter((x) => x.userId !== u);
+      db.messageAlerts = db.messageAlerts.filter((x) => x.userId !== u);
+      persist();
+    },
+    // ---- messages between a patient and their care team
+    listMessages(q = {}) { return clone(db.messages.filter((m) => !q.patientId || m.patientId === String(q.patientId)).sort((a, b) => Number(a.id) - Number(b.id))); },
+    addMessage(m) { const rec = { readByPatientAt: null, readByTeamAt: null, ...clone(m), patientId: String(m.patientId), id: id() }; db.messages.push(rec); persist(); return clone(rec); },
+    updateMessage(msgId, fields) { const m = db.messages.find((x) => x.id === String(msgId)); if (!m) return null; for (const k of ['readByPatientAt', 'readByTeamAt']) if (k in fields) m[k] = fields[k]; persist(); return clone(m); },
+    getMessageAlert(patientId, userId) { return clone(db.messageAlerts.find((x) => x.patientId === String(patientId) && x.userId === String(userId)) ?? null); },
+    saveMessageAlert(a) {
+      const rec = { patientId: String(a.patientId), userId: String(a.userId), lang: a.lang ?? null, lastAlertAt: a.lastAlertAt ?? null };
+      db.messageAlerts = db.messageAlerts.filter((x) => !(x.patientId === rec.patientId && x.userId === rec.userId));
+      db.messageAlerts.push(rec);
+      persist();
+      return clone(rec);
+    },
     // ---- audit log
     addAudit(rec) { db.audit.push({ ...clone(rec), patientId: rec.patientId == null ? null : String(rec.patientId), id: id() }); if (db.audit.length > 3000) db.audit = db.audit.slice(-3000); persist(); },
     listAudit({ patientId = null, scope = null, limit = 50 } = {}) {
@@ -124,6 +156,7 @@ export function createMemoryRepo(storage = null, key = 'mizan-hospital-demo-v5')
     // ---- demo helpers
     clearHospitalData() {
       db.patients = {}; db.entries = []; db.intake = []; db.requests = []; db.audit = [];
+      db.careTeam = []; db.messages = []; db.messageAlerts = [];
       db.health = db.health.filter((r) => !r.owner.startsWith('p:'));
       for (const u of Object.values(db.users)) u.patientId = null;
       persist();

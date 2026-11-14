@@ -18,8 +18,8 @@ function loginError(error: AuthError): string {
 }
 
 const IDENTIFIER_HINT = {
-  member: 'Hospital staff: use your separate member account here, not your work account.',
-  hospital: 'Patients: use the account you made with your link code. Staff: use your approved staff account.',
+  member: 'Healthcare providers: use your separate member account here, not your work account.',
+  hospital: 'Patients: use the account you made with your link code. Healthcare providers: use your approved provider account.',
 } as const;
 
 /** Username-or-email sign-in. `space` only changes the help text: the server sends every account to its own role's home. */

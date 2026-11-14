@@ -7,7 +7,7 @@
 // custom X-Mizan-Request header and a JSON body. Session cookies are
 // SameSite=Lax and HttpOnly.
 import 'server-only';
-import { NextResponse, type NextRequest } from 'next/server';
+import { NextResponse, after, type NextRequest } from 'next/server';
 import { getRuntime, type Ctx } from './runtime';
 import { AUTH_BASE_URL } from './auth';
 import { actorFromHeaders, toViewer, type Actor } from './session';
@@ -16,6 +16,7 @@ import { ServiceError } from '@/domain/service.js';
 import { can } from '@/domain/rbac.js';
 import { DEMO_ACCOUNTS, DEMO_PASSWORD } from '@/domain/demo-data.js';
 import { ROLES, label } from '@/domain/constants.js';
+import { langOf, sendMessageAlert, type MessageAlert } from './email';
 
 const MAX_BODY = 100_000;
 const NO_STORE = { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
@@ -81,7 +82,9 @@ export async function handleApi(req: NextRequest, segments: string[]) {
       if (req.headers.get('x-mizan-request') !== '1' || !sameOrigin(req)) return fail(403, 'csrf', 'Request rejected.');
     }
     const rt = await getRuntime();
-    const actor = await actorFromHeaders(req.headers);
+    const signedIn = await actorFromHeaders(req.headers);
+    // The language the person uses (language cookie), remembered for the message alerts they may get.
+    const actor = signedIn ? { ...signedIn, lang: langOf(req) } : null;
     const body = method === 'GET' || method === 'HEAD' ? {} : await readBody(req);
     const account = await accountRoute(method, path, actor, body);
     if (account !== undefined) {
@@ -100,7 +103,10 @@ export async function handleApi(req: NextRequest, segments: string[]) {
       const ctx = match.route.public && !actor ? await rt.catalogContext() : await rt.readContext();
       result = await run(ctx);
     } else {
-      result = await rt.write(run);
+      const alerts: MessageAlert[] = [];
+      result = await rt.write(run, { notify: (a: MessageAlert) => alerts.push(a) });
+      // Only after the change is saved: email alerts that say there is a new message (never its text).
+      if (alerts.length) after(async () => { for (const a of alerts) await sendMessageAlert(a).catch((e) => console.error('Message alert not sent:', (e as Error).message)); });
     }
     return json(result ?? { ok: true });
   } catch (err) {

@@ -199,7 +199,7 @@ ok(staffList.staff.some((u) => u.username === 'layla.applicant' && u.role === 's
 
 // ---------------------------------------------------------------- 8. RBAC
 const statusOf = async (page, path) => (await page.request.get(`${base}${path}`, { maxRedirects: 0 })).status();
-ok(await statusOf(staff, '/staff-access') === 403, 'staff: Staff Access is 403');
+ok(await statusOf(staff, '/staff-access') === 403, 'healthcare provider: Provider access is 403');
 ok(await statusOf(staff, '/patients/new') === 403, 'staff: New patient profile is 403');
 ok(await statusOf(noura, '/patients') === 403 && await statusOf(noura, '/kitchen') === 403, 'patient: staff pages are 403');
 ok((await api(noura, 'GET', '/api/patients/2')).status() === 403, 'patient cannot read another patient (API 403)');
@@ -265,8 +265,45 @@ await calc.goto(`${base}/tools/calculator`);
 ok((await calc.locator('h1').count()) === 1, 'public calculator page loads');
 await calc.close();
 
+// ---------------------------------------------------------------- 12. care team: food, progress, notes, messages
+await staff.goto(`${base}/patients/1?tab=food`);
+ok(await staff.getByRole('heading', { name: 'Day total' }).waitFor({ timeout: 10000 }).then(() => true, () => false), 'provider sees the patient’s food diary (Food tab, read-only)');
+ok(await staff.locator('section[aria-labelledby=meal-breakfast-h] button', { hasText: /^Add/ }).count() === 0, 'the Food tab has no add or remove buttons');
+await staff.goto(`${base}/patients/1?tab=progress`);
+ok(await staff.getByText('Weight over time').first().waitFor({ timeout: 10000 }).then(() => true, () => false) && (await staff.locator('main').textContent()).includes('Weekly check-ins'), 'provider sees weight towards the goal and check-ins (Progress tab)');
+await staff.goto(`${base}/patients/1?tab=notes`);
+await staff.locator('#note-body').fill('Keep up the evening walks, Noura. (e2e)');
+await staff.getByRole('button', { name: 'Save note' }).click();
+ok(await seeToast(staff, /Note saved/), 'provider wrote a note the patient can see');
+ok((await api(staff, 'POST', '/api/care/1/notes', { body: 'Team only: check fasting sugar (e2e)', visibility: 'team' })).ok(), 'provider wrote a care-team-only note');
+await staff.goto(`${base}/patients/1?tab=messages`);
+await staff.locator('#team-compose').fill('Hello Noura, how are your meals today? (e2e)');
+await staff.getByRole('button', { name: /^Send$/ }).click();
+ok(await staff.locator('ol li', { hasText: 'how are your meals today? (e2e)' }).first().waitFor({ timeout: 8000 }).then(() => true, () => false), 'provider sent a message');
+await noura.goto(`${base}/my-progress`);
+const progressText = await noura.locator('main').textContent();
+ok(progressText.includes('Keep up the evening walks, Noura. (e2e)') && !progressText.includes('Team only: check fasting sugar'), 'patient sees the visible note, never the care-team-only one');
+const notesApi = await json(noura, '/api/care/me/notes');
+ok(notesApi.notes.every((n) => n.visibility === 'patient'), 'the notes API returns only notes meant for the patient');
+ok(await noura.locator('header a[aria-label^="Messages, "]').first().waitFor({ timeout: 8000 }).then(() => true, () => false), 'patient sees an unread-messages badge in the header');
+await noura.goto(`${base}/my-messages`);
+ok((await noura.locator('main').textContent()).includes('For emergencies call 997'), 'the compose box shows the emergency line');
+await noura.locator('#patient-compose').fill('Thank you, they were good. (e2e)');
+await noura.getByRole('button', { name: /^Send$/ }).click();
+await noura.locator('ol li', { hasText: 'they were good. (e2e)' }).first().waitFor({ timeout: 8000 }).catch(() => {});
+ok((await json(noura, '/api/care/unread')).count === 0, 'opening the conversation marked it read');
+ok((await json(staff, '/api/care/unread')).count >= 1, 'providers see the patient’s reply as unread');
+await staff.goto(`${base}/patients/1?tab=messages`);
+ok(await staff.locator('ol li', { hasText: 'they were good. (e2e)' }).first().waitFor({ timeout: 8000 }).then(() => true, () => false), 'provider sees the patient’s reply');
+ok((await api(noura, 'GET', '/api/care/2/messages')).status() === 403 && (await api(noura, 'GET', '/api/care/2/notes')).status() === 403, 'a patient cannot open another patient’s messages or notes');
+ok((await api(sara, 'GET', '/api/care/1/messages')).status() === 403 && (await api(sara, 'GET', '/api/care/me/messages')).status() === 403, 'members reach no care-team messages');
+ok((await json(sara, '/api/care/me/progress')).kind === 'member', 'a member’s My progress uses their own space');
+ok((await api(staff, 'GET', '/api/care/attention')).ok(), 'providers get the Needs attention list');
+await staff.goto(`${base}/dashboard`);
+ok(await staff.getByRole('heading', { name: /Needs attention/ }).count() === 1, 'the dashboard shows Needs attention');
+
 // ---------------------------------------------------------------- 10. pages at phone width: no overflow, no errors
-const sweep = { 'sara.member': ['/home', '/today', '/my-foods', '/my-health', '/my-health/assessment', '/eat-well', '/eat-well?tab=plan', '/eat-well?tab=shopping', '/eat-well?tab=habits'], 'noura.1001': ['/my-meals', '/my-meals?view=week', '/today', '/my-health', '/my-requests', '/my-profile', '/settings'], 'staff.demo': ['/patients', '/patients/1', '/patients/1?tab=health', '/patients/1?tab=profile', '/patients/1?tab=intake', '/dashboard', '/requests', '/schedule', '/kitchen', '/menu/manage'], 'admin.demo': ['/patients/new', '/staff-access', '/menu/manage?tab=sfct'] };
+const sweep = { 'sara.member': ['/home', '/my-progress', '/today', '/my-foods', '/my-health', '/my-health/assessment', '/eat-well', '/eat-well?tab=plan', '/eat-well?tab=shopping', '/eat-well?tab=habits'], 'noura.1001': ['/my-meals', '/my-meals?view=week', '/my-progress', '/my-messages', '/today', '/my-health', '/my-requests', '/my-profile', '/settings'], 'staff.demo': ['/patients', '/patients/1', '/patients/1?tab=food', '/patients/1?tab=progress', '/patients/1?tab=notes', '/patients/1?tab=messages', '/messages', '/patients/1?tab=health', '/patients/1?tab=profile', '/patients/1?tab=intake', '/dashboard', '/requests', '/schedule', '/kitchen', '/menu/manage'], 'admin.demo': ['/patients/new', '/staff-access', '/menu/manage?tab=sfct'] };
 for (const [user, paths] of Object.entries(sweep)) {
   const pg = await session(user, 390);
   for (const p of paths) {

@@ -5,6 +5,7 @@ import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import pg from 'pg';
 import { ensureSchema, createPgStore } from '../domain/pg-store.js';
+import { weekStart } from '../domain/care-service.js';
 import { createService } from '../domain/service.js';
 import { seedHealthDemo } from '../domain/health-demo.js';
 import { seedCatalog, seedHospitalDemo, linkDemoAccounts, DEMO_ACCOUNTS } from '../domain/demo-data.js';
@@ -23,7 +24,7 @@ CREATE TABLE "session" ("id" text PRIMARY KEY, "expiresAt" timestamptz NOT NULL,
   "updatedAt" timestamptz NOT NULL, "ipAddress" text, "userAgent" text, "userId" text NOT NULL REFERENCES "user" ("id") ON DELETE CASCADE);`;
 
 const admin = { id: 'u-admin', role: 'admin', status: 'active', name: 'Demo Admin', username: 'admin.demo' };
-const staff = { id: 'u-staff', role: 'staff', status: 'active', name: 'Demo Staff Member', username: 'staff.demo' };
+const staff = { id: 'u-staff', role: 'staff', status: 'active', name: 'Demo Healthcare Provider', username: 'staff.demo' };
 
 /** Everything the domain can read, for comparing what was written with what is loaded back. */
 function dump(repo) {
@@ -32,6 +33,8 @@ function dump(repo) {
     users: repo.listUsers(), patients, entries: repo.listEntries(), intake: repo.listIntake(), requests: repo.listRequests(),
     audit: patients.map((p) => repo.listAudit({ patientId: p.id, limit: 40 })), menuAudit: repo.listAudit({ scope: 'menu.', limit: 15 }),
     catalog: repo.getCatalogData(), menu: repo.getMenu(), health: repo.listHealth(),
+    providerProfiles: repo.listProviderProfiles(), careTeam: repo.listCareTeam(), messages: repo.listMessages(),
+    alerts: patients.map((p) => repo.listCareTeam({ patientId: p.id }).map((m) => repo.getMessageAlert(p.id, m.userId))),
   };
 }
 
@@ -166,4 +169,67 @@ test('dishes calculated from ingredients are stored as such, and older databases
   const repo = await createPgStore(pool).read();
   const soup = createService({ repo }).catalog().byId['red-lentil-soup'];
   assert.ok(soup.nutrition.perServing.kcal > 0, 'the soup has calories after loading from Postgres');
+});
+
+test('care-team data round-trips: profiles, care teams, goals, notes, check-ins, messages and alerts', { skip }, async () => {
+  const store = createPgStore(pool);
+  const noura = { id: 'u-noura.1001', role: 'patient', status: 'active', name: 'Noura' };
+  const alerts = [];
+  const written = await store.write((repo) => {
+    const service = createService({ repo, notify: (a) => alerts.push(a) });
+    const pid = repo.listPatients().find((p) => p.demoId === 'MZ-1004').id;
+    const p1 = repo.listPatients().find((p) => p.demoId === 'MZ-1001').id;
+    noura.patientId = p1;
+    service.updateProviderProfile(staff, 'me', { specialty: 'nurse', bio: 'Ward nurse.' });
+    for (const m of repo.listCareTeam({ patientId: pid })) repo.removeCareTeam(pid, m.userId);
+    repo.addCareTeam({ patientId: pid, userId: 'u-staff', addedAt: new Date().toISOString(), addedBy: 'test' });
+    service.addToCareTeam(admin, pid, { userId: 'u-admin' });
+    service.removeFromCareTeam(admin, pid, 'u-staff');
+    const goals = service.setGoals(staff, pid, { targetWeight: 80, targetDate: addDays(service.today(), 30), steps: 6000, limits: { systolicMax: 140 } });
+    const note = service.addNote(staff, pid, { body: 'Team only (pg)', visibility: 'team' });
+    service.saveCheckin(noura, 'me', { hunger: 2, energy: 3, mood: 4 });
+    const sent = service.sendMessage(noura, 'me', { body: 'Hello from the database test' });
+    service.markRead({ ...staff, lang: 'ar' }, p1);
+    repo.saveMessageAlert({ patientId: p1, userId: 'u-staff', lang: 'ar', lastAlertAt: '2026-01-01T00:00:00.000Z' });
+    return { pid, p1, goals, note, sent, dump: dump(repo) };
+  });
+  const loaded = dump(await store.read());
+  assert.deepEqual(loaded, written.dump);
+  assert.equal(loaded.providerProfiles.find((p) => p.userId === 'u-staff').specialty, 'nurse');
+  assert.deepEqual(loaded.careTeam.filter((m) => m.patientId === written.pid).map((m) => m.userId), ['u-admin']);
+  assert.ok(loaded.health.some((r) => r.kind === 'goal' && r.targetWeight === 80 && r.limits.systolicMax === 140));
+  assert.ok(loaded.health.some((r) => r.kind === 'note' && r.visibility === 'team'));
+  assert.ok(loaded.health.some((r) => r.kind === 'checkin' && r.date === weekStart(addDays(written.goals.goal.targetDate, -30))));
+  const msg = loaded.messages.find((m) => m.body === 'Hello from the database test');
+  assert.ok(msg && msg.readByTeamAt, 'marked read by the team');
+  const r = await store.read();
+  assert.equal(r.getMessageAlert(written.p1, 'u-staff').lang, 'ar');
+  // Deleting an account removes its profile and care-team places; deleting a patient removes their conversation.
+  await store.write((repo) => { repo.deleteUserCareData('u-staff'); repo.deletePatient(written.p1); });
+  const after = await store.read();
+  assert.equal(after.getProviderProfile('u-staff'), null);
+  assert.equal(after.listCareTeam({ userId: 'u-staff' }).length, 0);
+  assert.equal(after.listMessages({ patientId: written.p1 }).length, 0);
+  const { rows } = await pool.query('SELECT (SELECT COUNT(*)::int FROM Messages WHERE patient_id = $1) AS m, (SELECT COUNT(*)::int FROM CareTeam WHERE user_id = $2) AS c', [Number(written.p1), 'u-staff']);
+  assert.deepEqual(rows[0], { m: 0, c: 0 });
+});
+
+test('migrations are idempotent and upgrade an older health-records table', { skip }, async () => {
+  const client = await pool.connect();
+  try {
+    await client.query('DROP SCHEMA IF EXISTS mig_up CASCADE; CREATE SCHEMA mig_up; SET search_path TO mig_up');
+    await client.query(`CREATE TABLE Meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)`);
+    await client.query(`CREATE TABLE HealthRecords (id INTEGER PRIMARY KEY, owner TEXT NOT NULL, kind TEXT NOT NULL CHECK (kind IN ('profile','assessment','reading','food','custom-food','home-plan')), date TEXT, data TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL)`);
+    await client.query(`INSERT INTO HealthRecords VALUES (1, 'm:x', 'reading', '2026-01-01', '{}', 'x', 'x')`);
+    await ensureSchema(client);
+    await ensureSchema(client);
+    await client.query(`INSERT INTO HealthRecords VALUES (2, 'p:1', 'goal', NULL, '{}', 'x', 'x'), (3, 'p:1', 'note', NULL, '{}', 'x', 'x'), (4, 'p:1', 'checkin', NULL, '{}', 'x', 'x')`);
+    await assert.rejects(client.query(`INSERT INTO HealthRecords VALUES (5, 'p:1', 'nonsense', NULL, '{}', 'x', 'x')`));
+    const { rows } = await client.query(`SELECT COUNT(*)::int AS n FROM information_schema.tables WHERE table_schema = 'mig_up' AND table_name IN ('providerprofiles','careteam','messages','messagealerts')`);
+    assert.equal(rows[0].n, 4);
+    assert.equal((await client.query('SELECT COUNT(*)::int AS n FROM HealthRecords')).rows[0].n, 4, 'existing rows kept');
+  } finally {
+    await client.query('SET search_path TO public; DROP SCHEMA IF EXISTS mig_up CASCADE').catch(() => {});
+    client.release();
+  }
 });

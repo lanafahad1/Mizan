@@ -205,7 +205,7 @@ export default async function SourcesPage() {
               <li>{t('Where no Saudi source sets a number (carbohydrate per meal, potassium, phosphorus, an energy target), the care team sets it. Meal shares, portion sizes, the protein ranking level and intake flags are Mizan prototype assumptions (ruleset {version}).', { version: RULESET_VERSION })}</li>
               <li>{t('Packaged products vary by brand; check labels. Meals are never called “allergy-safe”.')}</li>
               <li>{t('Alerts appear inside Mizan only: no text messages or pager alerts, and no connection to any hospital system (electronic health record, pharmacy or kitchen equipment). The only emails are account emails (email confirmation and password reset).')}</li>
-              <li>{t('Accounts are demonstration access: no identity is verified. All hospital patients, staff and records are fictional.')}</li>
+              <li>{t('Accounts are demonstration access: no identity is verified. All hospital patients, healthcare providers and records are fictional.')}</li>
             </ul>
           </Card>
           <Accordion className="rounded-[16px] border border-border bg-card" headClassName="min-h-12 px-4 py-3 font-display text-[.98rem] font-semibold text-heading" title={t('How hospital intake and feedback are summarised')}>
