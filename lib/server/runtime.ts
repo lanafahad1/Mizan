@@ -189,7 +189,7 @@ async function refreshDemoAccounts(auth: Auth, one: One) {
       await one(`UPDATE account SET password = $1, "updatedAt" = now() WHERE "userId" = $2 AND "providerId" = 'credential'`, [hash, row.id]);
     }
     if (moveEmail) await one('UPDATE "user" SET email = $1, "updatedAt" = now() WHERE id = $2', [email, row.id]);
-    // Shared demo accounts keep the name the code gives them (e.g. "Demo Healthcare Provider").
+    // Shared demo accounts keep the name the code gives them (e.g. "Dr. Turki Al-Mutairi").
     if (a.demo && row.name !== a.name) await one('UPDATE "user" SET name = $1, "updatedAt" = now() WHERE id = $2', [a.name, row.id]);
   }
   if (!passwordCurrent) await one(`INSERT INTO Meta (key, value) VALUES ('demo_password', $1) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value`, [fingerprint]);

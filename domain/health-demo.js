@@ -12,7 +12,7 @@ const food = (q, kinds = null) => searchFoods(q, { kinds, limit: 1 })[0] ?? null
 
 export function seedHealthDemo({ repo, service, today, patientIds = {} }) {
   const admin = { id: null, role: 'admin', name: 'Demo Admin', status: 'active' };
-  const staff = { id: null, role: 'staff', name: 'Demo Healthcare Provider', status: 'active' };
+  const staff = { id: null, role: 'staff', name: 'Dr. Turki Al-Mutairi', status: 'active' };
   const asPatient = (demoId) => ({ id: null, role: 'patient', name: demoId, status: 'active', patientId: patientIds[demoId] });
 
   // ---- member: Sara, using Mizan on her own

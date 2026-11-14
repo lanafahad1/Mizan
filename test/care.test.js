@@ -265,7 +265,7 @@ test('the demo seeds care-team data and clearing the hospital removes it', () =>
   const r2 = createMemoryRepo();
   seedCatalog(r2, new Date().toISOString());
   const s2 = createService({ repo: r2 });
-  const staffUser = r2.createUser({ username: 'staff.demo', name: 'Demo Healthcare Provider', email: 'staff@mizan.test', role: 'staff', status: 'active', isDemo: true });
+  const staffUser = r2.createUser({ username: 'staff.demo', name: 'Dr. Turki Al-Mutairi', email: 'staff@mizan.test', role: 'staff', status: 'active', isDemo: true });
   r2.createUser({ username: 'admin.demo', name: 'Demo Admin', email: 'admin@mizan.test', role: 'admin', status: 'active', isDemo: true });
   const pids = seedHospitalDemo({ repo: r2, service: s2, today: s2.today() });
   seedHealthDemo({ repo: r2, service: s2, today: s2.today(), patientIds: pids });

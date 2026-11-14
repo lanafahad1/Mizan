@@ -26,9 +26,9 @@ export function seedCareDemo({ repo, today, patientIds = {} }) {
   team('MZ-1001', adminUser, 5);
   team('MZ-1002', adminUser, 5);
 
-  const by = (u, role) => ({ setBy: u?.name ?? (role === 'admin' ? 'Demo Admin' : 'Demo Healthcare Provider'), setById: u?.id ?? null, setByRole: role });
+  const by = (u, role) => ({ setBy: u?.name ?? (role === 'admin' ? 'Demo Admin' : 'Dr. Turki Al-Mutairi'), setById: u?.id ?? null, setByRole: role });
   const note = (pid, u, role, daysAgo, time, visibility, body) => repo.addHealth({
-    owner: `p:${pid}`, kind: 'note', date: ago(daysAgo), body, visibility, authorId: u?.id ?? null, authorName: u?.name ?? 'Demo Healthcare Provider', authorRole: role, createdAt: at(ago(daysAgo), time),
+    owner: `p:${pid}`, kind: 'note', date: ago(daysAgo), body, visibility, authorId: u?.id ?? null, authorName: u?.name ?? 'Dr. Turki Al-Mutairi', authorRole: role, createdAt: at(ago(daysAgo), time),
   });
 
   // ---- Noura (MZ-1001): obesity, type 2 diabetes, high blood pressure
@@ -53,9 +53,9 @@ export function seedCareDemo({ repo, today, patientIds = {} }) {
       });
     };
     const nouraUser = repo.listUsersByPatient(n)[0];
-    send(staffUser, 'staff', staffUser?.name ?? 'Demo Healthcare Provider', 3, '09:30', 'Hello Noura, I’m your dietitian. You can message me here about your meals, your goals or anything that worries you about food.', true);
+    send(staffUser, 'staff', staffUser?.name ?? 'Dr. Turki Al-Mutairi', 3, '09:30', 'Hello Noura, I’m your dietitian. You can message me here about your meals, your goals or anything that worries you about food.', true);
     send(nouraUser, 'patient', nouraUser?.name ?? 'Noura', 2, '18:05', 'Thank you. Is it fine to have laban with my dinner?', true);
-    send(staffUser, 'staff', staffUser?.name ?? 'Demo Healthcare Provider', 2, '19:20', 'Thanks for asking. Please log it with your dinner, and we will go through your evening meals together at your next visit.', true);
+    send(staffUser, 'staff', staffUser?.name ?? 'Dr. Turki Al-Mutairi', 2, '19:20', 'Thanks for asking. Please log it with your dinner, and we will go through your evening meals together at your next visit.', true);
     send(nouraUser, 'patient', nouraUser?.name ?? 'Noura', 0, null, 'My fasting sugar was a bit high this morning. Should I change my breakfast?', false);
   }
 

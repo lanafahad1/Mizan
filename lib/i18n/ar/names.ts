@@ -3,5 +3,5 @@
 export const NAMES: Record<string, string> = {
   'Noura': 'نورة', 'Fahad': 'فهد', 'Mona': 'منى', 'Khalid': 'خالد', 'Sara': 'سارة',
   'Abdullah': 'عبدالله', 'Huda': 'هدى', 'Faisal': 'فيصل', 'Reem': 'ريم', 'Majed': 'ماجد',
-  'Demo Admin': 'المشرف التجريبي', 'Demo Healthcare Provider': 'مقدّم الرعاية التجريبي', 'Demo Staff Member': 'مقدّم الرعاية التجريبي',
+  'Demo Admin': 'المشرف التجريبي', 'Dr. Turki Al-Mutairi': 'د. تركي المطيري', 'Demo Healthcare Provider': 'مقدّم الرعاية التجريبي', 'Demo Staff Member': 'مقدّم الرعاية التجريبي',
 };

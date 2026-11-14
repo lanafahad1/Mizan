@@ -20,7 +20,7 @@ const DEFAULT_REVIEW_NOTE = 'Reviewed by the admin against the diet order: no ad
 // system after identity checks; Mizan does not verify anyone's identity.
 export const DEMO_ACCOUNTS = [
   { username: 'admin.demo', email: 'admin@mizan.test', name: 'Demo Admin', role: 'admin', summary: 'Controls everything: provider access, care teams, diet orders and allergies, meals that need review, menu verification, plus every healthcare provider task.' },
-  { username: 'staff.demo', email: 'staff@mizan.test', name: 'Demo Healthcare Provider', role: 'staff', summary: 'Healthcare provider (dietitian): follows patients’ food, weight and progress, sets goals, writes notes, messages patients and runs meal service.' },
+  { username: 'staff.demo', email: 'staff@mizan.test', name: 'Dr. Turki Al-Mutairi', role: 'staff', summary: 'Healthcare provider (dietitian): follows patients’ food, weight and progress, sets goals, writes notes, messages patients and runs meal service.' },
   { username: 'noura.1001', email: 'noura@mizan.test', name: 'Noura', role: 'patient', patientDemoId: 'MZ-1001', summary: 'Patient account linked to MZ-1001: choose meals, give feedback, ask for help.' },
   { username: 'khalid.1004', email: 'khalid@mizan.test', name: 'Khalid', role: 'patient', patientDemoId: 'MZ-1004', summary: 'Patient account linked to MZ-1004 (peanut and tree nut allergies).' },
   { username: 'sara.member', email: 'sara@mizan.test', name: 'Sara', role: 'member', summary: 'Member (personal use, no hospital): food diary, weight and blood pressure, personal targets.' },
@@ -150,7 +150,7 @@ function rng(seed) {
 export function seedHospitalDemo({ repo, service, today }) {
   const catalog = service.catalog();
   const menu = service.menu();
-  const staff = { id: null, role: 'staff', name: 'Demo Healthcare Provider', status: 'active' };
+  const staff = { id: null, role: 'staff', name: 'Dr. Turki Al-Mutairi', status: 'active' };
   const admin = { id: null, role: 'admin', name: 'Demo Admin', status: 'active' };
   const at = (date, h, m = 0) => `${date}T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00.000Z`;
   const ids = {};

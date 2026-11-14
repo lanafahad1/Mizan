@@ -24,7 +24,7 @@ CREATE TABLE "session" ("id" text PRIMARY KEY, "expiresAt" timestamptz NOT NULL,
   "updatedAt" timestamptz NOT NULL, "ipAddress" text, "userAgent" text, "userId" text NOT NULL REFERENCES "user" ("id") ON DELETE CASCADE);`;
 
 const admin = { id: 'u-admin', role: 'admin', status: 'active', name: 'Demo Admin', username: 'admin.demo' };
-const staff = { id: 'u-staff', role: 'staff', status: 'active', name: 'Demo Healthcare Provider', username: 'staff.demo' };
+const staff = { id: 'u-staff', role: 'staff', status: 'active', name: 'Dr. Turki Al-Mutairi', username: 'staff.demo' };
 
 /** Everything the domain can read, for comparing what was written with what is loaded back. */
 function dump(repo) {
