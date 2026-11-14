@@ -128,13 +128,12 @@ test('retired diet categories cannot be added to a new diet order', () => {
 test('patient and staff records of one meal combine into a single outcome', () => {
   const base = { patientId: '1', date: '2026-10-18', period: 'lunch', mealId: 'jareesh', portion: 'regular', reasons: [] };
   const out = mealOutcomes([
-    { ...base, source: 'patient', accepted: true, amount: 'all', satisfaction: 5, measuredWasteG: null },
-    { ...base, source: 'staff', accepted: true, amount: 'most', satisfaction: null, measuredWasteG: 80 },
+    { ...base, source: 'patient', accepted: true, amount: 'all', satisfaction: 5 },
+    { ...base, source: 'staff', accepted: true, amount: 'most', satisfaction: null },
   ]);
   assert.equal(out.length, 1);
   assert.equal(out[0].amount, 'most', 'staff observation used for amount eaten');
   assert.equal(out[0].satisfaction, 5, 'patient’s own rating used for satisfaction');
-  assert.equal(out[0].measuredWasteG, 80);
   assert.deepEqual(out[0].sources, ['patient', 'staff']);
 });
 

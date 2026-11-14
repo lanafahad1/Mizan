@@ -5,7 +5,8 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   turbopack: { root: fileURLToPath(new URL('.', import.meta.url)) },
-  experimental: { authInterrupts: true },
+  // staleTimes: keep prefetched pages for a short while so going back and forth is instant.
+  experimental: { authInterrupts: true, staleTimes: { dynamic: 30, static: 180 } },
   async headers() {
     const security = [
       { key: 'X-Content-Type-Options', value: 'nosniff' },

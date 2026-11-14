@@ -7,9 +7,9 @@
 **Mizan** supports healthy eating for **obesity and chronic diseases** (obesity, type 2 diabetes, high blood pressure, heart and kidney disease). It is a university Health Informatics project with two spaces:
 
 - **Member** — anyone, including healthcare workers, managing their own lifestyle: a food diary with calories and macros for Saudi dishes, single ingredients and supermarket products (search, grams, barcode), the MOH BMI and calorie calculator, personal targets, weight / blood pressure / blood sugar readings, an optional assessment, meal ideas and an MOH meal plan with a shopping list. **Private: no hospital role can see it.**
-- **Hospital care** — patients, staff and admins: meals screened against each patient's diet order, conditions and allergies, followed from the offer to the tray; a care-team assessment with daily targets and review dates; and a home plan at discharge. Recording plate waste is kept as a secondary benefit (less food wasted).
+- **Hospital care** — patients, staff and admins: meals screened against each patient's diet order, conditions and allergies, followed from the offer to the tray; a care-team assessment with daily targets and review dates; and a home plan at discharge.
 
-Every food value and health rule cites its source, **Saudi government first**: the Ministry of Health (calorie and BMI calculators, the Calorie Guide for Weight Loss, the obesity guideline, salt and diabetes advice), the Saudi National Diabetes Center, the Saudi Food & Drug Authority (Saudi Food Composition Tables, allergens), MEWA and GFSA. Non-Saudi sources are used only where no Saudi one exists, and are labelled (USDA FoodData Central for single ingredients, Open Food Facts for packaged products, IDDSI for textures).
+Every food value and health rule cites its source, **Saudi government first**: the Ministry of Health (calorie and BMI calculators, the Calorie Guide for Weight Loss, the obesity guideline, salt and diabetes advice), the Saudi National Diabetes Center, the Saudi Food & Drug Authority (Saudi Food Composition Tables, allergens) and MEWA. Non-Saudi sources are used only where no Saudi one exists, and are labelled (USDA FoodData Central for single ingredients, Open Food Facts for packaged products, IDDSI for textures).
 
 **Designed and developed by:** Lana Fahad Alhari (لانا فهد الحريّ)
 
@@ -37,20 +37,6 @@ MOH reports that about 20% of adults in Saudi Arabia live with obesity (MOH nati
 2. **Track what you eat.** Calories, carbohydrate, protein, fat, sugar and sodium for every food, with the source of each value.
 3. **Follow a plan.** MOH meal plans from 1,200 to 2,200 kcal, the MOH exchange list for swaps, and a printable shopping list.
 4. **In hospital,** meals are checked against every condition and allergy together, the care team reviews the assessment and sets targets, and the patient leaves with a home plan.
-
-## Less food waste (secondary)
-
-Hospital meals that do not fit a patient (wrong diet, an allergen, a disliked food, too large a portion for a poor appetite) are refused or left on the plate. Mizan addresses this at each step:
-
-1. **Screening first.** Meals that conflict with the diet order or allergies are excluded before anything is offered, and meals with incomplete information go to an admin for review. Preferences never bring back an excluded meal.
-2. **Choice within safe options.** Patients choose from approved options on their phone. Ranking uses their preferences, past feedback and appetite.
-3. **Right-sized portions.** Portions are suggested from the patient's appetite and the portions their diet order permits.
-4. **Only confirmed meals reach the kitchen.** The kitchen prepares exact quantities by meal and portion. Changes after confirmation (a new allergy, an unavailable meal, a menu edit) put the order on hold, so nothing unsuitable is cooked or delivered.
-5. **Measured outcomes.** Acceptance, the estimated amount eaten, satisfaction and **weighed plate waste (grams)** are recorded separately and shown on the team dashboard. This follows the GFSA National Program to Reduce Food Loss and Waste.
-
-<p align="center">
-  <img src="docs/screenshots/dashboard-desktop.png" alt="Nutrition team dashboard: chronic conditions, BMI categories and reviews due" width="720">
-</p>
 
 ## Features by role
 
@@ -214,7 +200,6 @@ test/, e2e/          node:test suites and the cross-role browser test
   - SFDA's 14 declarable allergens and its "high in fibre" level.
 - **Other:**
   - local production figures from MEWA and GASTAT;
-  - the GFSA food-waste programme;
   - IDDSI texture levels (no Saudi standard was found).
 
 The full list of sources is on the site's **Data sources & limitations** page.

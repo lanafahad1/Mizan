@@ -354,12 +354,10 @@ CREATE TABLE IF NOT EXISTS MealIntake (
   reasons TEXT NOT NULL DEFAULT '[]',
   satisfaction INTEGER CHECK (satisfaction BETWEEN 1 AND 5),
   comment TEXT,
-  measured_waste_g INTEGER CHECK (measured_waste_g >= 0),
   recorded_by TEXT NOT NULL,
   recorded_by_role TEXT NOT NULL,
   recorded_at TEXT NOT NULL,
-  UNIQUE (patient_id, date, period, source),
-  CHECK (source = 'staff' OR measured_waste_g IS NULL)
+  UNIQUE (patient_id, date, period, source)
 );
 CREATE INDEX IF NOT EXISTS idx_intake_date ON MealIntake(date);
 
@@ -539,11 +537,11 @@ function entryFromRows({ row: r, offers, changes, events }) {
 const intakeToRow = (r, id) => ({
   id: Number(id), patient_id: Number(r.patientId), date: r.date, period: r.period, source: r.source, meal_id: r.mealId, meal_name: r.mealName ?? null, portion: r.portion,
   appetite_before: r.appetiteBefore ?? null, accepted: r.accepted ? 1 : 0, amount: r.amount, reasons: J(r.reasons ?? []), satisfaction: r.satisfaction ?? null, comment: r.comment || null,
-  measured_waste_g: r.measuredWasteG ?? null, recorded_by: r.recordedBy, recorded_by_role: r.recordedByRole, recorded_at: r.recordedAt,
+  recorded_by: r.recordedBy, recorded_by_role: r.recordedByRole, recorded_at: r.recordedAt,
 });
 const intakeFromRow = (r) => ({
   id: String(r.id), patientId: String(r.patient_id), date: r.date, period: r.period, source: r.source, mealId: r.meal_id, mealName: r.meal_name, portion: r.portion, appetiteBefore: r.appetite_before,
-  accepted: Boolean(r.accepted), amount: r.amount, reasons: P(r.reasons, []), satisfaction: N(r.satisfaction), comment: r.comment ?? '', measuredWasteG: N(r.measured_waste_g),
+  accepted: Boolean(r.accepted), amount: r.amount, reasons: P(r.reasons, []), satisfaction: N(r.satisfaction), comment: r.comment ?? '',
   recordedBy: r.recorded_by, recordedByRole: r.recorded_by_role, recordedAt: r.recorded_at,
 });
 
@@ -709,6 +707,8 @@ async function migrate(client) {
     art += r.rowCount;
   }
   if (art) await client.query(`UPDATE Meta SET value = (value::int + 1)::text WHERE key = 'catalog_version'`);
+  // 6. Mizan no longer records weighed plate waste (it was part of the earlier food-waste project).
+  await client.query(`ALTER TABLE MealIntake DROP COLUMN IF EXISTS measured_waste_g`);
 }
 
 /** INSERT rows in chunks; with conflict key columns, existing rows are updated instead. */

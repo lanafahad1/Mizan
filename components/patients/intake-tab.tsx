@@ -34,7 +34,6 @@ function Observation({ r, staff }: { r: any; staff: boolean }) {
         <dt className="text-muted-foreground">{t('Amount eaten')}</dt><dd>{r.amount ? t(amountLabel(r.amount)) : <NR />}{staff ? ` ${t('(estimated)')}` : ''}</dd>
         <dt className="text-muted-foreground">{t('Satisfaction')}</dt><dd>{r.satisfaction ? `${r.satisfaction}/5` : <NR />}</dd>
         {r.reasons?.length ? <><dt className="text-muted-foreground">{t('Reasons')}</dt><dd>{r.reasons.map((x: string) => t(reasonLabel(x))).join(lang === 'ar' ? '، ' : ', ')}</dd></> : null}
-        {staff ? <><dt className="text-muted-foreground">{t('Weighed waste')}</dt><dd>{r.measuredWasteG != null ? <b>{r.measuredWasteG} {t('g')}</b> : <NR />}</dd></> : null}
       </dl>
       {r.recordedBy ? <span className="text-muted-foreground">{r.recordedBy}{r.recordedByRole ? ` (${t(roleLabel(r.recordedByRole))})` : ''}{lang === 'ar' ? '، ' : ', '}<When iso={r.recordedAt} /></span> : null}
     </div>
@@ -110,8 +109,8 @@ export function IntakeTab() {
                 </div>
                 <p className="text-sm"><CellLabel>{t('Used in summaries')}</CellLabel>{' '}
                   {lang === 'ar'
-                    ? `${t(r.accepted ? 'Accepted' : 'Refused')}، ${t(amountLabel(r.amount))} (${t(r.amountSource === 'staff' ? 'staff' : 'patient')})${r.satisfaction ? `؛ ${r.satisfaction}/5 (${t(r.satisfactionSource)})` : ''}${r.measuredWasteG != null ? `؛ ${t('{n} g measured', { n: r.measuredWasteG })}` : ''}`
-                    : <>{r.accepted ? 'Accepted' : 'Refused'}, {amountLabel(r.amount).toLowerCase()} ({r.amountSource === 'staff' ? 'staff' : 'patient'}){r.satisfaction ? `; ${r.satisfaction}/5 (${r.satisfactionSource})` : ''}{r.measuredWasteG != null ? `; ${r.measuredWasteG} g measured` : ''}</>}
+                    ? `${t(r.accepted ? 'Accepted' : 'Refused')}، ${t(amountLabel(r.amount))} (${t(r.amountSource === 'staff' ? 'staff' : 'patient')})${r.satisfaction ? `؛ ${r.satisfaction}/5 (${t(r.satisfactionSource)})` : ''}`
+                    : <>{r.accepted ? 'Accepted' : 'Refused'}, {amountLabel(r.amount).toLowerCase()} ({r.amountSource === 'staff' ? 'staff' : 'patient'}){r.satisfaction ? `; ${r.satisfaction}/5 (${r.satisfactionSource})` : ''}</>}
                 </p>
               </li>
             ))}

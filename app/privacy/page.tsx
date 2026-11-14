@@ -30,7 +30,7 @@ export default async function PrivacyPage() {
             <li><b>{t('Accounts:')}</b> {t('username, email, display name, role and a hashed password.')}</li>
             <li><b>{t('Account emails:')}</b> {t('your email is used only to confirm it and to send a password-reset link when you ask for one. Mizan sends no newsletters or marketing, and never asks for your password by email.')}</li>
             <li><b>{t('Patient nutrition profile:')}</b> {t('a demonstration identifier (MZ-####), ward and bed, age range, relevant conditions, the prescribed diet order, allergies and intolerances (recorded separately), medically required exclusions, food preferences and appetite. Used only to screen, rank and prepare meals.')}</li>
-            <li><b>{t('Meals and feedback:')}</b> {t('offered options, selections and confirmations, appetite before meals, intake, reasons, satisfaction, weighed plate waste and requests to the nutrition team.')}</li>
+            <li><b>{t('Meals and feedback:')}</b> {t('offered options, selections and confirmations, appetite before meals, intake, reasons, satisfaction and requests to the nutrition team.')}</li>
             <li><b>{t('Audit log:')}</b> {t('who changed a patient’s record or meals, and when.')}</li>
             <li>{t('Mizan does not store real names, medical record numbers, national ID numbers, contact details or device identifiers.')}</li>
           </ul>

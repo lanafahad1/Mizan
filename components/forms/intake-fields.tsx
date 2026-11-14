@@ -1,7 +1,7 @@
 'use client';
 // Intake and feedback fields shared by the patient's and the staff screens.
 // Keeps the four measurements distinct: accepted or refused, the estimated
-// amount eaten, the patient's satisfaction and (staff only) weighed waste (g).
+// amount eaten and the patient's satisfaction.
 import * as React from 'react';
 import { OptionCard } from '@/components/ui/field';
 import { Input, Textarea, Label } from '@/components/ui/input';
@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import { useT } from '@/components/site/lang';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-type IntakeRecord = { appetiteBefore?: string | null; accepted?: boolean; amount?: string | null; reasons?: string[]; satisfaction?: number | null; comment?: string; measuredWasteG?: number | null } | null;
+type IntakeRecord = { appetiteBefore?: string | null; accepted?: boolean; amount?: string | null; reasons?: string[]; satisfaction?: number | null; comment?: string } | null;
 
 export function IntakeFields({ reference, staff = false, initial = null }: { reference: any; staff?: boolean; initial?: IntakeRecord }) {
   const { t } = useT();
@@ -36,7 +36,7 @@ export function IntakeFields({ reference, staff = false, initial = null }: { ref
           <FieldError name="amount" />
         </Fieldset>
       </div>
-      <Fieldset legend={t(staff ? 'Reasons for refusal or leftovers' : 'Why did you leave some or all of it? (choose any)')}>
+      <Fieldset legend={t(staff ? 'Why the meal wasn’t finished' : 'Why did you leave some or all of it? (choose any)')}>
         <Options>{v.refusalReasons.map((r: any) => <OptionCard key={r.id} type="checkbox" name="reasons" value={r.id} defaultChecked={initial?.reasons?.includes(r.id)} title={t(r.label)} />)}</Options>
         <FieldError name="reasons" />
       </Fieldset>
@@ -56,14 +56,6 @@ export function IntakeFields({ reference, staff = false, initial = null }: { ref
         <Label htmlFor="in-comment">{t('Comment')} <span className="font-sans text-xs font-normal text-muted-foreground">{t('(optional)')}</span></Label>
         <Textarea id="in-comment" name="comment" maxLength={300} defaultValue={initial?.comment ?? ''} />
       </div>
-      {staff ? (
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="in-waste">{t('Measured food waste in grams')} <span className="font-sans text-xs font-normal text-muted-foreground">{t('(optional, weighed by staff)')}</span></Label>
-          <Input id="in-waste" name="measuredWasteG" type="number" min={0} max={3000} inputMode="numeric" defaultValue={initial?.measuredWasteG ?? ''} aria-describedby="in-waste-hint" />
-          <span id="in-waste-hint" className="text-sm text-muted-foreground">{t('Weigh the returned plate. This is kept separate from the estimated amount eaten and is never calculated from it.')}</span>
-          <FieldError name="measuredWasteG" />
-        </div>
-      ) : null}
     </div>
   );
 }
@@ -77,6 +69,5 @@ export function readIntake(form: HTMLFormElement) {
     appetiteBefore: fd.get('appetiteBefore') || null, accepted: acc === 'yes' ? true : acc === 'no' ? false : undefined,
     amount: acc === 'no' ? undefined : fd.get('amount') || undefined, reasons: fd.getAll('reasons'), satisfaction: fd.get('satisfaction') || null, comment: fd.get('comment') || '',
   };
-  if (fd.has('measuredWasteG') && fd.get('measuredWasteG') !== '') out.measuredWasteG = fd.get('measuredWasteG');
   return out;
 }

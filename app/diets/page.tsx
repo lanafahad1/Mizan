@@ -20,7 +20,7 @@ import { getT } from '@/lib/i18n/server';
 import type { T } from '@/lib/i18n';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const DESCRIPTION = 'Every diet Mizan applies, including weight management, with its exact logic and Saudi government source (MOH, SFDA, MEWA, GFSA): nutrient limits, allergy and review rules, intake flags, the 14 SFDA allergens and IDDSI texture levels.';
+const DESCRIPTION = 'Every diet Mizan applies, including weight management, with its exact logic and Saudi government source (MOH, SFDA, MEWA): nutrient limits, allergy and review rules, intake flags, the 14 SFDA allergens and IDDSI texture levels.';
 export async function generateMetadata() {
   const t = await getT();
   return publicMetadata({ title: t('Diets & Screening Rules'), description: t(DESCRIPTION), path: '/diets' });
@@ -93,7 +93,7 @@ export default async function DietsPage() {
       <JsonLd data={ld} />
       <AboutNav current="/diets" />
       <PageHead eyebrow={t('Knowledge base · ruleset {version}', { version: RULESET_VERSION })} title={t('Diets & Screening Rules')}>
-        <p>{t('Here is every diet and rule Mizan uses, how it works and where it comes from. All food and health rules are based on Saudi government guidance (MOH, the Saudi National Diabetes Center, SFDA, MEWA and GFSA). Open a section to learn more.')}</p>
+        <p>{t('Here is every diet and rule Mizan uses, how it works and where it comes from. All food and health rules are based on Saudi government guidance (MOH, the Saudi National Diabetes Center, SFDA and MEWA). Open a section to learn more.')}</p>
       </PageHead>
       <div className="container-page flex flex-col gap-6 pb-16">
         <nav aria-label={t('Diet categories')} className="flex flex-col gap-2">
@@ -215,7 +215,7 @@ export default async function DietsPage() {
             <SourceLinks ids={['IDDSI']} t={t} />
           </Section>
 
-          <Section id="local" title={t('Local produce (MEWA)')} intro={t('Ingredients the Kingdom produces widely are marked on the menu and kitchen summary.')}>
+          <Section id="local" title={t('Local produce (MEWA)')} intro={t('Background: foods the Kingdom produces widely. Meals are not labelled for this.')}>
             <p className="text-sm">{t((SOURCES as any)['MEWA-LOCAL'].summary)}</p>
             <Table caption={t('National self-sufficiency by food group')} className="sm:w-auto">
               <thead><tr><Th scope="col">{t('Group')}</Th><Th scope="col" className="text-end">{t('Self-sufficiency')}</Th><Th scope="col" className="text-end">{t('Year')}</Th></tr></thead>
@@ -225,17 +225,6 @@ export default async function DietsPage() {
             <ul className="flex flex-col gap-1 text-sm">{LOCAL_PRODUCTION_SOURCES.map((s: { url: string; publisher: string }) => <li key={s.url}><ExtLink href={s.url}>{t(s.publisher)}</ExtLink></li>)}</ul>
           </Section>
 
-          <Section id="waste" title={t('Food security and food waste (GFSA)')} intro={t('A secondary benefit: hospital leftovers and plate waste are recorded for every meal.')}>
-            <p className="text-sm">{t((SOURCES as any).GFSA.summary)}</p>
-            <p className="text-sm">{t((SOURCES as any)['GFSA-WASTE'].summary)}</p>
-            <p className="text-sm">{t('Estimated leftovers and weighed plate waste are recorded separately, and the nutrition team dashboard shows both. Meals ranked by preference and portions matched to appetite are intended to reduce avoidable waste; the prototype does not measure that effect.')}</p>
-            <ul className="flex flex-col gap-1 text-sm">
-              {['GFSA', 'GFSA-WASTE'].flatMap((id) => {
-                const s = (SOURCES as any)[id];
-                return [<li key={id}><ExtLink href={s.url}>{t(s.title)}</ExtLink> · <span className="text-muted-foreground">{t(s.publisher)}</span></li>, ...(s.links ?? []).map((l: { url: string; label: string }) => <li key={l.url}><ExtLink href={l.url}>{t(l.label)}</ExtLink></li>)];
-              })}
-            </ul>
-          </Section>
 
         </div>
         <p id="sources" className="scroll-mt-24 text-sm text-muted-foreground"><b className="text-heading">{t('Sources and limitations.')}</b> {t('Every source behind these rules and the project’s limitations are listed on')} <Link href="/sources">{t('Data sources & limitations')}</Link>{t('.')}</p>

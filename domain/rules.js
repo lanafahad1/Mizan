@@ -159,22 +159,6 @@ export const SOURCES = {
     url: 'https://www.arabnews.com/node/2620297',
     summary: 'MEWA promotes local agricultural produce. Saudi Arabia reports self-sufficiency of more than 100% in dates, dairy products and table eggs (GASTAT, 2024).',
   },
-  // ---- General Food Security Authority (GFSA)
-  'GFSA': {
-    authority: 'GFSA', saudi: true,
-    title: 'Cabinet approval of the Saudi Grains Organization’s transformation into the General Food Security Authority (January 2023)',
-    publisher: 'General Food Security Authority (GFSA), Saudi Arabia, as reported by Argaam',
-    url: 'https://www.argaam.com/en/article/articledetail/id/1616600',
-    summary: 'GFSA, formerly the Saudi Grains Organization (SAGO), is chaired by the Minister of Environment, Water and Agriculture. Its tasks include reviewing the national food security strategy and preparing implementation plans, strategic food storage, and an early warning system for food security.',
-  },
-  'GFSA-WASTE': {
-    authority: 'GFSA', saudi: true,
-    title: 'National Program to Reduce Food Loss and Waste, and the SAGO field study of food waste in Saudi Arabia',
-    publisher: 'Saudi Grains Organization (SAGO, now GFSA), as reported by Arab News',
-    url: 'https://www.arabnews.com/node/1654461',
-    summary: 'SAGO (now GFSA) launched the National Program to Reduce Food Loss and Waste in 2018. Its field study estimated that 33.1% of targeted food commodities, about 4.06 million tonnes a year worth about SR 40 billion, are wasted. Mizan records reported leftovers and weighed plate waste to support hospital food-waste reduction.',
-    links: [{ label: 'National Program to Reduce Food Loss and Waste (Saudipedia)', url: 'https://saudipedia.com/en/article/509/economy-and-business/economic-affairs/the-national-program-to-reduce-food-loss-and-waste' }],
-  },
   // ---- International framework (no Saudi government equivalent found)
   'IDDSI': {
     authority: 'IDDSI', saudi: false,

@@ -1,7 +1,7 @@
 import { cache } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ChevronLeft, Scale, Layers, Check, X, Shield, TriangleAlert, Leaf, List } from 'lucide-react';
+import { ChevronLeft, Scale, Layers, X, Shield, TriangleAlert, List } from 'lucide-react';
 import { publicMetadata } from '@/components/public/seo';
 import { SITE_URL } from '@/lib/site';
 import { serviceCall, publicCall, param } from '@/lib/server/data';
@@ -119,17 +119,19 @@ export default async function MealPage({ params, searchParams }: Props) {
             <span className="inline-flex items-start gap-1.5"><Scale className="mt-0.5 size-4 shrink-0 text-heading" aria-hidden />{t('Standard serving:')} {t(m.servingSize)}</span>
             <span className="inline-flex items-start gap-1.5"><Layers className="mt-0.5 size-4 shrink-0 text-heading" aria-hidden />{t('Portions:')} {list(portions.map(pLabel))} {complete ? t('({factors} of every component)', { factors: list(factors) }) : t('({factors} of the standard serving)', { factors: list(factors) })}</span>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {m.available ? <Badge variant="ok"><Check aria-hidden />{t('Available')}</Badge> : <Badge variant="danger" className="whitespace-normal"><X aria-hidden />{t('Unavailable')}{m.unavailableReason ? `: ${t(m.unavailableReason)}` : ''}</Badge>}
-            {m.infoReview?.status === 'verified'
-              ? <Badge variant="ok" className="whitespace-normal"><Shield aria-hidden />{m.infoReview.by ? t('Dietary information verified by {name}', { name: m.infoReview.by }) : t('Dietary information verified')}</Badge>
-              : <Badge variant="warn" className="whitespace-normal"><TriangleAlert aria-hidden />{m.infoReview?.changedBy ? t('Dietary information changed by {name}; not yet verified by an admin', { name: m.infoReview.changedBy }) : t('Dietary information changed; not yet verified by an admin')}</Badge>}
-            <Badge variant="outline">{t('Version {v}', { v: m.version })}</Badge>
-          </div>
+          {/* At most one coloured label, and only when something needs attention; the rest is quiet text. */}
+          {!m.available || m.infoReview?.status !== 'verified' ? (
+            <div className="flex flex-wrap gap-2">
+              {!m.available ? <Badge variant="danger" className="whitespace-normal"><X aria-hidden />{t('Unavailable')}{m.unavailableReason ? `: ${t(m.unavailableReason)}` : ''}</Badge>
+                : <Badge variant="warn" className="whitespace-normal"><TriangleAlert aria-hidden />{m.infoReview?.changedBy ? t('Dietary information changed by {name}; not yet verified by an admin', { name: m.infoReview.changedBy }) : t('Dietary information changed; not yet verified by an admin')}</Badge>}
+            </div>
+          ) : (
+            <p className="inline-flex items-start gap-1.5 text-sm text-muted-foreground"><Shield className="mt-0.5 size-4 shrink-0 text-heading" aria-hidden />{m.infoReview.by ? t('Dietary information verified by {name}', { name: m.infoReview.by }) : t('Dietary information verified')}{staff ? ` · ${t('Version {v}', { v: m.version })}` : ''}</p>
+          )}
           {m.onMenu.length
             ? <p className="text-sm"><b className="text-heading">{t('On the menu in the next 7 days:')}</b> {m.onMenu.map((x: any) => (lang === 'ar' ? `${t(x.name)} (${list(x.periods.map((p: string) => t(periodLabel(p))))})` : `${x.name} (${x.periods.map(periodLabel).join(', ').toLowerCase()})`)).join(' · ')}</p>
             : <p className="text-sm text-muted-foreground">{t('Not on the menu in the next 7 days.')}</p>}
-          {m.local.length ? <p className="flex items-start gap-1.5 text-sm text-success"><Leaf className="mt-0.5 size-4 shrink-0" aria-hidden /><span>{t('Local Saudi produce (MEWA / GASTAT 2024 self-sufficiency):')} {m.local.map((l: any) => `${t(l.ingredient)} (${t(l.label)}, ${l.selfSufficiency}%)`).join(' · ')}</span></p> : null}
+          {m.local.length ? <p className="text-sm text-muted-foreground">{t('Saudi Arabia produces these widely (MEWA / GASTAT 2024):')} {m.local.map((l: any) => t(l.ingredient)).join(lang === 'ar' ? '، ' : ', ')}.</p> : null}
           {ev && d.patient ? (
             <Panel tone={ev.status === 'excluded' ? 'blush' : 'mint'} className="p-4 sm:p-5">
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -154,15 +156,9 @@ export default async function MealPage({ params, searchParams }: Props) {
                   <li key={i.id} className="grid grid-cols-[72px_minmax(0,1fr)] gap-3 border-b border-dashed border-border py-2.5 last:border-b-0 sm:grid-cols-[96px_minmax(0,1fr)]">
                     <span className="font-display font-medium text-heading tabular">{t('{n} g', { n: fmt(i.grams, 1) })}</span>
                     <span className="flex min-w-0 flex-col gap-1">
-                      <span><b className="text-heading">{nm(i)}</b>{i.prep ? `${t(', ')}${t(i.prep)}` : ''}{i.optional ? <> <Badge variant="outline">{t('optional')}</Badge></> : null}</span>
-                      {(i.allergens.length || i.mayContain.length || i.labelCheck || i.local) ? (
-                        <span className="flex flex-wrap gap-1.5">
-                          {i.allergens.length ? <Badge variant="danger" className="whitespace-normal"><TriangleAlert aria-hidden />{t('Contains {list}', { list: list(i.allergens.map((a: string) => allergenName(a, t))) })}</Badge> : null}
-                          {i.mayContain.length ? <Badge variant="warn" className="whitespace-normal"><TriangleAlert aria-hidden />{t('May contain {list}', { list: list(i.mayContain.map((a: string) => allergenName(a, t))) })}</Badge> : null}
-                          {i.labelCheck ? <Badge variant="outline">{t('Kitchen checks label')}</Badge> : null}
-                          {i.local ? <Badge variant="ok"><Leaf aria-hidden />{t('Local: {label}', { label: t(i.local.label) })}</Badge> : null}
-                        </span>
-                      ) : null}
+                      <span><b className="text-heading">{nm(i)}</b>{i.prep ? `${t(', ')}${t(i.prep)}` : ''}{i.optional ? <span className="text-sm text-muted-foreground"> ({t('optional')})</span> : null}</span>
+                      {i.allergens.length ? <span className="inline-flex items-start gap-1.5 text-sm"><TriangleAlert className="mt-0.5 size-3.5 shrink-0 text-destructive" aria-hidden />{t('Contains {list}', { list: list(i.allergens.map((a: string) => allergenName(a, t))) })}</span> : null}
+                      {i.mayContain.length || i.labelCheck ? <span className="text-sm text-muted-foreground">{[i.mayContain.length ? t('May contain {list}', { list: list(i.mayContain.map((a: string) => allergenName(a, t))) }) : null, i.labelCheck ? t('Kitchen checks label') : null].filter(Boolean).join(' · ')}</span> : null}
                       {i.note ? <span className="text-sm text-muted-foreground">{t(i.note)}</span> : null}
                     </span>
                   </li>

@@ -449,18 +449,12 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
     if (input.accepted === false && !reasons.length) errors.reasons = staff ? 'Choose at least one reason the meal was refused.' : 'Choose at least one reason, so the team can help.';
     const satisfaction = input.satisfaction == null || input.satisfaction === '' ? null : Number(input.satisfaction);
     if (satisfaction != null && !(Number.isInteger(satisfaction) && satisfaction >= 1 && satisfaction <= 5)) errors.satisfaction = 'Satisfaction is a whole number from 1 to 5.';
-    let measuredWasteG = input.measuredWasteG == null || input.measuredWasteG === '' ? null : Number(input.measuredWasteG);
-    if (measuredWasteG != null) {
-      if (!staff) errors.measuredWasteG = 'Measured waste is weighed and recorded by hospital staff.';
-      else if (!(Number.isFinite(measuredWasteG) && measuredWasteG >= 0 && measuredWasteG <= 3000)) errors.measuredWasteG = 'Measured waste must be between 0 and 3,000 g.';
-      else measuredWasteG = Math.round(measuredWasteG);
-    }
     if (Object.keys(errors).length) invalid('Some answers need attention.', errors);
     const source = staff ? 'staff' : 'patient';
     const record = repo.saveIntake({
       patientId: p.id, date, period, source, mealId: entry.selectedMealId, mealName: entry.mealName, portion: entry.portion,
       appetiteBefore, accepted: input.accepted, amount, reasons, satisfaction, comment: clean(input.comment, 300),
-      measuredWasteG: staff ? measuredWasteG : null, recordedBy: actor.name, recordedByRole: actor.role, recordedAt: stamp(),
+      recordedBy: actor.name, recordedByRole: actor.role, recordedAt: stamp(),
     });
     // The most recent appetite report becomes the current appetite used for portion suggestions.
     let appetiteUpdated = false;
@@ -472,7 +466,7 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
       }
     }
     const what = input.accepted ? `accepted, ${label(INTAKE_AMOUNTS, amount).toLowerCase()} eaten` : 'refused';
-    audit(actor, p.id, 'intake.record', `${staff ? 'Staff observation' : 'Patient report'} for ${period} on ${date}: ${what}${measuredWasteG != null && staff ? `; ${measuredWasteG} g weighed waste` : ''}${appetiteUpdated ? '; current appetite updated' : ''}.`);
+    audit(actor, p.id, 'intake.record', `${staff ? 'Staff observation' : 'Patient report'} for ${period} on ${date}: ${what}${appetiteUpdated ? '; current appetite updated' : ''}.`);
     const outcome = outcomesOf(p.id).find((o) => o.date === date && o.period === period);
     return { intake: record, outcome, appetiteUpdated, flags: staff ? intakeFlags(outcomesOf(p.id), today()) : [] };
   }
@@ -614,9 +608,6 @@ export function createService({ repo, sfct = SFCT_LIBRARY, now = () => new Date(
         acceptanceRate: recorded ? Math.round((sum('accepted') / recorded) * 100) : null,
         satisfaction: rated.length ? Math.round((rated.reduce((s, r) => s + r.satisfaction, 0) / rated.length) * 10) / 10 : null,
         rated: rated.length,
-        estimatedLeftoverShare: recorded ? Math.round((1 - outcomes.reduce((s, r) => s + (INTAKE_AMOUNTS.find((a) => a.id === r.amount)?.share ?? 0), 0) / outcomes.length) * 100) : null,
-        measuredTrays: sum('measuredTrays'),
-        measuredWasteG: sum('measuredTrays') ? sum('measuredWasteG') : null,
         reasons: reasonCounts(outcomes),
       },
       outcomeRule: OUTCOME_RULE,

@@ -187,7 +187,7 @@ test('7. patient and staff feedback for the same meal do not inflate dashboard c
   const before = service.getDashboard(staff).week;
   service.recordIntake(asPatient('MZ-2001'), p.id, { date: today, period: 'lunch', accepted: true, amount: 'all', satisfaction: 4 });
   const mid = service.getDashboard(staff).week;
-  service.recordIntake(staff, p.id, { date: today, period: 'lunch', accepted: true, amount: 'most', measuredWasteG: 60 });
+  service.recordIntake(staff, p.id, { date: today, period: 'lunch', accepted: true, amount: 'most' });
   const after = service.getDashboard(staff).week;
   assert.equal(mid.recorded, before.recorded + 1);
   assert.equal(after.recorded, mid.recorded, 'the staff record of the same meal is not a second meal');
@@ -195,8 +195,6 @@ test('7. patient and staff feedback for the same meal do not inflate dashboard c
   const o = service.getPatient(staff, p.id).intake[0];
   assert.equal(o.amount, 'most');
   assert.equal(o.satisfaction, 4);
-  assert.equal(o.measuredWasteG, 60);
-  assert.throws(() => service.recordIntake(asPatient('MZ-2001'), p.id, { date: today, period: 'lunch', accepted: true, amount: 'all', measuredWasteG: 10 }), /attention/);
 });
 
 test('8. each role reaches only its own information and actions', () => {

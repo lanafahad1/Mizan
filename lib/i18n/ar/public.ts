@@ -249,8 +249,8 @@ export const PUBLIC: Record<string, string> = {
   'Cite this project': 'استشهد بهذا المشروع',
 
   // ---- diets
-  'Every diet Mizan applies, including weight management, with its exact logic and Saudi government source (MOH, SFDA, MEWA, GFSA): nutrient limits, allergy and review rules, intake flags, the 14 SFDA allergens and IDDSI texture levels.':
-    'كل حمية يطبّقها ميزان، ومنها إدارة الوزن، بمنطقها الدقيق ومصدرها الحكومي السعودي (وزارة الصحة، والهيئة العامة للغذاء والدواء، ووزارة البيئة والمياه والزراعة، والهيئة العامة للأمن الغذائي): حدود العناصر الغذائية، وقواعد الحساسية والمراجعة، وتنبيهات الكمية المتناولة، ومسببات الحساسية الأربع عشرة، ومستويات القوام وفق IDDSI.',
+  'Every diet Mizan applies, including weight management, with its exact logic and Saudi government source (MOH, SFDA, MEWA): nutrient limits, allergy and review rules, intake flags, the 14 SFDA allergens and IDDSI texture levels.':
+    'كل حمية يطبّقها ميزان، ومنها إدارة الوزن، بمنطقها الدقيق ومصدرها الحكومي السعودي (وزارة الصحة، والهيئة العامة للغذاء والدواء، ووزارة البيئة والمياه والزراعة): حدود العناصر الغذائية، وقواعد الحساسية والمراجعة، وتنبيهات الكمية المتناولة، ومسببات الحساسية الأربع عشرة، ومستويات القوام وفق IDDSI.',
   'Diets & Screening Rules': 'الحميات وقواعد الفحص',
   'Mizan safety design (no external threshold)': 'تصميم سلامة من ميزان (دون حدّ خارجي)',
   'ranking only': 'للترتيب فقط',
@@ -264,7 +264,7 @@ export const PUBLIC: Record<string, string> = {
   'IDDSI texture level': 'مستوى القوام وفق IDDSI',
   'carbohydrate amount per meal': 'كمية الكربوهيدرات لكل وجبة',
   'Knowledge base · ruleset {version}': 'قاعدة المعرفة · إصدار القواعد {version}',
-  'Here is every diet and rule Mizan uses, how it works and where it comes from. All food and health rules are based on Saudi government guidance (MOH, the Saudi National Diabetes Center, SFDA, MEWA and GFSA). Open a section to learn more.': 'هنا كل حمية وقاعدة يستخدمها ميزان، وطريقة عملها، ومصدرها. تستند جميع قواعد الغذاء والصحة إلى إرشادات الجهات الحكومية السعودية (وزارة الصحة، والمركز الوطني للسكري، والهيئة العامة للغذاء والدواء، ووزارة البيئة والمياه والزراعة، والهيئة العامة للأمن الغذائي). افتح أي قسم لمعرفة المزيد.',
+  'Here is every diet and rule Mizan uses, how it works and where it comes from. All food and health rules are based on Saudi government guidance (MOH, the Saudi National Diabetes Center, SFDA and MEWA). Open a section to learn more.': 'هنا كل حمية وقاعدة يستخدمها ميزان، وطريقة عملها، ومصدرها. تستند جميع قواعد الغذاء والصحة إلى إرشادات الجهات الحكومية السعودية (وزارة الصحة، والمركز الوطني للسكري، والهيئة العامة للغذاء والدواء، ووزارة البيئة والمياه والزراعة). افتح أي قسم لمعرفة المزيد.',
   'Diet categories': 'فئات الحميات',
   'Governance.': 'الحوكمة.',
   'Reviewed by: {by} on {date}.': 'راجعها: {by} بتاريخ {date}.',
@@ -312,7 +312,7 @@ export const PUBLIC: Record<string, string> = {
   'The care team sets the texture level; every such meal needs admin review.': 'يحدّد الفريق الطبي مستوى القوام، وتحتاج كل وجبة من هذا النوع إلى مراجعة المشرف.',
   'Menu items do not have a recorded IDDSI level, so the kitchen prepares each meal at the prescribed level after review.': 'أصناف القائمة ليس لها مستوى IDDSI مسجّل، لذلك يحضّر المطبخ كل وجبة بالمستوى الموصوف بعد المراجعة.',
   'Local produce (MEWA)': 'المنتجات المحلية (وزارة البيئة والمياه والزراعة)',
-  'Ingredients the Kingdom produces widely are marked on the menu and kitchen summary.': 'تُميَّز المكوّنات التي تنتجها المملكة على نطاق واسع في القائمة وملخص المطبخ.',
+  'Background: foods the Kingdom produces widely. Meals are not labelled for this.': 'معلومة عامة: أغذية تنتجها المملكة على نطاق واسع، ولا تُوسَم بها الوجبات.',
   'National self-sufficiency by food group': 'الاكتفاء الذاتي الوطني حسب المجموعة الغذائية',
   'Group': 'المجموعة',
   'Self-sufficiency': 'الاكتفاء الذاتي',
@@ -326,8 +326,8 @@ export const PUBLIC: Record<string, string> = {
   'Every source behind these rules and the project’s limitations are listed on': 'كل المصادر التي تستند إليها هذه القواعد وحدود المشروع مذكورة في صفحة',
 
   // ---- sources
-  'Where Mizan’s food, health and nutrition information comes from (Saudi MOH, SFDA, the Saudi National Diabetes Center, MEWA, GFSA and international sources), how it is used, and what the prototype cannot do.':
-    'من أين تأتي معلومات الغذاء والصحة والتغذية في ميزان (وزارة الصحة، والهيئة العامة للغذاء والدواء، والمركز الوطني للسكري، ووزارة البيئة والمياه والزراعة، والهيئة العامة للأمن الغذائي، ومصادر دولية)، وكيف تُستخدم، وما الذي لا يستطيعه النموذج الأولي.',
+  'Where Mizan’s food, health and nutrition information comes from (Saudi MOH, SFDA, the Saudi National Diabetes Center, MEWA and international sources), how it is used, and what the prototype cannot do.':
+    'من أين تأتي معلومات الغذاء والصحة والتغذية في ميزان (وزارة الصحة، والهيئة العامة للغذاء والدواء، والمركز الوطني للسكري، ووزارة البيئة والمياه والزراعة، ومصادر دولية)، وكيف تُستخدم، وما الذي لا يستطيعه النموذج الأولي.',
   'Data Sources & Limitations': 'مصادر البيانات وحدودها',
   'About & Sources': 'عن المشروع والمصادر',
   'Saudi government': 'الجهات الحكومية السعودية',
@@ -409,8 +409,8 @@ export const PUBLIC: Record<string, string> = {
   'a demonstration identifier (MZ-####), ward and bed, age range, relevant conditions, the prescribed diet order, allergies and intolerances (recorded separately), medically required exclusions, food preferences and appetite. Used only to screen, rank and prepare meals.':
     'معرّف تجريبي (MZ-####)، والجناح والسرير، والفئة العمرية، والحالات الصحية ذات الصلة، والحمية الموصوفة، والحساسيات وعدم التحمّل (تُسجَّل كلٌّ على حدة)، والاستبعادات المطلوبة طبيًا، وتفضيلات الطعام، والشهية. تُستخدم فقط لفحص الوجبات وترتيبها وتحضيرها.',
   'Meals and feedback:': 'الوجبات والتقييمات:',
-  'offered options, selections and confirmations, appetite before meals, intake, reasons, satisfaction, weighed plate waste and requests to the nutrition team.':
-    'الخيارات المعروضة، والاختيارات والتأكيدات، والشهية قبل الوجبات، والكمية المتناولة، والأسباب، والرضا، وهدر الأطباق الموزون، والطلبات المرسلة إلى فريق التغذية.',
+  'offered options, selections and confirmations, appetite before meals, intake, reasons, satisfaction and requests to the nutrition team.':
+    'الخيارات المعروضة، والاختيارات والتأكيدات، والشهية قبل الوجبات، والكمية المتناولة، والأسباب، والرضا، والطلبات المرسلة إلى فريق التغذية.',
   'who changed a patient’s record or meals, and when.': 'من غيّر سجل المريض أو وجباته، ومتى.',
   'Mizan does not store real names, medical record numbers, national ID numbers, contact details or device identifiers.': 'لا يخزّن ميزان الأسماء الحقيقية ولا أرقام السجلات الطبية ولا أرقام الهوية الوطنية ولا بيانات التواصل ولا معرّفات الأجهزة.',
   'Who can see what': 'من يرى ماذا',
@@ -756,6 +756,24 @@ export const PUBLIC: Record<string, string> = {
     'تأتي القيم الغذائية من القيم المخبرية في جداول تركيب الأغذية السعودية الصادرة عن الهيئة العامة للغذاء والدواء للأطباق المحضّرة وفق وصفتها القياسية، وتُحسب الوصفات الأخرى من قيم مكوّناتها في قاعدة USDA مع الإشارة إلى ذلك. ولا تُقدَّر أي قيمة ناقصة أبدًا.',
   '{site}: Your plate, your balance': '{site}: طبقك، توازنك',
   'Your plate, <em>your balance</em>.': 'طبقك، <em>توازنك</em>.',
+  'Our vision': 'رؤيتنا',
+  'gluten': 'الغلوتين',
+  'Saudi Arabia produces these widely (MEWA / GASTAT 2024):': 'تنتج المملكة هذه الأغذية على نطاق واسع (وزارة البيئة والمياه والزراعة / الهيئة العامة للإحصاء 2024):',
+  'What it is': 'ما هي',
+  'traditional dishes from the 13 regions': 'طبقًا تقليديًا من مناطق المملكة الثلاث عشرة',
+  'released {date}': 'صدرت في {date}',
+  'How we use it': 'كيف نستخدمها',
+  'Per portion = value per 100 g × the hospital’s portion weight.': 'قيمة الحصة = القيمة لكل 100 جم × وزن حصة المستشفى.',
+  'If part of a meal has no values, the total shows as “≥” and is never used for a limit.': 'إذا لم تتوفر قيم لجزء من الوجبة، يظهر المجموع بعلامة «≥» ولا يُستخدم أبدًا لأي حدّ.',
+  'Carb limits use SFDA “Total Carbohydrates” (fibre included); available carbs are shown next to it.': 'تعتمد حدود الكربوهيدرات على «إجمالي الكربوهيدرات» في جداول الهيئة (ويشمل الألياف)، وتظهر الكربوهيدرات المتاحة بجانبها.',
+  'Portion weights and kitchen grams are demonstration values, not SFDA data.': 'أوزان الحصص وجرامات المطبخ قيم تجريبية، وليست من بيانات الهيئة.',
+  '{n} hospital dishes made to the SFDA recipe': '{n} طبقًا في المستشفى تُحضَّر وفق وصفة الهيئة',
+  'A dish is linked only when the kitchen prepares it to that standard recipe.': 'لا يُربط الطبق إلا إذا حضّره المطبخ وفق الوصفة القياسية نفسها.',
+  '{n} tables we can’t use yet': '{n} جداول لا يمكن استخدامها بعد',
+  'Their numbers don’t add up, for example {example}.': 'أرقامها غير متسقة، مثل {example}.',
+  'Their numbers don’t add up.': 'أرقامها غير متسقة.',
+  'They stay exactly as published and won’t be linked to a hospital dish until SFDA confirms them.': 'تبقى كما نُشرت تمامًا، ولن تُربط بأي طبق في المستشفى حتى تؤكدها الهيئة.',
+  'Helping people with obesity and chronic disease live healthier, one meal at a time.': 'نساعد مرضى السمنة والأمراض المزمنة على حياةٍ أصحّ، وجبةً بعد وجبة.',
   'Track, plan and enjoy food that fits you, at home or in hospital.': 'سجّل طعامك، وخطّط وجباتك، واستمتع بغذاء يناسبك، في المنزل أو في المستشفى.',
   'Your plate, your balance. Log what you eat, know your daily calories and plan meals you enjoy, at home or in hospital. Built on guidance from the Saudi Ministry of Health and SFDA. A university Health Informatics project.': 'طبقك، توازنك. سجّل طعامك، واعرف سعراتك اليومية، وخطّط لوجبات تحبها، في المنزل أو في المستشفى. يستند إلى إرشادات وزارة الصحة السعودية والهيئة العامة للغذاء والدواء. مشروع جامعي في المعلوماتية الصحية.',
 

@@ -21,7 +21,7 @@ import { getT, getLang } from '@/lib/i18n/server';
 import type { Lang, T } from '@/lib/i18n';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const DESCRIPTION = 'Where Mizan’s food, health and nutrition information comes from (Saudi MOH, SFDA, the Saudi National Diabetes Center, MEWA, GFSA and international sources), how it is used, and what the prototype cannot do.';
+const DESCRIPTION = 'Where Mizan’s food, health and nutrition information comes from (Saudi MOH, SFDA, the Saudi National Diabetes Center, MEWA and international sources), how it is used, and what the prototype cannot do.';
 export async function generateMetadata() {
   const t = await getT();
   return publicMetadata({ title: t('Data Sources & Limitations'), description: t(DESCRIPTION), path: '/sources' });
@@ -130,18 +130,51 @@ export default async function SourcesPage() {
             <FoodCard icon={Package} title={t('Packaged products')}>{t('Open Food Facts: community-contributed data (ODbL licence). Values can be incomplete or out of date, so always check the pack label.')}</FoodCard>
           </div>
           <Accordion className="rounded-[16px] border border-border bg-card" headClassName="min-h-12 px-4 py-3 font-display text-[.98rem] font-semibold text-heading" title={t('How the SFDA Saudi Food Composition Tables are used')}>
-            <div className="prose-cb max-w-none gap-3 px-4 pb-4 text-[.95rem]">
-              {lang === 'ar'
-                ? <p>{t('{publisher}, {title}, {edition} (released {released}). Laboratory analysis of {n} traditional dishes from the 13 regions of the Kingdom, {basis}.', { publisher: t(SFCT_META.publisher), title: t(SFCT_META.title), edition: t(SFCT_META.edition), released: SFCT_META.released, n: SFCT_META.dishes, basis: t(SFCT_META.basis) })}</p>
-                : <p>{SFCT_META.publisher}, <i>{SFCT_META.title}</i>, {SFCT_META.edition} (released {SFCT_META.released}). Laboratory analysis of {SFCT_META.dishes} traditional dishes from the 13 regions of the Kingdom, {SFCT_META.basis}.</p>}
-              <ul>
-                <li>{t('A hospital dish is linked to an SFCT entry only when the kitchen prepares it to that standard recipe. {n} demonstration dishes are linked: {list}.', { n: SFCT_HOSPITAL_DISHES.length, list: SFCT_HOSPITAL_DISHES.map((d: any) => t('{name} ({region}, p. {page})', { name: dishName({ name: d.name, nameAr: d.nameAr ?? library[d.nutrition.sfctId].nameAr }), region: t(library[d.nutrition.sfctId].region), page: library[d.nutrition.sfctId].tablePage })).join(t('; ')) })}</li>
-                <li>{t('Per-portion values = SFCT value per 100 g × the hospital’s standard portion weight. If any component of a meal has no values, totals are shown as partial (“≥”) and are never used for a limit.')}</li>
-                <li>{t('Carbohydrate limits use the SFCT “Total Carbohydrates” value (which includes dietary fibre); available carbohydrate is shown alongside.')}</li>
-                <li>{t('Portion weights and ingredient grams derived from SFCT recipes are demonstration kitchen values, not SFDA data.')}</li>
-                <li>{t('Every table was checked for internal consistency.')} {example ? t('{n} of {total} published tables fail it, for example {example}.', { n: flagged.length, total: SFCT_META.dishes, example }) : t('{n} of {total} published tables fail it.', { n: flagged.length, total: SFCT_META.dishes })} {t('They are kept exactly as published and cannot be linked to a hospital dish until confirmed with SFDA: {list}.', { list: flagged.map(([, e]) => dishName(e)).join(t(', ')) })}</li>
-              </ul>
-              <p><ExtLink href={SFCT_META.news}>{t('SFDA announcement')}</ExtLink> · <ExtLink href={SFCT_META.url}>{t('English PDF')}</ExtLink> · <ExtLink href={SFCT_META.urlAr}>{t('Arabic PDF')}</ExtLink></p>
+            <div className="flex flex-col gap-3 px-4 pb-4 text-[.95rem]">
+              <div className="grid gap-3 md:grid-cols-2">
+                <Card tone="plain" className="gap-2 p-4">
+                  <h3 className="text-[1rem]">{t('What it is')}</h3>
+                  <p className="flex items-baseline gap-2"><b className="font-display text-[2rem] leading-none text-primary tabular">{SFCT_META.dishes}</b><span className="text-muted-foreground">{t('traditional dishes from the 13 regions')}</span></p>
+                  <p className="text-sm">{lang === 'ar' ? t(SFCT_META.publisher) : SFCT_META.publisher} · {lang === 'ar' ? t(SFCT_META.edition) : SFCT_META.edition} · {t('released {date}', { date: SFCT_META.released })}</p>
+                  <p className="text-sm text-muted-foreground">{lang === 'ar' ? t(SFCT_META.basis) : SFCT_META.basis.charAt(0).toUpperCase() + SFCT_META.basis.slice(1)}</p>
+                  <p className="flex flex-wrap gap-x-3 gap-y-1 text-sm"><ExtLink href={SFCT_META.news}>{t('SFDA announcement')}</ExtLink><ExtLink href={SFCT_META.url}>{t('English PDF')}</ExtLink><ExtLink href={SFCT_META.urlAr}>{t('Arabic PDF')}</ExtLink></p>
+                </Card>
+                <Card tone="plain" className="gap-2 p-4">
+                  <h3 className="text-[1rem]">{t('How we use it')}</h3>
+                  <ul className="flex list-disc flex-col gap-1.5 ps-5 text-sm">
+                    <li>{t('Per portion = value per 100 g × the hospital’s portion weight.')}</li>
+                    <li>{t('If part of a meal has no values, the total shows as “≥” and is never used for a limit.')}</li>
+                    <li>{t('Carb limits use SFDA “Total Carbohydrates” (fibre included); available carbs are shown next to it.')}</li>
+                    <li>{t('Portion weights and kitchen grams are demonstration values, not SFDA data.')}</li>
+                  </ul>
+                </Card>
+              </div>
+              <Card tone="plain" className="gap-3 p-4">
+                <div className="flex flex-col gap-0.5">
+                  <h3 className="text-[1rem]">{t('{n} hospital dishes made to the SFDA recipe', { n: SFCT_HOSPITAL_DISHES.length })}</h3>
+                  <p className="text-sm text-muted-foreground">{t('A dish is linked only when the kitchen prepares it to that standard recipe.')}</p>
+                </div>
+                {Object.entries(SFCT_HOSPITAL_DISHES.reduce((acc: Record<string, any[]>, d: any) => { const e = library[d.nutrition.sfctId]; (acc[e.region] ??= []).push({ d, e }); return acc; }, {}))
+                  .sort(([, x], [, y]) => y.length - x.length)
+                  .map(([region, list]) => (
+                    <div key={region} className="flex flex-col gap-1.5">
+                      <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{t(region)}</span>
+                      <ul className="flex flex-wrap gap-1.5">
+                        {list.map(({ d, e }) => (
+                          <li key={d.id} className="rounded-[10px] bg-blush px-2.5 py-1 text-sm">{dishName({ name: d.name, nameAr: d.nameAr ?? e.nameAr })} <span className="text-xs font-semibold text-muted-foreground tabular">{t('p. {page}', { page: e.tablePage })}</span></li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+              </Card>
+              {flagged.length ? (
+                <Accordion className="rounded-[14px] border border-border bg-card" headClassName="min-h-11 px-4 py-2.5 text-[.95rem] font-semibold text-heading" title={t('{n} tables we can’t use yet', { n: flagged.length })}>
+                  <div className="flex flex-col gap-2 px-4 pb-4 text-sm">
+                    <p>{example ? t('Their numbers don’t add up, for example {example}.', { example }) : t('Their numbers don’t add up.')} {t('They stay exactly as published and won’t be linked to a hospital dish until SFDA confirms them.')}</p>
+                    <ul className="flex flex-wrap gap-1.5">{flagged.map(([id, e]) => <li key={id} className="rounded-[10px] border border-border px-2.5 py-1">{dishName(e)}</li>)}</ul>
+                  </div>
+                </Accordion>
+              ) : null}
             </div>
           </Accordion>
         </Section>

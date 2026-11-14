@@ -1,11 +1,10 @@
 import type * as React from 'react';
 import Link from 'next/link';
-import { User, Hospital, List, BookOpen, Target, ShieldCheck, Leaf, Lock, Shield, Database } from 'lucide-react';
+import { User, Hospital, List, BookOpen, Target, ShieldCheck, Lock, Shield, Database } from 'lucide-react';
 import { publicMetadata } from '@/components/public/seo';
 import { SITE_URL, SITE_NAME, DEVELOPER } from '@/lib/site';
 import { botanical, teamPortrait } from '@/lib/art.js';
 import { AboutNav } from '@/components/cb/misc';
-import { Notice } from '@/components/ui/notice';
 import { Accordion } from '@/components/ui/accordion';
 import { Band, SectionHead, CheckList, CheckItem, Benefit, Pipeline, Panel } from '@/components/public/blocks';
 import { Citation } from '@/components/public/citation';
@@ -98,12 +97,10 @@ export default async function AboutPage() {
           </Details>
 
           <Details title={t('Intended benefits: what Mizan is built to help with')}>
-            <div className="grid gap-3 md:grid-cols-3">
+            <div className="grid gap-3 md:grid-cols-2">
               <Benefit icon={Target} title={t('Healthier daily choices')}>{t('Clear daily goals and a simple food diary make Saudi dietary guidance easier to follow.')}</Benefit>
               <Benefit icon={ShieldCheck} title={t('Safer hospital meals')}>{t('Every offered meal is checked against the diet order, allergies and each recorded condition.')}</Benefit>
-              <Benefit icon={Leaf} title={t('Less food waste')}>{t('A bonus: meals people actually want, in portions that match their appetite, supporting GFSA’s national programme to reduce food loss and waste.')}</Benefit>
             </div>
-            <Notice>{t('These are the benefits we hope for. This prototype uses made-up data, so it can’t measure them.')}</Notice>
           </Details>
 
           <Details title={t('Privacy and safety by design: minimum necessary information')}>
@@ -113,15 +110,6 @@ export default async function AboutPage() {
               <CheckItem icon={Database}>{t('Fictional demonstration identifiers (MZ-####), never medical record numbers.')}</CheckItem>
               <CheckItem icon={List}>{t('An audit log of every change to a patient’s record and meals.')}</CheckItem>
             </CheckList>
-          </Details>
-
-          <Details title={t('Data model: relational, coded and auditable')}>
-            <p>{t('Picking from a list, such as choosing “Sesame” from the SFDA list instead of typing it, keeps automatic checks reliable. Anything typed that can’t be matched goes to an admin.')}</p>
-            <div className="flex flex-col gap-1">
-              <h3 className="text-[1rem]">{t('Main hospital-care database entities')}</h3>
-              <p dir="ltr" lang="en" className="break-words text-start text-sm text-muted-foreground">Users (with roles), Patients, PatientConditions, DietOrders and DietOrderCategories, PatientAllergies (allergies and intolerances kept apart), MedicalExclusions, FoodPreferences, Meals, Ingredients, SfctDishes (SFDA), Dishes, DishIngredients, MealComponents, MenuCycle and MenuDates, LocalProduction (MEWA / GASTAT), DietCategories, MedicalDietaryRules, MealSchedule, MealOffers, ScheduleChanges and ScheduleEvents, MealIntake, PatientRequests and AuditLog.</p>
-            </div>
-            <p className="text-sm text-muted-foreground">{t('The coded structure could later be mapped to standards such as HL7 FHIR; this prototype does not exchange data with other systems.')}</p>
           </Details>
 
           <Panel className="mt-3">

@@ -215,14 +215,13 @@ export function seedHospitalDemo({ repo, service, today }) {
         const base = { patientId: p.id, date, period, mealId: pick.mealId, mealName: meal.name, portion, appetiteBefore: p.appetite.level, accepted: !refuse, amount, reasons };
         const patientReports = byPatient || rand() < 0.3;
         const staffObserves = !byPatient || weighed || rand() < 0.35;
-        if (patientReports) repo.saveIntake({ ...base, source: 'patient', satisfaction, comment: refuse && reasons.includes('taste') ? 'Too bland for me.' : '', measuredWasteG: null, recordedBy: p.preferredName, recordedByRole: 'patient', recordedAt: at(date, serveH + 1) });
+        if (patientReports) repo.saveIntake({ ...base, source: 'patient', satisfaction, comment: refuse && reasons.includes('taste') ? 'Too bland for me.' : '', recordedBy: p.preferredName, recordedByRole: 'patient', recordedAt: at(date, serveH + 1) });
         if (staffObserves) {
+          if (weighed) rand(); // keeps the demo's random sequence (and so the rest of the demo data) unchanged
           // Staff estimate can differ slightly from the patient's own report; summaries use the staff observation for amount eaten.
           const staffAmount = patientReports && amount === 'most' && rand() < 0.3 ? 'some' : amount;
           repo.saveIntake({
             ...base, source: 'staff', amount: staffAmount, satisfaction: patientReports ? null : satisfaction, comment: '',
-            // Weighed plate waste is a separate measurement and need not match the estimated amount.
-            measuredWasteG: weighed ? Math.max(0, Math.round(meal.grams * portionFactor(portion) * (1 - share) * (0.8 + rand() * 0.4))) : null,
             recordedBy: staff.name, recordedByRole: 'staff', recordedAt: at(date, serveH + 1, 30),
           });
         }
@@ -291,9 +290,20 @@ export function seedHospitalDemo({ repo, service, today }) {
   safely(() => choose('MZ-1005', 'lunch'));
   // Sara then reports a possible allergy to something in her confirmed breakfast: it is put on hold until reviewed.
   safely(() => {
-    const e = repo.getEntry(ids['MZ-1005'], today, 'breakfast');
-    const allergen = e ? service.catalog().byId[e.selectedMealId]?.allergenSummary?.contains?.[0] : null;
-    if (allergen) service.createRequest(asPatient('MZ-1005'), ids['MZ-1005'], { type: 'clinical-change', reportKind: 'new-allergy', allergen, message: 'I think I reacted to this at home last week. Could the team check before breakfast?' });
+    // The menu changes by day: use the first chosen or confirmed meal with an allergen, Sara's first, then any
+    // other admitted patient's, so the demo always shows a meal on hold.
+    const byId = service.catalog().byId;
+    const order = ['MZ-1005', ...Object.keys(ids).filter((d) => d !== 'MZ-1005')];
+    let hit = null;
+    for (const demoId of order) {
+      for (const day of [today, tomorrow]) for (const period of PERIOD_IDS) {
+        const e = hit ? null : repo.getEntry(ids[demoId], day, period);
+        const a = e && ['selected', 'confirmed'].includes(e.status) && e.selectedMealId ? byId[e.selectedMealId]?.allergenSummary?.contains?.[0] : null;
+        if (a && repo.getPatient(ids[demoId])?.status === 'admitted') hit = { demoId, allergen: a };
+      }
+      if (hit) break;
+    }
+    if (hit) service.createRequest(asPatient(hit.demoId), ids[hit.demoId], { type: 'clinical-change', reportKind: 'new-allergy', allergen: hit.allergen, message: 'I think I reacted to this at home last week. Could the team check before breakfast?' });
   });
   // Abdullah: breakfast approved by the admin after review; the rest awaits review.
   safely(() => {
@@ -316,10 +326,10 @@ export function seedHospitalDemo({ repo, service, today }) {
     service.updatePatientSection(admin, reem.id, 'clinical', { ...reem, allergies: { ...reem.allergies, confirmed: [...reem.allergies.confirmed, 'sesame'] } });
   });
 
-  // Intake recorded this morning: Noura by herself and by staff (one meal, two records), Mona by staff with a weighed tray.
+  // Intake recorded this morning: Noura by herself and by staff (one meal, two records), Mona by staff.
   safely(() => service.recordIntake(asPatient('MZ-1001'), ids['MZ-1001'], { date: today, period: 'breakfast', appetiteBefore: 'good', accepted: true, amount: 'all', satisfaction: 5, reasons: [] }));
   safely(() => service.recordIntake(staff, ids['MZ-1001'], { date: today, period: 'breakfast', appetiteBefore: 'good', accepted: true, amount: 'most', reasons: [] }));
-  safely(() => service.recordIntake(staff, ids['MZ-1003'], { date: today, period: 'breakfast', appetiteBefore: 'poor', accepted: true, amount: 'some', satisfaction: 3, reasons: ['low-appetite'], measuredWasteG: 140 }));
+  safely(() => service.recordIntake(staff, ids['MZ-1003'], { date: today, period: 'breakfast', appetiteBefore: 'poor', accepted: true, amount: 'some', satisfaction: 3, reasons: ['low-appetite'] }));
 
   // Pending requests.
   safely(() => service.createRequest(asPatient('MZ-1001'), ids['MZ-1001'], { type: 'schedule-change', message: 'Could my dinner be brought a little later, after evening prayer?' }));

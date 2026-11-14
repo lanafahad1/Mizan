@@ -62,8 +62,8 @@
   /* ── Data: bars grow from their start, cups pop, the week line draws ────────── */
   .mz-seg, .mz-bar {
     transform-origin: left center;
-    animation: mz-grow-x 700ms var(--mz-ease) both;
-    animation-delay: calc(160ms + var(--i, 0) * 90ms);
+    animation: mz-grow-x 500ms var(--mz-ease) both;
+    animation-delay: calc(80ms + var(--i, 0) * 60ms);
   }
   .mz-seg:dir(rtl), .mz-bar:dir(rtl) { transform-origin: right center; }
   .mz-fade { animation: mz-fade 600ms var(--mz-ease) 160ms both; }
@@ -71,8 +71,8 @@
   /* Macro rings fill from the top, one after another, and glide to new numbers */
   .mz-ring {
     transition: stroke-dasharray 800ms var(--mz-ease), stroke 240ms var(--mz-ease);
-    animation: mz-ring 900ms var(--mz-ease) both;
-    animation-delay: calc(160ms + var(--i, 0) * 110ms);
+    animation: mz-ring 600ms var(--mz-ease) both;
+    animation-delay: calc(80ms + var(--i, 0) * 70ms);
   }
   .mz-line { stroke-dasharray: 1; animation: mz-draw 700ms var(--mz-ease) 160ms both; }
   .mz-area { animation: mz-fade 600ms var(--mz-ease) 380ms both; }
@@ -124,11 +124,11 @@
 ::view-transition-group(site-header) { animation: none; z-index: 100; }
 ::view-transition-old(site-header) { display: none; }
 ::view-transition-new(site-header) { animation: none; }
-::view-transition-old(.mz-page-out) { animation: mz-page-out 160ms ease-in both; }
-::view-transition-new(.mz-page-in) { animation: mz-page-in 360ms var(--mz-ease) 90ms both; }
-::view-transition-group(.mz-page-in), ::view-transition-group(.mz-page-out) { animation-duration: 360ms; }
-@keyframes mz-page-out { to { opacity: 0; transform: translateY(-6px); } }
-@keyframes mz-page-in { from { opacity: 0; transform: translateY(14px); } }
+::view-transition-old(.mz-page-out) { animation: mz-page-out 90ms linear both; }
+::view-transition-new(.mz-page-in) { animation: mz-page-in 200ms var(--mz-ease) both; }
+::view-transition-group(.mz-page-in), ::view-transition-group(.mz-page-out) { animation-duration: 200ms; }
+@keyframes mz-page-out { to { opacity: 0; } }
+@keyframes mz-page-in { from { opacity: 0; transform: translateY(6px); } }
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(*), ::view-transition-new(*), ::view-transition-group(*) { animation-duration: 0s !important; animation-delay: 0s !important; }
 }

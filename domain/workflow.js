@@ -754,7 +754,6 @@ export function createWorkflow(ctx) {
         'Quantities are standard-portion grams × portion factor (small ½, regular 1, large 1½).',
         'Tray tickets show the minimum information needed: ward, bed, demonstration ID, diet, allergy alerts and preparation instructions.',
         'Marking a tray delivered does not record what was eaten. Intake is recorded separately by the patient or the nutrition team.',
-        'Weigh returned plates when you can and record it with the meal’s intake: measured waste supports the national programme to reduce food loss and waste (GFSA).',
       ],
     };
   }

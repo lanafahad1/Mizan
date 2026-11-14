@@ -36,6 +36,8 @@ export function MenuMealCard({ meal, href, diet = '' }: { meal: MenuMeal; href: 
   const facts = [cuisine, meal.type === 'complete' ? t('Complete meal') : t('Individual dish')];
   const a = meal.allergens ?? { contains: [], mayContain: [], labelCheck: [] };
   const allergen = (id: string) => t(label(ALLERGENS, id));
+  // On the card line, “Cereals containing gluten” reads as just “gluten”; the full SFDA name stays on the meal page.
+  const short = (id: string) => (id === 'gluten' ? t('gluten') : allergen(id));
   const fit = diet ? (meal.compatibility as Compat[] | undefined)?.find((c) => c.id === diet) : null;
   const basis = meal.nutritionBasis as string | null;
   const toggle = () => { setOpen((o) => !o); setSeen(true); };
@@ -73,14 +75,13 @@ export function MenuMealCard({ meal, href, diet = '' }: { meal: MenuMeal; href: 
             </div>
           ) : null}
 
-          {/* Allergen chips, then (phones) Details at the end of the last chip line: it only takes a line of its own when the line is full. */}
-          <div className="flex flex-wrap items-center gap-1">
-            <ul aria-label={t('Allergens')} role="list" className="contents">
+          {/* One quiet allergen line (no chips), then (phones) the Details button on the same line. */}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <p className="flex min-w-0 flex-1 items-start gap-1.5 text-[.85rem] text-foreground">
               {a.contains.length
-                ? a.contains.map((id: string) => <li key={id}><Badge variant="rose" className={chipCls}>{allergen(id)}</Badge></li>)
-                : <li><Badge variant="ok" className={cn('whitespace-normal', chipCls)}>{t('None of the 14 SFDA allergens')}</Badge></li>}
-              {a.mayContain.length ? <li><Badge variant="outline" className={cn('whitespace-normal', chipCls)}>{t('May contain {allergen}', { allergen: a.mayContain.map(allergen).join(sep) })}</Badge></li> : null}
-            </ul>
+                ? <><TriangleAlert className="mt-0.5 size-3.5 shrink-0 text-destructive" aria-hidden /><span>{t('Contains {list}', { list: a.contains.map(short).join(sep) })}</span></>
+                : <span className="text-muted-foreground">{t('None of the 14 SFDA allergens')}</span>}
+            </p>
             <button type="button" className="t-acc-head relative z-10 -my-2.5 -me-1 ms-auto inline-flex min-h-11 shrink-0 items-center gap-1 rounded-full px-2 font-display text-sm font-semibold text-heading hover:bg-mint sm:hidden" aria-expanded={open} aria-controls={panelId} onClick={toggle}>
               {t('Details')}{chevron}
             </button>
@@ -116,6 +117,7 @@ export function MenuMealCard({ meal, href, diet = '' }: { meal: MenuMeal; href: 
                 <span className="inline-flex items-start gap-1.5"><Scale className="mt-0.5 size-4 shrink-0 text-heading" aria-hidden />{t('Standard serving:')} <bdi>{t(meal.servingSize)}</bdi></span>
                 <span className="inline-flex items-start gap-1.5"><Layers className="mt-0.5 size-4 shrink-0 text-heading" aria-hidden />{t('Portions:')} {meal.portions.map((p: string) => t(portionLabel(p))).join(t(', '))}</span>
               </div>
+              {a.mayContain.length ? <p className="text-sm text-muted-foreground">{t('May contain {allergen}', { allergen: a.mayContain.map(allergen).join(sep) })}</p> : null}
               {a.labelCheck.length ? <p className="text-sm text-muted-foreground">{t('Kitchen checks labels:')} {a.labelCheck.map((x: string) => t(x)).join(sep)}</p> : null}
               <LocalLine local={meal.local} />
               {meal.compatibility?.length ? (

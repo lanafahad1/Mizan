@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import {
-  ChevronRight, User, Hospital, Lock, Shield, HeartPulse, Calculator, Recycle, BookOpen, type LucideIcon,
+  ChevronRight, Lock, Shield, HeartPulse, Calculator, BookOpen,
 } from 'lucide-react';
 import { publicMetadata } from '@/components/public/seo';
 import { SITE_NAME, SITE_DESCRIPTION } from '@/lib/site';
-import { botanical } from '@/lib/art.js';
+import { botanical, heroArt } from '@/lib/art.js';
 import { Illustration } from '@/components/illustrations/illustration';
 import type { IllustrationName } from '@/lib/illustrations';
 import { getActor, homeFor } from '@/lib/server/session';
@@ -29,23 +29,7 @@ const FEATURES: [IllustrationName, string, string][] = [
 ];
 
 /** Saudi government bodies behind Mizan's health and food rules. */
-const SOURCE_BADGES = ['MOH', 'SFDA', 'Saudi National Diabetes Center', 'GFSA'];
-
-function Space({ icon: Icon, tone, title, who, children, action }: { icon: LucideIcon; tone: 'mint' | 'blush'; title: string; who: string; children: React.ReactNode; action: React.ReactNode }) {
-  return (
-    <div className="mz-glass mz-rise flex h-full flex-col gap-3 rounded-[24px] p-5 sm:p-6" style={{ '--d': tone === 'mint' ? '260ms' : '360ms' } as React.CSSProperties}>
-      <div className="flex items-center gap-3">
-        <span className={`grid size-11 shrink-0 place-items-center rounded-full ${tone === 'mint' ? 'bg-sage text-heading' : 'bg-rose text-rose-ink'}`}><Icon className="size-5" aria-hidden /></span>
-        <div className="flex min-w-0 flex-col">
-          <h2 className="text-[1.2rem]">{title}</h2>
-          <span className="text-sm text-[#55527A]">{who}</span>
-        </div>
-      </div>
-      <div className="flex-1 text-[.97rem] text-[#2A2750]">{children}</div>
-      {action}
-    </div>
-  );
-}
+const SOURCE_BADGES = ['MOH', 'SFDA', 'Saudi National Diabetes Center'];
 
 export default async function Home() {
   const actor = await getActor();
@@ -60,29 +44,29 @@ export default async function Home() {
         {/* A soft cream veil behind the text and a fine grain keep it readable over any part of the moving light. */}
         <div aria-hidden="true" className="mz-hero-scrim pointer-events-none absolute inset-0 -z-10" />
         <div aria-hidden="true" className="mz-grain pointer-events-none absolute inset-0 -z-10" />
-        <div className="container-page grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-12">
+        <div className="container-page grid items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-12">
           <div className="flex flex-col gap-5">
-            <h1 className="text-display mz-rise" style={{ '--d': '0ms' } as React.CSSProperties}>{hero[0]}<em className="not-italic text-[#4F46E5]">{hero[1]}</em>{hero[2]}</h1>
-            <p className="mz-rise text-[1.1rem] text-[#34315A]" style={{ '--d': '90ms' } as React.CSSProperties}>{t('Track, plan and enjoy food that fits you, at home or in hospital.')}</p>
+            <h1 className="text-display mz-rise text-[#1A1747]" style={{ '--d': '0ms' } as React.CSSProperties}>{hero[0]}<em className="not-italic text-[#3730A3]">{hero[1]}</em>{hero[2]}</h1>
+            <p className="mz-rise max-w-[40ch] text-[1.15rem] font-semibold text-[#221F47]" style={{ '--d': '90ms' } as React.CSSProperties}>{t('Track, plan and enjoy food that fits you, at home or in hospital.')}</p>
             {actor ? (
               <Link href={homeFor(actor)} className={buttonVariants({ size: 'lg', className: 'w-full sm:w-fit' })}><ChevronRight aria-hidden className="rtl:-scale-x-100" />{t('Go to my start page')}</Link>
             ) : null}
-            <ul className="mz-rise flex flex-wrap gap-x-5 gap-y-2 text-[.9rem] font-semibold text-[#34315A]" style={{ '--d': '170ms' } as React.CSSProperties}>
+            <ul className="mz-rise flex flex-wrap gap-x-5 gap-y-2 text-[.92rem] font-bold text-[#221F47]" style={{ '--d': '170ms' } as React.CSSProperties}>
               <li className="inline-flex items-center gap-1.5"><HeartPulse className="size-4 text-primary" aria-hidden />{t('Guided by the Ministry of Health and SFDA')}</li>
               <li className="inline-flex items-center gap-1.5"><Lock className="size-4 text-primary" aria-hidden />{t('Your diary stays private')}</li>
               <li className="inline-flex items-center gap-1.5"><Shield className="size-4 text-primary" aria-hidden />{t('Not clinically validated')}</li>
             </ul>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Space icon={User} tone="mint" title={t('Member')} who={t('For anyone who wants to eat well, healthcare workers included')}
-              action={<Link href="/register?space=member" className={buttonVariants({ className: 'w-full' })}>{t('Start as a member')} <ChevronRight aria-hidden className="rtl:-scale-x-100" /></Link>}>
-              <p>{t('Keep a food diary, see your daily calorie goal and track your health readings. It’s private: hospital staff never see it.')}</p>
-            </Space>
-            <Space icon={Hospital} tone="blush" title={t('Hospital care')} who={t('For patients, staff and admins')}
-              action={<Link href="/login?space=hospital" className={buttonVariants({ variant: 'outline', className: 'w-full bg-white/50' })}>{t('Hospital sign-in')} <ChevronRight aria-hidden className="rtl:-scale-x-100" /></Link>}>
-              <p>{t('Every meal is checked against each patient’s diet and health conditions. A demonstration hospital with fictional data.')}</p>
-            </Space>
-          </div>
+          {/* A tiny world of balanced dishes: decorative, so the text above carries the message. */}
+          <div aria-hidden="true" className="mz-glass mz-rise mz-illo mx-auto w-full max-w-[520px] overflow-hidden rounded-[28px] p-2 [&>svg]:block [&>svg]:h-auto [&>svg]:w-full [&>svg]:rounded-[22px]" style={{ '--d': '220ms' } as React.CSSProperties}
+            dangerouslySetInnerHTML={{ __html: heroArt() }} />
+        </div>
+      </section>
+
+      <section aria-labelledby="vision-h" className="border-b border-border bg-card py-7 sm:py-9">
+        <div className="container-page flex flex-col items-center gap-2 text-center">
+          <h2 id="vision-h" className="eyebrow">{t('Our vision')}</h2>
+          <p className="max-w-[46ch] text-balance font-display text-[1.25rem] font-semibold leading-snug text-heading sm:text-[1.5rem]">{t('Helping people with obesity and chronic disease live healthier, one meal at a time.')}</p>
         </div>
       </section>
 
@@ -114,7 +98,7 @@ export default async function Home() {
               ))}
             </ul>
           </div>
-          <p className="flex items-center gap-2 text-sm"><Recycle className="size-4 shrink-0 text-heading" aria-hidden />{t('A bonus: less food wasted in hospitals.')} <Link href="/sources" className="inline-flex items-center gap-1 whitespace-nowrap font-semibold"><BookOpen className="size-4" aria-hidden />{t('All sources')}</Link></p>
+          <p className="flex items-center gap-2 text-sm"><Link href="/sources" className="inline-flex items-center gap-1 whitespace-nowrap font-semibold"><BookOpen className="size-4" aria-hidden />{t('All sources')}</Link></p>
         </div>
       </section>
 

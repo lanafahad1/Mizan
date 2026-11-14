@@ -119,11 +119,11 @@ function trackItem(el: Element, main: Element, vh: number) {
   if (r.height > vh * 1.1) return; // taller than the screen: its parts reveal on their own
   if (r.top < vh && r.bottom > 0) { seen.set(el, 'done'); return; } // already on screen: never hide it
   if (r.bottom <= 0) { seen.set(el, 'done'); return; } // above the viewport (scroll restored)
-  const anim = el.animate(RISE, { duration: 600, easing: EASE, fill: 'backwards' });
+  const anim = el.animate(RISE, { duration: 420, easing: EASE, fill: 'backwards' });
   anim.pause();
   const kids = kidsOf(el).map((k) => {
     seen.set(k, 'kid');
-    const a = k.animate(RISE_KID, { duration: 480, easing: EASE, fill: 'backwards' });
+    const a = k.animate(RISE_KID, { duration: 340, easing: EASE, fill: 'backwards' });
     a.pause();
     return a;
   });

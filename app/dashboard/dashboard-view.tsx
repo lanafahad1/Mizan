@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
 import Link from 'next/link';
-import { Info, Calendar, TriangleAlert, Activity, ThumbsUp, Scale, MessageSquare, Leaf, HeartPulse, ClipboardList, CalendarClock, Gauge } from 'lucide-react';
+import { Info, Calendar, TriangleAlert, Activity, ThumbsUp, MessageSquare, HeartPulse, ClipboardList, CalendarClock, Gauge } from 'lucide-react';
 import { useApi, apiPath } from '@/lib/api-client';
 import { PageHead, PageBody } from '@/components/site/page-head';
 import { FlagChips, AppetiteChip } from '@/components/cb/status';
@@ -14,7 +14,7 @@ import { Accordion } from '@/components/ui/accordion';
 import { formatDate, formatLongDate } from '@/lib/format';
 import { useT } from '@/components/site/lang';
 import { Panel, KpiTile, KpiRow } from '@/components/staff/ui';
-import { Figure, Legend, LineChart, ColumnChart, HBarChart, StackedChart, VIZ, type Series } from '@/components/staff/charts';
+import { Figure, Legend, LineChart, HBarChart, StackedChart, VIZ, type Series } from '@/components/staff/charts';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Dashboard = any;
@@ -113,14 +113,13 @@ export function DashboardView({ initial, requestedDate, chronic }: { initial: Da
   const byPeriod = t.byPeriod.map((p: any) => ({ ...p, label: tr(p.label), confirmedPlus: p.confirmed + p.prepared + p.delivered }));
   const range = `${formatDate(w.from, { month: 'short', day: 'numeric' }, lang)}–${formatDate(w.to, { month: 'short', day: 'numeric' }, lang)}`;
   const days = d.trends.map((x: any) => ({ ...x, label: formatDate(x.date, { weekday: 'long', month: 'short', day: 'numeric' }, lang), short: formatDate(x.date, { weekday: 'short' }, lang) }));
-  const wmax = Math.max(100, ...days.map((x: any) => x.measuredWasteG ?? 0));
   const [generated, setGenerated] = React.useState<string>('');
   React.useEffect(() => { setGenerated(new Date(d.generatedAt).toLocaleString(lang === 'ar' ? 'ar-SA-u-ca-gregory-nu-latn' : undefined)); }, [d.generatedAt, lang]);
 
   return (
     <>
       <PageHead eyebrow={tr('Hospital nutrition team')} title={tr('Nutrition Team Dashboard')} className="max-w-[1320px]">
-        <p>{tr('Start with chronic conditions and reviews due, then today’s meals, changes to review, appetite and refusals, and the last 7 days of acceptance, satisfaction and waste ({range}).', { range })}</p>
+        <p>{tr('Start with chronic conditions and reviews due, then today’s meals, changes to review, appetite and refusals, and the last 7 days of acceptance and satisfaction ({range}).', { range })}</p>
       </PageHead>
       <PageBody className="max-w-[1320px]">
         {error ? <Notice tone="danger" title={tr('We couldn’t refresh the dashboard.')}>{tr(error.message)} {tr('The figures below may be out of date. Check your connection and try again.')}</Notice> : null}
@@ -128,7 +127,7 @@ export function DashboardView({ initial, requestedDate, chronic }: { initial: Da
         <p className="eyebrow m-0 text-[.8rem]">{tr('Chronic conditions')}</p>
         <ChronicSection c={chronic} />
 
-        <p className="eyebrow m-0 mt-4 border-t border-border pt-6 text-[.8rem]">{tr('Meal service and food waste')}</p>
+        <p className="eyebrow m-0 mt-4 border-t border-border pt-6 text-[.8rem]">{tr('Meal service')}</p>
         {requestedDate && requestedDate !== w.to ? <p className="text-sm text-muted-foreground">{tr('Meal workflow for {date}. The 7-day trends always end today.', { date: formatLongDate(d.date, lang) })}</p> : null}
 
         <KpiRow>
@@ -231,28 +230,7 @@ export function DashboardView({ initial, requestedDate, chronic }: { initial: Da
             </div>
           </Panel>
 
-          <Panel id="waste-h" icon={Scale} title="Leftovers: estimated and measured, kept separate" className="lg:col-span-12">
-            <p className="text-sm"><b>{tr('Estimated leftovers')}</b> {tr('come from how much was eaten as estimated by staff or reported by the patient (none, some, most, all); they are an estimate, not a weight.')} <b>{tr('Measured food waste')}</b> {tr('is plate waste weighed by staff in grams, recorded only for some trays. They are different measurements and are never combined or converted into each other.')}</p>
-            <p className="flex items-start gap-1.5 text-sm text-muted-foreground"><Leaf className="mt-0.5 size-4 shrink-0 text-success" aria-hidden /><span>{tr('Tracking plate waste supports the National Program to Reduce Food Loss and Waste led by the General Food Security Authority (GFSA).')} <Link href="/diets?section=waste">{tr('About GFSA and food waste')}</Link></span></p>
-            <KpiRow>
-              <KpiTile label="Estimated leftovers (7 days)" value={w.estimatedLeftoverShare == null ? '—' : pct(w.estimatedLeftoverShare)} sub="average share of the portion not eaten (estimate)" />
-              <KpiTile label="Measured plate waste (7 days)" value={w.measuredWasteG == null ? '—' : `${(w.measuredWasteG / 1000).toLocaleString('en-US', { maximumFractionDigits: 1 })} ${tr('kg')}`} sub={tr(w.measuredTrays === 1 ? 'total weight from {n} weighed tray only; other trays were not weighed' : 'total weight from {n} weighed trays only; other trays were not weighed', { n: w.measuredTrays })} />
-            </KpiRow>
-            <div className="grid gap-5 lg:grid-cols-2">
-              <Figure title="Estimated leftovers (% of portion, estimate)" caption="Per day: average share of the served portion not eaten, from estimates. Not a weight."
-                headers={['Day', 'Meals with intake', 'None eaten', 'Some', 'Most', 'All', 'Estimated leftovers']}
-                rows={days.map((x: any) => [x.label, x.recorded, x.amounts.none, x.amounts.some, x.amounts.most, x.amounts.all, x.estimatedLeftoverShare == null ? tr('no data') : `${x.estimatedLeftoverShare}%`])}>
-                <LineChart unit="Estimated leftovers" yMax={100} fmt={pct} points={days.map((x: any) => ({ label: x.label, short: x.short, value: x.estimatedLeftoverShare, detail: tr('{n} meals with intake', { n: x.recorded }) }))} />
-              </Figure>
-              <Figure title="Measured food waste (grams, weighed)" caption="Per day: total grams from weighed trays only. A day without weighing shows no bar (no data, not zero)."
-                headers={['Day', 'Trays weighed', 'Total measured waste']} rows={days.map((x: any) => [x.label, x.measuredTrays, x.measuredWasteG == null ? tr('not measured') : `${x.measuredWasteG} ${tr('g')}`])}>
-                <ColumnChart unit="Measured waste" color={VIZ.c2} yMax={Math.ceil(wmax / 100) * 100} fmt={(v) => `${Math.round(v)} ${tr('g')}`}
-                  points={days.map((x: any) => ({ label: x.label, short: x.short, value: x.measuredWasteG, detail: tr(x.measuredTrays === 1 ? '{n} tray weighed' : '{n} trays weighed', { n: x.measuredTrays }) }))} />
-              </Figure>
-            </div>
-          </Panel>
-
-          <Panel id="rs-h" icon={MessageSquare} title="Reasons given for refusal or leftovers" className="lg:col-span-12" action={<span className="text-sm text-muted-foreground">{tr('last 7 days')}</span>}>
+          <Panel id="rs-h" icon={MessageSquare} title="Why meals weren’t finished" className="lg:col-span-12" action={<span className="text-sm text-muted-foreground">{tr('last 7 days')}</span>}>
             {w.reasons.length ? (
               <Figure title="Times each reason was given" caption="A meal can have more than one reason." headers={['Reason', 'Times given']} rows={w.reasons.map((r: any) => [r.label, r.count])}>
                 <HBarChart unit="Times given" fmt={(v) => String(v)} items={[...w.reasons].sort((a: any, b: any) => b.count - a.count).map((r: any) => ({ label: r.label, value: r.count }))} />

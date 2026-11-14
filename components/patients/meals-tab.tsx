@@ -266,8 +266,8 @@ function PeriodCard({ per }: { per: Per }) {
       {o ? (
         <p className="flex items-start gap-1.5 text-sm text-muted-foreground"><Activity className="mt-0.5 size-4 shrink-0" aria-hidden />
           <span>{lang === 'ar'
-            ? `${o.accepted ? t('Intake: {amount} eaten ({source})', { amount: t(amountLabel(o.amount)), source: t(o.amountSource === 'staff' ? 'staff observation' : 'patient report') }) : t('Intake: refused')}${o.satisfaction ? ` · ${t('satisfaction {n}/5', { n: o.satisfaction })}` : ''}${o.measuredWasteG != null ? ` · ${t('{n} g weighed waste', { n: o.measuredWasteG })}` : ''}.`
-            : <>Intake: {o.accepted ? `${amountLabel(o.amount).toLowerCase()} eaten (${o.amountSource === 'staff' ? 'staff observation' : 'patient report'})` : 'refused'}{o.satisfaction ? ` · satisfaction ${o.satisfaction}/5` : ''}{o.measuredWasteG != null ? ` · ${o.measuredWasteG} g weighed waste` : ''}.</>}</span>
+            ? `${o.accepted ? t('Intake: {amount} eaten ({source})', { amount: t(amountLabel(o.amount)), source: t(o.amountSource === 'staff' ? 'staff observation' : 'patient report') }) : t('Intake: refused')}${o.satisfaction ? ` · ${t('satisfaction {n}/5', { n: o.satisfaction })}` : ''}.`
+            : <>Intake: {o.accepted ? `${amountLabel(o.amount).toLowerCase()} eaten (${o.amountSource === 'staff' ? 'staff observation' : 'patient report'})` : 'refused'}{o.satisfaction ? ` · satisfaction ${o.satisfaction}/5` : ''}.</>}</span>
         </p>
       ) : null}
       {sc && !per.npo ? (

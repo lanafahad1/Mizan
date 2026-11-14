@@ -9,7 +9,6 @@
 //     when there is one, otherwise the patient's report;
 //   • satisfaction: the patient's own rating when there is one, otherwise a
 //     rating staff recorded on the patient's behalf;
-//   • measured food waste (grams): weighed by staff only;
 //   • reasons: every reason given in either record.
 
 import { INTAKE_AMOUNTS, PERIOD_IDS, REFUSAL_REASONS } from './constants.js';
@@ -20,10 +19,8 @@ export const OUTCOME_RULE = [
   'Each meal is counted once, even when both the patient and staff recorded it.',
   'Accepted or refused, and the estimated amount eaten: the staff observation when recorded, otherwise the patient’s report.',
   'Satisfaction: the patient’s own rating when given, otherwise a rating staff recorded on the patient’s behalf.',
-  'Measured food waste: weighed by staff only. It is never derived from the estimated amount eaten.',
 ];
 
-const shareOf = (amount) => INTAKE_AMOUNTS.find((a) => a.id === amount)?.share ?? null;
 export const byMealTime = (a, b) => a.date.localeCompare(b.date) || PERIOD_IDS.indexOf(a.period) - PERIOD_IDS.indexOf(b.period);
 const mean = (xs) => (xs.length ? Math.round((xs.reduce((s, x) => s + x, 0) / xs.length) * 100) / 100 : null);
 
@@ -45,7 +42,6 @@ export function mealOutcomes(records) {
       accepted: obs.accepted, amount: obs.amount, amountSource: g.staff ? 'staff' : 'patient',
       appetiteBefore: (g.staff ?? g.patient).appetiteBefore ?? g.patient?.appetiteBefore ?? null,
       satisfaction: rating?.satisfaction ?? null, satisfactionSource: rating ? rating.source : null,
-      measuredWasteG: g.staff?.measuredWasteG ?? null,
       reasons: [...new Set([...(g.staff?.reasons ?? []), ...(g.patient?.reasons ?? [])])],
       sources: [g.patient && 'patient', g.staff && 'staff'].filter(Boolean),
       patientRecord: g.patient, staffRecord: g.staff,
@@ -75,7 +71,6 @@ export function intakeTrends(outcomes, today, days = 7) {
     const rs = outcomes.filter((r) => r.date === date);
     const accepted = rs.filter((r) => r.accepted);
     const rated = rs.filter((r) => r.satisfaction != null);
-    const measured = rs.filter((r) => r.measuredWasteG != null);
     const amounts = Object.fromEntries(INTAKE_AMOUNTS.map((a) => [a.id, rs.filter((r) => r.amount === a.id).length]));
     out.push({
       date,
@@ -86,11 +81,6 @@ export function intakeTrends(outcomes, today, days = 7) {
       satisfaction: mean(rated.map((r) => r.satisfaction)),
       rated: rated.length,
       amounts,
-      // Estimated leftovers: share of the served portion not eaten, as estimated by the patient or staff (not weighed).
-      estimatedLeftoverShare: rs.length ? Math.round((1 - mean(rs.map((r) => shareOf(r.amount) ?? 0))) * 100) : null,
-      // Measured waste: plate waste weighed by staff, kept separate from estimates.
-      measuredTrays: measured.length,
-      measuredWasteG: measured.length ? Math.round(measured.reduce((s, r) => s + r.measuredWasteG, 0)) : null,
     });
   }
   return out;
