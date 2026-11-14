@@ -12,7 +12,7 @@ export const ILLUSTRATIONS = [
   // MOH food groups
   'group-starch', 'group-protein', 'group-vegetables', 'group-fruit', 'group-milk', 'group-fat',
   // quick actions and trackers
-  'log-food', 'water', 'steps', 'activity', 'weight', 'calculator', 'plan', 'health', 'hospital', 'ideas', 'shopping', 'readings', 'assessment',
+  'log-food', 'water', 'steps', 'activity', 'sleep', 'weight', 'calculator', 'plan', 'health', 'hospital', 'ideas', 'shopping', 'readings', 'assessment',
   // empty states
   'empty-diary', 'empty-readings', 'empty-requests', 'empty-search', 'empty-generic',
   // pages
@@ -301,6 +301,15 @@ export const DRAWINGS: Record<IllustrationName, string> = {
     + `<path d="M16 76H98C101 76 102 79 101 82C100.6 84 99 86 97 86H20C17 86 15.6 84 15.4 81.6C15.2 78.6 15.6 76 16 76Z" fill="${SK2}"/>`
     + `<path d="M24 81H40" stroke="${W}" stroke-width="2.4"/>`,
     { g: [60, 90, 48, 8], s: [[100, 46, 5.4], [14, 60, 4, VI]] }),
+
+  sleep: frame(
+    // a crescent moon resting on a soft pillow, with stars
+    `<path d="M24 70C22 62 28 57 36 58H84C92 57 98 62 96 70C95 78 90 82 82 82H38C30 82 25 78 24 70Z" fill="${W}"/>`
+    + `<path d="M34 64C44 61 76 61 86 64" stroke="${LV3}" stroke-width="2"/>`
+    + `<path d="M70 14A24 24 0 1 0 84 54A19 19 0 1 1 70 14Z" fill="${F.lemon}"/>`
+    + `<path d="M58 22A18 18 0 0 0 54 40" stroke="${W}" stroke-width="2.6" opacity=".8"/>`
+    + `<path d="M50 40c1.6 1.4 3.6 1.4 5.2 0M60 44c1.6 1.4 3.6 1.4 5.2 0" stroke-width="2.2"/>`,
+    { g: [60, 90, 42, 8], gc: LV, s: [[96, 24, 5.4], [22, 30, 4.2, VI], [104, 46, 3.4, VI]], c: [[10, 46, .5]] }),
 
   activity: frame(
     // a stopwatch seen at an angle, with a heart

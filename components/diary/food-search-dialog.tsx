@@ -19,7 +19,8 @@ import { FoodPicker } from './food-picker';
 import { LabelFoodForm } from './label-food-form';
 import { QuickAdd } from './quick-add';
 import { SearchResults, ShelfGrid, ShelfList, shelfTitle, useDebounced, type ShelfId } from './shelves';
-import { MEAL_LABELS, mealIn, tMsg, type Food, type LabelDraft, type MealId, type RecentFood } from './types';
+import { tMsg, type Food, type LabelDraft, type MealId, type RecentFood } from './types';
+import { useMealNames } from './meal-names';
 
 type View =
   | { kind: 'shelves' }
@@ -65,7 +66,7 @@ function AddFoodFlow({ meal, date, recent, favorites, onAdded, onFavoritesChange
   const [favs, setFavs] = React.useState(() => new Set(favorites));
   const headingRef = React.useRef<HTMLHeadingElement>(null);
   const first = React.useRef(true);
-  const mealLabel = mealIn(meal, MEAL_LABELS[meal], lang);
+  const mealLabel = useMealNames().inSentence(meal, false);
 
   // Keep the local ★ set in step with the diary when it is refreshed.
   const favKey = favorites.join(',');

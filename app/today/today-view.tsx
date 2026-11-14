@@ -2,7 +2,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { ChevronLeft, ChevronRight, CircleCheck, Footprints, GlassWater, Info, RotateCw, Settings2, Target, Undo2, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CircleCheck, Footprints, GlassWater, Info, RotateCw, Salad, Settings2, Target, Undo2, X } from 'lucide-react';
 import { useApi, apiSend, ApiError } from '@/lib/api-client';
 import { addDays } from '@/domain/dates.js';
 import { formatDate, formatLongDate } from '@/lib/format';
@@ -21,7 +21,9 @@ import { MealCard } from '@/components/diary/meal-card';
 import { AddFoodDialog } from '@/components/diary/food-search-dialog';
 import { useT } from '@/components/site/lang';
 import type { Lang, T } from '@/lib/i18n';
-import { amountText, diaryKey, fmt, foodName, isMealId, LABELS, MEAL_LABELS, mealForNow, mealIn, tMsg, type Diary, type DiaryEntry, type MealId, type NutrientKey } from '@/components/diary/types';
+import { amountText, diaryKey, fmt, foodName, isMealId, LABELS, mealForNow, tMsg, type Diary, type DiaryEntry, type MealId, type NutrientKey } from '@/components/diary/types';
+import { MealNamesProvider, makeMealNames } from '@/components/diary/meal-names';
+import { RamadanSwitch, RamadanTipsCard, type SourceRefs } from '@/components/diary/ramadan';
 
 const DAYS_BACK = 60;
 
@@ -32,8 +34,8 @@ function dayName(date: string, today: string, t: T, lang: Lang) {
   return formatDate(date, { weekday: 'long', month: 'short', day: 'numeric' }, lang);
 }
 
-/** The food diary for one day: a calm summary against the targets, then the four meals. */
-export function TodayView({ initial, role }: { initial: Diary; role: 'member' | 'patient' }) {
+/** The food diary for one day: a calm summary against the targets, then the four meals (Ramadan meals in Ramadan mode). */
+export function TodayView({ initial, role, sources }: { initial: Diary; role: 'member' | 'patient'; sources: SourceRefs }) {
   const { t, lang } = useT();
   const today = initial.today;
   const min = addDays(today, -DAYS_BACK);
@@ -43,6 +45,7 @@ export function TodayView({ initial, role }: { initial: Diary; role: 'member' | 
   const { data, error, mutate, isValidating } = useApi<Diary>(key, key === diaryKey(initial.date) ? initial : undefined);
   const diary = data;
   const loadingDay = !diary || diary.date !== date;
+  const names = makeMealNames(Boolean(diary?.ramadan?.active), lang);
 
   // The day before, to offer "Repeat yesterday's …" on empty meals.
   const prev = addDays(date, -1);
@@ -66,7 +69,8 @@ export function TodayView({ initial, role }: { initial: Diary; role: 'member' | 
   const addParam = params.get('add');
   React.useEffect(() => {
     if (addParam == null) return;
-    openAdd(isMealId(addParam) ? addParam : mealForNow());
+    const now = mealForNow();
+    openAdd(isMealId(addParam) ? addParam : names.ramadan && now === 'lunch' ? 'dinner' : now);
     const url = new URL(window.location.href);
     url.searchParams.delete('add');
     window.history.replaceState(null, '', url.pathname + url.search);
@@ -95,7 +99,7 @@ export function TodayView({ initial, role }: { initial: Diary; role: 'member' | 
     // The same food added again to the same meal is merged into one row.
     const msg = mergedAmount
       ? t('Added — now {amount} {name}.', { amount: amountText(mergedAmount, t, lang), name: t(name) })
-      : t('Added {name} to {meal}.', { name: t(name), meal: mealIn(meal, MEAL_LABELS[meal].toLowerCase(), lang) });
+      : t('Added {name} to {meal}.', { name: t(name), meal: names.inSentence(meal) });
     toast(msg);
     const fresh = await mutate();
     setAnnounce(`${mergedAmount ? msg : t('Added {name}.', { name: t(name) })} ${totalLine(fresh)}`);
@@ -105,7 +109,7 @@ export function TodayView({ initial, role }: { initial: Diary; role: 'member' | 
     const name = t(foodName(e, lang));
     const moved = e.meal != null && c.meal !== e.meal;
     const msg = moved
-      ? t('Moved {name} to {meal}.', { name, meal: mealIn(c.meal, MEAL_LABELS[c.meal].toLowerCase(), lang) })
+      ? t('Moved {name} to {meal}.', { name, meal: names.inSentence(c.meal) })
       : t('Saved: {name}, {amount}.', { name, amount: amountText(c.amountLabel, t, lang) });
     toast(msg);
     const fresh = await mutate();
@@ -146,7 +150,7 @@ export function TodayView({ initial, role }: { initial: Diary; role: 'member' | 
     try {
       const res = await apiSend<{ added: number }>('POST', '/api/health/me/diary/repeat', { fromDate: prev, meal, toDate: date });
       const fresh = await mutate();
-      const where = mealIn(meal, MEAL_LABELS[meal].toLowerCase(), lang);
+      const where = names.inSentence(meal);
       const msg = res.added === 1 ? t('Added 1 food to {meal}.', { meal: where }) : t('Added {n} foods to {meal}.', { n: res.added, meal: where });
       toast(msg);
       setAnnounce(`${msg} ${totalLine(fresh)}`);
@@ -167,7 +171,7 @@ export function TodayView({ initial, role }: { initial: Diary; role: 'member' | 
   const navBtn = 'grid size-11 shrink-0 place-items-center rounded-full border border-border bg-card text-heading hover:bg-mint disabled:pointer-events-none disabled:opacity-40';
 
   return (
-    <>
+    <MealNamesProvider ramadan={names.ramadan}>
       <div className={cn(containerClass({ space: 'member' }), 'flex flex-col gap-2 pb-5 pt-8 sm:pt-10')}>
         <span className="eyebrow text-center">{t('Diary')}</span>
         <div role="group" aria-label={t('Choose the day')} className="flex items-center justify-between gap-2">
@@ -196,17 +200,25 @@ export function TodayView({ initial, role }: { initial: Diary; role: 'member' | 
         {diary ? (
           <div aria-busy={loadingDay || undefined} className={cn('flex flex-col gap-4 transition-opacity', loadingDay && 'opacity-50')}>
             <Summary diary={diary} role={role} announce={announce} />
-            {diary.meals.map((m) => (
+            {/* Ramadan mode: Suhoor, Iftar and Snacks after Iftar; lunch only when it already has food. */}
+            {diary.meals.filter((m) => !names.ramadan || m.id !== 'lunch' || m.entries.length > 0).map((m) => (
               <MealCard key={m.id} meal={m} deleting={deleting} onAdd={() => openAdd(m.id)} onDelete={remove} onSaved={saved}
                 repeat={m.entries.length === 0 && !loadingDay ? repeatFor(m.id) : null} />
             ))}
+            {names.ramadan && diary.ramadan ? <RamadanTipsCard info={diary.ramadan} sources={sources} /> : null}
           </div>
         ) : null}
         {loadingDay && !error ? <p role="status" className="sr-only">{isValidating ? t('Loading the day…') : ''}</p> : null}
 
-        <Link href="/my-foods" className="inline-flex min-h-11 w-fit items-center gap-1.5 text-sm font-semibold">
-          <Settings2 aria-hidden className="size-4" />{t('My foods (from labels and barcodes)')}
-        </Link>
+        <div className="flex flex-col gap-1">
+          <Link href="/eat-well?tab=plate" className="inline-flex min-h-11 w-fit items-center gap-1.5 text-sm font-semibold">
+            <Salad aria-hidden className="size-4" />{t('Compare your plate with the healthy plate')}
+          </Link>
+          <Link href="/my-foods" className="inline-flex min-h-11 w-fit items-center gap-1.5 text-sm font-semibold">
+            <Settings2 aria-hidden className="size-4" />{t('My foods (from labels and barcodes)')}
+          </Link>
+        </div>
+        {diary?.ramadan ? <RamadanSwitch info={diary.ramadan} /> : null}
 
         <p className="text-xs leading-snug text-muted-foreground">
           <Info aria-hidden className="me-1 inline size-3.5 align-[-2px]" />
@@ -218,7 +230,7 @@ export function TodayView({ initial, role }: { initial: Diary; role: 'member' | 
       <AddFoodDialog open={addTo != null} onOpenChange={(o) => { if (!o) setAddTo(null); }} meal={addTo ?? lastMeal} date={date}
         recent={diary?.recent ?? []} favorites={diary?.favorites ?? []} onAdded={added} onFavoritesChanged={() => { void mutate(); }} />
       {undo ? <UndoBar key={undo.key} name={undo.name} busy={restoring} onUndo={() => void restore()} onClose={() => setUndo(null)} /> : null}
-    </>
+    </MealNamesProvider>
   );
 }
 

@@ -11,8 +11,8 @@ import {
   Tag, Ruler, ArrowLeftRight, ClipboardList, Stethoscope, ExternalLink,
 } from 'lucide-react';
 import {
-  MOH_GUIDE_META, EXCHANGE_GROUPS, EXCHANGE_FOODS, FREE_FOODS, FREE_FOOD_KCAL, HEALTHY_PLATE, MOH_MEAL_PLANS, PLAN_RULES,
-  LABEL_GUIDE, MEASURES, ACTIVITY_GUIDE, LIFESTYLE_TIPS,
+  MOH_GUIDE_META, EXCHANGE_GROUPS, EXCHANGE_FOODS, FREE_FOODS, FREE_FOOD_KCAL, MOH_MEAL_PLANS, PLAN_RULES,
+  MEASURES, ACTIVITY_GUIDE, LIFESTYLE_TIPS,
 } from '@/data/moh-calorie-guide.js';
 import { EmptyState } from '@/components/cb/misc';
 import { Accordion } from '@/components/ui/accordion';
@@ -24,6 +24,8 @@ import { cn } from '@/lib/utils';
 import { useT } from '@/components/site/lang';
 import type { Lang } from '@/lib/i18n';
 import { SHOP_UNITS_AR } from '@/lib/i18n/ar/health';
+import { LabelLessons } from '@/components/member/label-lessons';
+import { MohSource, Section } from '@/components/member/eat-well-parts';
 
 type Line = { group: string; n: number; example: string; exampleAr: string };
 type Icon = React.ComponentType<{ className?: string; 'aria-hidden'?: boolean }>;
@@ -114,36 +116,6 @@ const unitFor = (t: number, unit: [string, string], lang: Lang = 'en') => {
 const groupName = (g: { label: string; labelAr?: string } | undefined, lang: Lang, fallback = '') => (g ? (lang === 'ar' && g.labelAr ? g.labelAr : g.label) : fallback);
 
 // ---------------------------------------------------------------- small pieces
-function MohSource({ className }: { className?: string }) {
-  const { t, lang } = useT();
-  if (lang === 'ar') {
-    return (
-      <p className={cn('text-sm text-muted-foreground', className)}>
-        {t('Source:')} <a href={MOH_GUIDE_META.url} target="_blank" rel="noopener noreferrer">{MOH_GUIDE_META.titleAr}<span className="sr-only"> {t('(opens in a new tab)')}</span></a>{' '}
-        {t('Saudi Ministry of Health, Live Well programme.')}
-      </p>
-    );
-  }
-  return (
-    <p className={cn('text-sm text-muted-foreground', className)}>
-      Source: <a href={MOH_GUIDE_META.url} target="_blank" rel="noopener noreferrer">Saudi Ministry of Health, Calorie Guide for Weight Loss<span className="sr-only"> (opens in a new tab)</span></a>{' '}
-      (<bdi lang="ar" dir="rtl">{MOH_GUIDE_META.titleAr}</bdi>), Live Well programme.
-    </p>
-  );
-}
-
-function Section({ id, title, icon: Ico, children, action, className }: { id: string; title: string; icon: Icon; children: React.ReactNode; action?: React.ReactNode; className?: string }) {
-  return (
-    <section aria-labelledby={id} className={cn('flex min-w-0 flex-col gap-4 rounded-[20px] border border-border bg-card p-4 shadow-soft sm:p-5', className)}>
-      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-        <h2 id={id} className="flex items-center gap-2 text-lg sm:text-xl"><Ico className="size-5 shrink-0" aria-hidden /><span>{title}</span></h2>
-        {action}
-      </div>
-      {children}
-    </section>
-  );
-}
-
 const accCls = 'rounded-[14px] border border-border bg-background/60';
 const accHead = 'min-h-11 px-3.5 py-2.5 font-display text-sm font-medium text-heading';
 
@@ -334,8 +306,8 @@ export function ShoppingTab({ kind, targetKcal, planKcal }: PlanProps) {
 }
 
 /** "Healthy habits" tab: MOH advice for a healthy lifestyle (shown with or without a plan). */
-export function HabitsTab() {
-  const { t, lang } = useT();
+export function HabitsTab({ salt = null }: { salt?: { title: string; url: string | null } | null }) {
+  const { t } = useT();
   return (
     <div className="flex flex-col gap-5">
       <Section id="habits-h" title={t('Healthy habits')} icon={Footprints}>
@@ -355,36 +327,12 @@ export function HabitsTab() {
             <ul className="m-0 list-disc px-3.5 pb-3.5 ps-9">{ACTIVITY_GUIDE.map((x) => <li key={x}>{t(x)}</li>)}</ul>
           </Accordion>
 
-          <Accordion className={accCls} headClassName={accHead} title={<span className="inline-flex items-center gap-2"><Salad className="size-4" aria-hidden />{t('The healthy plate')}</span>}>
-            <div className="flex flex-col gap-3 px-3.5 pb-3.5">
-              <div aria-hidden className="flex h-6 w-full overflow-hidden rounded-full border border-border">
-                {HEALTHY_PLATE.filter((p) => p.share != null).map((p, i) => (
-                  <span key={p.group} className={cn('h-full border-e-2 border-card last:border-e-0', ['bg-sage', 'bg-pink', 'bg-rose', 'bg-mint'][i % 4])} style={{ width: `${p.share}%` }} />
-                ))}
-              </div>
-              <ul className="m-0 grid list-none grid-cols-2 gap-2 p-0 sm:grid-cols-4">
-                {HEALTHY_PLATE.filter((p) => p.share != null).map((p, i) => (
-                  <li key={p.group} className="flex items-center gap-2 text-sm">
-                    <span aria-hidden className={cn('size-3 shrink-0 rounded-[3px] border border-border', ['bg-sage', 'bg-pink', 'bg-rose', 'bg-mint'][i % 4])} />
-                    <span><b className="tabular">{p.share}%</b> {t(p.label)}</span>
-                  </li>
-                ))}
-              </ul>
-              <p className="text-sm">{t('{groups}: shown beside the plate, because the Ministry of Health doesn’t give them a share of it.', { groups: HEALTHY_PLATE.filter((p) => p.share == null).map((p) => t(p.label)).join(t(', ')) })}</p>
-            </div>
-          </Accordion>
-
-          <Accordion className={accCls} headClassName={accHead} title={<span className="inline-flex items-center gap-2"><Tag className="size-4" aria-hidden />{t('How to read a nutrition label')}</span>}>
-            <div className="flex flex-col gap-3 px-3.5 pb-3.5 text-[.95rem]">
-              <ol className="m-0 list-decimal ps-5">
-                <li>{t(LABEL_GUIDE.servingNote)}</li>
-                <li>{t('Calories per serving: {list}.', { list: LABEL_GUIDE.kcalPerServing.map((k) => (lang === 'ar' ? t('{n} kcal: {level}', { n: k.kcal, level: t(k.label) }) : `${k.kcal} kcal ${k.label.toLowerCase()}`)).join(' · ') })}</li>
-                <li>{t('% daily value: {low}% or less is low; {high}% or more is high.', { low: LABEL_GUIDE.dailyValue.low, high: LABEL_GUIDE.dailyValue.high })}</li>
-                <li>{t('Limit: {list}.', { list: lang === 'ar' ? LABEL_GUIDE.limit.map((x) => t(x)).join('، ') : LABEL_GUIDE.limit.join(', ').toLowerCase() })}</li>
-                <li>{t('Get enough: {list}.', { list: lang === 'ar' ? LABEL_GUIDE.getEnough.map((x) => t(x)).join('، ') : LABEL_GUIDE.getEnough.join(', ').toLowerCase() })}</li>
-              </ol>
-            </div>
-          </Accordion>
+          <Link href="/eat-well?tab=plate" className={cn(accCls, 'flex min-h-11 items-center gap-2 px-3.5 py-2.5 font-display text-sm font-medium text-heading no-underline hover:border-primary')}>
+            <Salad className="size-4" aria-hidden />{t('The healthy plate: build and compare your plate')}
+          </Link>
+          <a href="#labels-h" className={cn(accCls, 'flex min-h-11 items-center gap-2 px-3.5 py-2.5 font-display text-sm font-medium text-heading no-underline hover:border-primary')}>
+            <Tag className="size-4" aria-hidden />{t('Reading food labels')}
+          </a>
 
           <Accordion className={accCls} headClassName={accHead} title={<span className="inline-flex items-center gap-2"><Ruler className="size-4" aria-hidden />{t('Household measures')}</span>}>
             <div className="px-3.5 pb-3.5">
@@ -397,6 +345,7 @@ export function HabitsTab() {
         </div>
         <MohSource />
       </Section>
+      <div id="labels" className="scroll-mt-24"><LabelLessons salt={salt} /></div>
       <MoreFromMoh />
     </div>
   );

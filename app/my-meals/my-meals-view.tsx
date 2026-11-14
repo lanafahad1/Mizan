@@ -21,6 +21,7 @@ import { RequestDialog, type RequestTarget } from '@/components/patient/request-
 import { FeedbackDialog, type FeedbackTarget } from '@/components/patient/feedback-dialog';
 import { dayName } from '@/components/patient/helpers';
 import { useT } from '@/components/site/lang';
+import { WinsStrip, type Wins } from '@/components/member/wins';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type MyMeals = any;
@@ -29,11 +30,12 @@ type View = 'day' | 'week';
 
 const iconBtn = 'grid size-11 shrink-0 place-items-center rounded-full border border-border bg-card text-heading hover:bg-mint disabled:pointer-events-none disabled:opacity-40';
 
-export function MyMealsView({ pid, name, demoId, initial, initialWeek, initialView, initialPeriod, reference }: {
-  pid: string; name: string; demoId: string; initial: MyMeals; initialWeek: string | null; initialView: View; initialPeriod: string | null; reference: any;
+export function MyMealsView({ pid, name, demoId, initial, initialWeek, initialView, initialPeriod, reference, wins }: {
+  pid: string; name: string; demoId: string; initial: MyMeals; initialWeek: string | null; initialView: View; initialPeriod: string | null; reference: any; wins?: Wins;
 }) {
   const router = useRouter();
   const { t, lang } = useT();
+  const winsNow = useApi<Wins>(wins ? '/api/care/me/wins' : null, wins).data ?? wins;
   const [date, setDate] = React.useState<string>(initial.date);
   const [week, setWeek] = React.useState<string | null>(initialWeek);
   const [view, setView] = React.useState<View>(initialView);
@@ -163,6 +165,8 @@ export function MyMealsView({ pid, name, demoId, initial, initialWeek, initialVi
             ))}
           </section>
         )}
+
+        {winsNow ? <WinsStrip wins={winsNow} /> : null}
 
         {!d.discharged ? (
           <section aria-labelledby="help-h" className="flex flex-col gap-3 rounded-xl border border-border bg-blush p-5">

@@ -1,7 +1,8 @@
 'use client';
-// Home trackers: water (cups today), steps (today) and active minutes (this week).
-// Goals are MOH's (Calorie Guide for Weight Loss): 6–8 cups of water a day,
-// more than 7,500 steps a day, at least 150 minutes of moderate activity a week.
+// Home trackers: water (cups today), steps (today), active minutes (this week) and
+// sleep (last night). Goals are MOH's (Calorie Guide for Weight Loss): 6–8 cups of
+// water a day, more than 7,500 steps a day, at least 150 minutes of moderate activity
+// a week, and 7–8 hours of sleep a night for adults.
 import * as React from 'react';
 import { Minus, Plus, Check, Pencil, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,19 +11,19 @@ import { Illustration } from '@/components/illustrations/illustration';
 import { cn } from '@/lib/utils';
 import { useT } from '@/components/site/lang';
 import { CountUp } from '@/components/site/count-up';
-import { useDaily, n0, type DailyType } from './daily';
+import { useDaily, n0, h1, type DailyType } from './daily';
 
 const card = 'flex min-w-0 flex-col gap-3 rounded-[20px] border border-border bg-card p-4 shadow-soft';
 
-export function Trackers({ water, steps, activityToday, activityWeek }: { water: number | null; steps: number | null; activityToday: number | null; activityWeek: number }) {
+export function Trackers({ water, steps, activityToday, activityWeek, sleep = null }: { water: number | null; steps: number | null; activityToday: number | null; activityWeek: number; sleep?: number | null }) {
   const { t } = useT();
   return (
     <section aria-labelledby="trackers-h" className="flex flex-col gap-3">
       <div className="flex flex-col gap-0.5">
-        <h2 id="trackers-h" className="text-lg sm:text-xl">{t('Water, steps and activity')}</h2>
+        <h2 id="trackers-h" className="text-lg sm:text-xl">{t('Water, steps, activity and sleep')}</h2>
         <p className="text-sm text-muted-foreground">{t('Copy your steps and active minutes from your phone or watch. The website can’t count them for you.')}</p>
       </div>
-      <div data-reveal-group className="grid gap-3 md:grid-cols-3">
+      <div data-reveal-group className="grid gap-3 md:grid-cols-2">
         <WaterCard cups={water ?? 0} logged={water != null} />
         <NumberCard type="steps" art="steps" title={t('Steps today')} value={steps} unit={t('steps')}
           goal={t('The Ministry of Health suggests more than 7,500 steps a day.')} met={(steps ?? 0) > 7500}
@@ -31,8 +32,19 @@ export function Trackers({ water, steps, activityToday, activityWeek }: { water:
           of={150} goal={t('The Ministry of Health suggests at least 150 minutes of moderate activity a week.')} met={activityWeek >= 150}
           sub={activityToday ? t('{n} min today', { n: n0(activityToday) }) : null} today={activityToday}
           button={t('Add minutes')} label={t('Minutes to add for today')} hint={t('For example, a 30-minute walk counts as 30.')} mode="add" max={600} step={5} />
+        <SleepCard value={sleep} />
       </div>
     </section>
+  );
+}
+
+/** Sleep last night, in hours (to the nearest half hour). Goal from MOH: 7–8 hours a night for adults. */
+export function SleepCard({ value }: { value: number | null }) {
+  const { t } = useT();
+  return (
+    <NumberCard type="sleep" art="sleep" title={t('Sleep last night')} value={value} unit={t('hours')} decimals={1}
+      goal={t('The Ministry of Health advises adults to sleep 7–8 hours a night.')} met={(value ?? 0) >= 7}
+      button={t('Add sleep')} label={t('Hours of sleep last night')} hint={t('For example, 7.5 for seven and a half hours.')} mode="value" max={24} step={0.5} />
   );
 }
 
@@ -73,8 +85,10 @@ function WaterCard({ cups, logged }: { cups: number; logged: boolean }) {
   );
 }
 
-function NumberCard({ type, art, title, value, unit, of, goal, met, sub, today, button, label, hint, mode, max, step }: {
-  type: DailyType; art: 'steps' | 'activity'; title: string; value: number | null; unit: string; of?: number; goal: string; met: boolean; sub?: string | null;
+function NumberCard({ type, art, title, value, unit, of, goal, met, sub, today, button, label, hint, mode, max, step, decimals = 0 }: {
+  type: DailyType; art: 'steps' | 'activity' | 'sleep'; title: string; value: number | null; unit: string; of?: number; goal: string; met: boolean; sub?: string | null;
+  /** 1 for sleep hours (saved to the nearest half hour). */
+  decimals?: 0 | 1;
   /** Today's own value for "add" cards (the card shows the week); `value` for "value" cards. */
   today?: number | null;
   button: string; label: string; hint: string; mode: 'value' | 'add'; max: number; step: number;
@@ -93,7 +107,8 @@ function NumberCard({ type, art, title, value, unit, of, goal, met, sub, today, 
     const n = Number(text);
     if (!text.trim() || !Number.isFinite(n) || n < 0 || n > max) { setError(t('Enter a number from 0 to {max}.', { max: n0(max) })); return; }
     setError(null);
-    const v = await save(type, mode === 'add' ? { add: Math.round(n) } : { value: Math.round(n) }, t('Saved.'));
+    const whole = decimals ? Math.round(n * 2) / 2 : Math.round(n);
+    const v = await save(type, mode === 'add' ? { add: whole } : { value: whole }, t('Saved.'));
     if (v != null) { setOpen(false); setText(''); }
   };
   const share = of ? Math.min(1, (value ?? 0) / of) : null;
@@ -102,7 +117,7 @@ function NumberCard({ type, art, title, value, unit, of, goal, met, sub, today, 
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-col">
           <h3 className="text-base">{title}</h3>
-          <p className="m-0"><b className="font-display text-[1.6rem] font-semibold leading-tight text-heading tabular">{value == null ? n0(value) : <CountUp value={value} format={n0} />}</b> <span className="text-muted-foreground">{of ? t('of {n} {unit}', { n: n0(of), unit }) : unit}</span></p>
+          <p className="m-0"><b className="font-display text-[1.6rem] font-semibold leading-tight text-heading tabular">{value == null ? n0(value) : decimals ? h1(value) : <CountUp value={value} format={n0} />}</b> <span className="text-muted-foreground">{of ? t('of {n} {unit}', { n: n0(of), unit }) : unit}</span></p>
           {sub ? <span className="text-sm text-muted-foreground">{sub}</span> : null}
         </div>
         <Illustration name={art} className="size-14" />
@@ -113,7 +128,7 @@ function NumberCard({ type, art, title, value, unit, of, goal, met, sub, today, 
         <form onSubmit={submit} noValidate className="mt-auto flex flex-col gap-1.5">
           <Label htmlFor={id}>{label}</Label>
           <div className="flex gap-2">
-            <Input ref={inputRef} id={id} type="number" inputMode="numeric" min={0} max={max} step={step} value={text} onChange={(e) => setText(e.target.value)}
+            <Input ref={inputRef} id={id} type="number" inputMode={decimals ? 'decimal' : 'numeric'} min={0} max={max} step={step} value={text} onChange={(e) => setText(e.target.value)}
               aria-describedby={`${id}-hint${error ? ` ${id}-err` : ''}`} aria-invalid={error ? true : undefined} className="min-w-0 flex-1" />
             <Button type="submit" disabled={busy === type}>{busy === type ? t('Saving…') : t('Save')}</Button>
           </div>

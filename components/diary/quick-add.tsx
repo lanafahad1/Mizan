@@ -7,7 +7,8 @@ import { Field } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Notice } from '@/components/ui/notice';
 import { useT } from '@/components/site/lang';
-import { MEAL_LABELS, mealIn, tMsg, type MealId } from './types';
+import { tMsg, type MealId } from './types';
+import { useMealNames } from './meal-names';
 
 const OPTIONAL = [
   { key: 'carbs', label: 'Carbs (g)' },
@@ -20,6 +21,7 @@ const OPTIONAL = [
 /** Quick add: the person types the calories (and macros if they know them). Marked "Your entry". */
 export function QuickAdd({ date, meal, onAdded }: { date: string; meal: MealId; onAdded: (name: string) => void }) {
   const { t, lang } = useT();
+  const names = useMealNames();
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [formError, setFormError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
@@ -64,7 +66,7 @@ export function QuickAdd({ date, meal, onAdded }: { date: string; meal: MealId; 
         </div>
       </fieldset>
       {formError ? <Notice tone="danger">{tMsg(t, lang, formError)}</Notice> : null}
-      <Button type="submit" disabled={busy} className="w-full"><Zap aria-hidden />{busy ? t('Adding…') : t('Add to {meal}', { meal: mealIn(meal, MEAL_LABELS[meal], lang) })}</Button>
+      <Button type="submit" disabled={busy} className="w-full"><Zap aria-hidden />{busy ? t('Adding…') : t('Add to {meal}', { meal: names.inSentence(meal, false) })}</Button>
     </form>
   );
 }

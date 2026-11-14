@@ -7,6 +7,7 @@ import { LinkFirst } from '@/components/patient/link-account';
 import { buildIdeas, ideaSources, allergenLabel, MEAL_SHARES } from '@/components/member/ideas-data';
 import { EatWellView } from '@/components/member/eat-well-view';
 import { EAT_WELL_TABS, type EatWellTab } from '@/components/member/eat-well-tabs';
+import { SOURCES } from '@/domain/rules.js';
 
 export async function generateMetadata() {
   const t = await getT();
@@ -15,7 +16,7 @@ export async function generateMetadata() {
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
-/** Eat well: meal ideas, the MOH meal plan, its shopping list and MOH healthy habits (members and hospital patients). */
+/** Eat well: meal ideas, the MOH meal plan, the healthy plate builder, its shopping list and MOH healthy habits with label lessons (members and hospital patients). */
 export default async function EatWellPage({ searchParams }: Props) {
   const actor = await requireActor('/eat-well');
   if (actor.role !== 'member' && actor.role !== 'patient') forbidden();
@@ -29,6 +30,7 @@ export default async function EatWellPage({ searchParams }: Props) {
   const overview = await serviceCall((s) => s.getHealthOverview(actor, 'me'));
   const allergies: string[] = overview.profile?.allergies ?? [];
   const { ideas, hidden } = buildIdeas(allergies);
+  const salt = (SOURCES as unknown as Record<string, { title: string; url: string | null }>)['MOH-SALT'];
   return (
     <EatWellView
       tab={tab}
@@ -37,6 +39,7 @@ export default async function EatWellPage({ searchParams }: Props) {
       targetsBasis={overview.targetsBasis ?? null}
       planKcal={overview.plan?.kcal ?? null}
       ideas={{ ideas, hidden, allergies: allergies.map(allergenLabel), shares: MEAL_SHARES, sources: ideaSources() }}
+      salt={salt ? { title: salt.title, url: salt.url } : null}
     />
   );
 }

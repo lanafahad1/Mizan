@@ -7,7 +7,15 @@ import { isoDate } from '@/lib/format';
 import { addDays } from '@/domain/dates.js';
 import { LinkFirst } from '@/components/patient/link-account';
 import type { Diary } from '@/components/diary/types';
+import { SOURCES } from '@/domain/rules.js';
 import { TodayView } from './today-view';
+
+/** Titles and links of the MOH Ramadan pages, for the tips card (the full list is on /sources). */
+const RAMADAN_SOURCE_IDS = ['MOH-SUHOOR', 'MOH-RAMADAN-CHRONIC', 'MOH-RAMADAN-HEART', 'MOH-RAMADAN-BP', 'MOH-RAMADAN-DIABETES'];
+const ramadanSources = () => Object.fromEntries(RAMADAN_SOURCE_IDS.map((id) => {
+  const s = (SOURCES as unknown as Record<string, { title: string; url: string | null }>)[id];
+  return [id, { title: s.title, url: s.url }];
+}));
 
 export async function generateMetadata() {
   const t = await getT();
@@ -32,5 +40,5 @@ export default async function TodayPage({ searchParams }: Props) {
   if (date && (initial.date < addDays(initial.today, -60) || initial.date > addDays(initial.today, 1))) {
     initial = (await serviceCall((s) => s.getDiary(actor, 'me', {}))) as Diary;
   }
-  return <TodayView initial={initial} role={actor.role} />;
+  return <TodayView initial={initial} role={actor.role} sources={ramadanSources()} />;
 }

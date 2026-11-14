@@ -10,7 +10,9 @@ import { toast } from '@/components/ui/toast';
 import { cn } from '@/lib/utils';
 import { ArabicName, SourceBadge } from './source-badge';
 import { useT } from '@/components/site/lang';
-import { allergenNames, fmt, foodName, MEAL_IDS, MEAL_LABELS, mealIn, previewNutrients, servingText, tMsg, type EntryAmount, type Food, type MealId } from './types';
+import { allergenNames, fmt, foodName, previewNutrients, servingText, tMsg, type EntryAmount, type Food, type MealId } from './types';
+import { useMealNames } from './meal-names';
+import { LabelLessonLink } from './label-link';
 
 const clampQty = (q: number) => Math.min(20, Math.max(0.25, Math.round(q * 4) / 4));
 
@@ -58,7 +60,8 @@ export function FoodPicker({ food: initialFood, date, meal, onAdded, favorite = 
   const g = Number(grams);
   const preview = mode === 'grams' ? previewNutrients(food, { grams: g }) : previewNutrients(food, { servingIndex, quantity });
   const allergens = allergenNames(food.allergens).map((a) => t(a));
-  const mealLabel = mealIn(meal, MEAL_LABELS[meal], lang);
+  const names = useMealNames();
+  const mealLabel = names.inSentence(meal, false);
   const err = (k: string) => tMsg(t, lang, errors[k]) || undefined;
 
   function setQty(q: number) { const v = clampQty(q); setQuantity(v); setQtyInput(String(v)); }
@@ -163,7 +166,7 @@ export function FoodPicker({ food: initialFood, date, meal, onAdded, favorite = 
       {edit ? (
         <Field id={fid('fp-meal')} label={t('Move to…')}>
           <NativeSelect value={toMeal} onChange={(e) => setToMeal(e.target.value as MealId)}>
-            {MEAL_IDS.map((m) => <option key={m} value={m}>{t(MEAL_LABELS[m])}</option>)}
+            {names.ids(meal).map((m) => <option key={m} value={m}>{t(names.label(m))}</option>)}
           </NativeSelect>
         </Field>
       ) : null}
@@ -192,6 +195,7 @@ export function FoodPicker({ food: initialFood, date, meal, onAdded, favorite = 
       </div>
 
       {food.checkLabel ? <p className="text-sm text-muted-foreground">{t('These values come from a pack label or community data, so check the pack.')}</p> : null}
+      {food.kind === 'packaged' || food.checkLabel || food.basis === 'label' || food.basis === 'community' ? <LabelLessonLink /> : null}
       {formError ? <Notice tone="danger">{tMsg(t, lang, formError)}</Notice> : null}
 
       {edit ? (

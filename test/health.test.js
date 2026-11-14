@@ -171,9 +171,9 @@ test('daily trackers: water adds up, steps replace, values stay in range, goals 
   assert.equal(service.setDaily(member, 'me', { type: 'steps', value: 8200 }).value, 8200);
   assert.equal(service.setDaily(member, 'me', { type: 'steps', value: 6000 }).value, 6000, 'steps replace the day value');
   assert.equal(status(() => service.setDaily(member, 'me', { type: 'steps', value: 500000 })), 422);
-  assert.equal(status(() => service.setDaily(member, 'me', { type: 'sleep', value: 1 })), 422);
+  assert.equal(status(() => service.setDaily(member, 'me', { type: 'mood', value: 1 })), 422);
   const d = service.getDiary(member, 'me');
-  assert.deepEqual(d.daily, { water: 2, steps: 6000, activity: null });
+  assert.deepEqual(d.daily, { water: 2, steps: 6000, activity: null, sleep: null });
   assert.ok(service.healthReference().dailyTrackers.every((t) => t.source === 'MOH-GUIDE'));
 });
 

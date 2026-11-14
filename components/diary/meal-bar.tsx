@@ -4,7 +4,8 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { useT } from '@/components/site/lang';
 import { CountUp } from '@/components/site/count-up';
-import { fmt, MEAL_IDS, MEAL_LABELS, type MealId } from './types';
+import { fmt, MEAL_IDS, type MealId } from './types';
+import { useMealNames } from './meal-names';
 
 /** One colour per meal (chart-1..4), the same on Home and in the diary. */
 export const MEAL_COLOR: Record<MealId, string> = {
@@ -26,6 +27,7 @@ export function MealBar({ meals, target, className, size = 'md' }: {
   size?: 'md' | 'lg';
 }) {
   const { t } = useT();
+  const names = useMealNames();
   const kcalOf = (id: MealId) => Math.max(0, Math.round(meals.find((m) => m.id === id)?.kcal ?? 0));
   const parts = MEAL_IDS.map((id) => ({ id, kcal: kcalOf(id) })).filter((p) => p.kcal > 0);
   const eaten = parts.reduce((a, p) => a + p.kcal, 0);
@@ -33,13 +35,13 @@ export function MealBar({ meals, target, className, size = 'md' }: {
   const left = hasTarget ? Math.round(target! - eaten) : null;
   const over = left != null && left < 0;
   const rest = left != null && left > 0 ? left : 0;
-  const legendText = (id: MealId, n: number) => `${t(MEAL_LABELS[id])} ${fmt(n)}`;
+  const legendText = (id: MealId, n: number) => `${t(names.label(id))} ${fmt(n)}`;
   // "{n} left" with the number counting up inside the translated words.
   const [leftBefore, leftAfter] = t('{n} left', { n: '\u0000' }).split('\u0000');
   const countFmt = (v: number) => fmt(v);
   const summary = [
     hasTarget ? t('{n} of {target} kcal eaten today.', { n: fmt(eaten), target: fmt(target) }) : t('{n} kcal eaten today.', { n: fmt(eaten) }),
-    ...parts.map((p) => t('{meal}: {n} kcal', { meal: t(MEAL_LABELS[p.id]), n: fmt(p.kcal) })),
+    ...parts.map((p) => t('{meal}: {n} kcal', { meal: t(names.label(p.id)), n: fmt(p.kcal) })),
     left == null ? null : over ? t('over by {n}', { n: fmt(-left) }) : t('{n} left', { n: fmt(left) }),
   ].filter(Boolean).join(' ');
   return (

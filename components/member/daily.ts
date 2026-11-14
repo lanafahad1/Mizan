@@ -1,5 +1,5 @@
 'use client';
-// Daily trackers (water, steps, active minutes): one value per day, typed in by
+// Daily trackers (water, steps, active minutes, sleep): one value per day, typed in by
 // the person. Shared by Home and the quick-add sheet of the bottom tab bar.
 import * as React from 'react';
 import { useSWRConfig } from 'swr';
@@ -8,20 +8,22 @@ import { toast } from '@/components/ui/toast';
 import { useT } from '@/components/site/lang';
 import { tMsg } from '@/components/diary/types';
 
-export type DailyType = 'water' | 'steps' | 'activity';
+export type DailyType = 'water' | 'steps' | 'activity' | 'sleep';
 export type Week = {
   from: string; to: string; target: number | null; daysLogged: number; activityMinutes: number; weightChange: number | null;
-  days: { date: string; kcal: number; logged: boolean; target: number | null; water: number | null; steps: number | null; activity: number | null }[];
-  goals: Record<DailyType, { goal: number | null; goalMin: number | null; weeklyGoal: number | null; text: string; unit: string; label: string }>;
+  days: { date: string; kcal: number; logged: boolean; target: number | null; water: number | null; steps: number | null; activity: number | null; sleep?: number | null }[];
+  goals: Record<DailyType, { goal: number | null; goalMin: number | null; goalMax?: number | null; weeklyGoal: number | null; text: string; unit: string; label: string }>;
 };
 export const WEEK_KEY = '/api/health/me/week';
 export const OVERVIEW_KEY = '/api/health/me';
 export const n0 = (v: number | null | undefined) => (v == null ? '—' : Math.round(v).toLocaleString('en-US'));
+/** Hours of sleep: up to one decimal (7.5). */
+export const h1 = (v: number | null | undefined) => (v == null ? '—' : v.toLocaleString('en-US', { maximumFractionDigits: 1 }));
 
-/** Refresh every health read of the signed-in person (overview, diary, week). */
+/** Refresh every health read of the signed-in person (overview, diary, week, My progress and small wins). */
 export function useRefreshHealth() {
   const { mutate } = useSWRConfig();
-  return React.useCallback(() => mutate((key) => typeof key === 'string' && key.startsWith('/api/health/me')), [mutate]);
+  return React.useCallback(() => mutate((key) => typeof key === 'string' && (key.startsWith('/api/health/me') || key.startsWith('/api/care/me/progress') || key.startsWith('/api/care/me/wins'))), [mutate]);
 }
 
 /** Save a daily value (`value` replaces today's number, `add` adds to it). Returns the saved value, or null on error (a toast explains). */

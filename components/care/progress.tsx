@@ -1,6 +1,6 @@
 'use client';
 // Progress over time: weight towards the goal, blood pressure and blood sugar,
-// the last 7 days of calories, days logged in a row and (patients) weekly check-ins.
+// the last 7 days of calories, days logged in a row, sleep, small wins and (patients) weekly check-ins.
 // One view for "My progress" (who = "me": members and patients) and the care
 // team's Progress tab (who = patient id).
 import * as React from 'react';
@@ -16,6 +16,8 @@ import { useT } from '@/components/site/lang';
 import { C, type CareRef } from './common';
 import { GoalsCard } from './goals';
 import { CheckinHistory, type Checkins } from './checkin';
+import { SleepProgress } from './sleep';
+import { WinsCard } from '@/components/member/wins';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type Progress = any;
@@ -130,6 +132,8 @@ export function ProgressView({ who, initial, team = false, canEditGoals = false,
           {!team ? <Link href="/today" className="self-start text-sm font-semibold">{t('Open your diary')}</Link> : null}
         </Card>
       </div>
+      <SleepProgress week={p.week} team={team} />
+      {p.wins ? <WinsCard wins={p.wins} team={team} /> : null}
       <ReadingsCard p={p} />
       {team && checkins ? <CheckinHistory data={checkins} /> : null}
     </div>

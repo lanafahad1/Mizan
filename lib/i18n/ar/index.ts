@@ -15,6 +15,7 @@ import { DIARY } from './diary.ts';
 import { ART } from './art.ts';
 import { NAMES } from './names.ts';
 import { CARE } from './care.ts';
+import { WELLBEING } from './wellbeing.ts';
 export { PATTERNS } from './patterns.ts';
 
-export const AR: Record<string, string> = { ...NAMES, ...CARE, ...DOMAIN, ...STAFF, ...PATIENT, ...HEALTH, ...ART, ...DIARY, ...MEMBER, ...AUTH, ...PUBLIC, ...COMMON };
+export const AR: Record<string, string> = { ...WELLBEING, ...NAMES, ...CARE, ...DOMAIN, ...STAFF, ...PATIENT, ...HEALTH, ...ART, ...DIARY, ...MEMBER, ...AUTH, ...PUBLIC, ...COMMON };

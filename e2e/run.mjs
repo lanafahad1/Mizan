@@ -242,6 +242,29 @@ const logged = await api(sara, 'POST', '/api/health/me/diary', { meal: 'dinner',
 ok(logged.ok() && (await logged.json()).amountLabel === '120 g', 'member logs a food by grams');
 const diary = await json(sara, '/api/health/me/diary');
 ok(diary.totals.kcal > 0 && diary.targets?.kcal, 'Today shows totals against the member’s targets');
+// Ramadan mode On relabels the diary (stored meals stay the same); then back to Auto.
+await sara.goto(`${base}/today`);
+await sara.getByRole('radio', { name: 'On', exact: true }).check();
+ok(await sara.getByRole('heading', { name: 'Suhoor', exact: true }).waitFor({ timeout: 8000 }).then(() => true, () => false)
+  && await sara.getByRole('heading', { name: 'Iftar', exact: true }).count() === 1 && await sara.getByRole('heading', { name: 'Ramadan tips' }).count() === 1, 'Ramadan mode On shows Suhoor, Iftar and the Ramadan tips');
+ok((await json(sara, '/api/health/me/diary')).meals.find((m) => m.id === 'dinner').entries.length > 0, 'the dinner entry stays stored under the same meal (shown as Iftar)');
+ok((await api(sara, 'POST', '/api/health/me/ramadan', { mode: 'auto' })).ok(), 'Ramadan mode back to Auto');
+// The healthy plate builder renders and compares in plain words.
+await sara.goto(`${base}/eat-well?tab=plate`);
+ok(await sara.getByRole('heading', { name: 'Build your plate' }).count() === 1 && await sara.locator('figure svg').count() >= 2, 'the healthy plate builder renders two plates');
+await sara.getByRole('group', { name: 'Grains' }).getByRole('radio', { name: 'A lot' }).check();
+await sara.getByRole('group', { name: 'Vegetables' }).getByRole('radio', { name: 'A little' }).check();
+ok(/Grains: more than the MOH plate/.test(await sara.locator('main').textContent()), 'the plate builder compares with the MOH plate');
+// The sleep tracker saves last night's hours.
+await sara.goto(`${base}/home`);
+await sara.getByRole('button', { name: 'Add sleep' }).click();
+await sara.locator('#trk-sleep').fill('7.5');
+await sara.locator('form:has(#trk-sleep) button[type=submit]').click();
+await sara.waitForTimeout(1200);
+ok((await json(sara, '/api/health/me/diary')).daily?.sleep === 7.5, 'the sleep tracker saves 7.5 hours');
+ok(await sara.getByRole('heading', { name: 'Small wins' }).count() === 1, 'small wins appear on member Home');
+await sara.goto(`${base}/my-progress`);
+ok(await sara.getByRole('heading', { name: 'Small wins' }).count() === 1 && await sara.getByRole('heading', { name: 'Sleep', exact: true }).count() === 1, 'small wins and sleep appear on My progress');
 ok((await api(sara, 'GET', '/api/patients')).status() === 403 && (await api(sara, 'GET', '/api/health/1')).status() === 403, 'members reach no hospital data');
 ok(await statusOf(sara, '/patients') === 403 && await statusOf(sara, '/dashboard') === 403, 'member: hospital pages are 403');
 const adminView = await json(admin, '/api/health-worklist');
@@ -303,7 +326,7 @@ await staff.goto(`${base}/dashboard`);
 ok(await staff.getByRole('heading', { name: /Needs attention/ }).count() === 1, 'the dashboard shows Needs attention');
 
 // ---------------------------------------------------------------- 10. pages at phone width: no overflow, no errors
-const sweep = { 'sara.member': ['/home', '/my-progress', '/today', '/my-foods', '/my-health', '/my-health/assessment', '/eat-well', '/eat-well?tab=plan', '/eat-well?tab=shopping', '/eat-well?tab=habits'], 'noura.1001': ['/my-meals', '/my-meals?view=week', '/my-progress', '/my-messages', '/today', '/my-health', '/my-requests', '/my-profile', '/settings'], 'staff.demo': ['/patients', '/patients/1', '/patients/1?tab=food', '/patients/1?tab=progress', '/patients/1?tab=notes', '/patients/1?tab=messages', '/messages', '/patients/1?tab=health', '/patients/1?tab=profile', '/patients/1?tab=intake', '/dashboard', '/requests', '/schedule', '/kitchen', '/menu/manage'], 'admin.demo': ['/patients/new', '/staff-access', '/menu/manage?tab=sfct'] };
+const sweep = { 'sara.member': ['/home', '/my-progress', '/today', '/my-foods', '/my-health', '/my-health/assessment', '/eat-well', '/eat-well?tab=plan', '/eat-well?tab=plate', '/eat-well?tab=shopping', '/eat-well?tab=habits', '/eat-well?tab=habits#labels'], 'noura.1001': ['/my-meals', '/eat-well?tab=plate', '/my-meals?view=week', '/my-progress', '/my-messages', '/today', '/my-health', '/my-requests', '/my-profile', '/settings'], 'staff.demo': ['/patients', '/patients/1', '/patients/1?tab=food', '/patients/1?tab=progress', '/patients/1?tab=notes', '/patients/1?tab=messages', '/messages', '/patients/1?tab=health', '/patients/1?tab=profile', '/patients/1?tab=intake', '/dashboard', '/requests', '/schedule', '/kitchen', '/menu/manage'], 'admin.demo': ['/patients/new', '/staff-access', '/menu/manage?tab=sfct'] };
 for (const [user, paths] of Object.entries(sweep)) {
   const pg = await session(user, 390);
   for (const p of paths) {

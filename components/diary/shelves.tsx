@@ -16,6 +16,7 @@ import { useT } from '@/components/site/lang';
 import { ArabicName, SourceBadge } from './source-badge';
 import { FoodPicture } from './food-picture';
 import { amountText, firstServingKcal, fmt, foodName, previewNutrients, servingText, tMsg, type Food, type RecentFood } from './types';
+import { LabelLessonLink } from './label-link';
 
 export type ShelfId = 'recent' | 'saudi' | 'groups' | 'ingredients' | 'supermarket' | 'mine';
 
@@ -358,6 +359,7 @@ function SupermarketShelf({ onFood, favorites, onBarcode }: ShelfProps) {
       <ShelfSearch id="sh-market-q" label={t('Search products or brands')} value={q} onChange={setQ} placeholder={t('Laban, Almarai, chips…')} />
       <ChipGroup label={t('Popular brands')} value={BRANDS.includes(q.trim()) ? q.trim() : ''} onChange={(b) => setQ(b === q.trim() ? '' : b)}
         items={BRANDS.map((b) => ({ id: b, label: b }))} />
+      <LabelLessonLink />
       <div aria-live="polite" aria-busy={res.isLoading || undefined}>
         {term.length < 2 ? (
           <Empty art="shelf-supermarket" title={t('Search for a product, or pick a brand.')}>

@@ -151,6 +151,42 @@ export const SOURCES = {
     url: 'https://www.moh.gov.sa/en/ministry/mediacenter/news/pages/news-2018-11-08-004.aspx',
     summary: 'MOH supplies gluten-free products for patients with coeliac disease through hospitals in every region, because a strict gluten-free diet is the treatment.',
   },
+  // ---- MOH Ramadan guidance (Ramadan mode in the diary; medicine advice on these pages is left out on purpose)
+  'MOH-RAMADAN-DIABETES': {
+    authority: 'MOH', saudi: true, date: '2025-03-22',
+    title: 'Pre-Ramadan Awareness for Diabetics',
+    publisher: 'Ministry of Health (MOH), Saudi Arabia · Seasonal and festival health',
+    url: 'https://www.moh.gov.sa/en/awarenessplateform/seasonalandfestivalhealth/educational-content/pages/diabetics.aspx',
+    summary: 'Checking blood sugar does not break the fast: check 1–2 times a day at low or moderate risk, 3–4 times a day at high risk, always after Iftar, and when unwell. Break the fast immediately if blood sugar is below 70 mg/dL, is 70–90 mg/dL on a check within an hour, is above 300 mg/dL, or with symptoms of low or high sugar, dehydration or acute illness. Mizan shows this as information only and does not repeat the page’s medicine advice.',
+  },
+  'MOH-RAMADAN-CHRONIC': {
+    authority: 'MOH', saudi: true, date: '2023-08-30',
+    title: 'Diabetes and Chronic Diseases When Fasting During Ramadan',
+    publisher: 'Ministry of Health (MOH), Saudi Arabia',
+    url: 'https://www.moh.gov.sa/en/HealthAwareness/EducationalContent/Diseases/diabetic/Pages/Diabetes-And-Chronic-Diseases-When-Fasting-During-Ramadan.aspx',
+    summary: 'People with chronic diseases should get a full assessment from their healthcare provider before fasting, with dietary guidance and follow-up based on their own risk. Drink enough fluids between Iftar and Suhoor.',
+  },
+  'MOH-SUHOOR': {
+    authority: 'MOH', saudi: true, date: '2026-09-16',
+    title: 'Suhoor',
+    publisher: 'Ministry of Health (MOH), Saudi Arabia · Knowledge Center',
+    url: 'https://www.moh.gov.sa/en/awarenessplateform/seasonalandfestivalhealth/educational-content/pages/suhoor.aspx',
+    summary: 'Don’t skip Suhoor and eat it as late as possible. Include vegetables, complex carbohydrates such as whole-wheat bread, and protein such as unsalted cheese, yogurt, milk or eggs; high-fibre whole grains like oats keep you full longer. Avoid salty foods, which increase thirst, and limit high-fat foods. Spread fluids between Iftar and Suhoor instead of drinking a lot at Suhoor.',
+  },
+  'MOH-RAMADAN-BP': {
+    authority: 'MOH', saudi: true, date: '2019-04-30',
+    title: 'MOH: Ramadan Tips for Patients with Hypertension',
+    publisher: 'Ministry of Health (MOH), Saudi Arabia · News',
+    url: 'https://www.moh.gov.sa/en/ministry/mediacenter/news/pages/news-2019-04-30-005.aspx',
+    summary: 'People with high blood pressure should consult their physician before fasting, reduce salt and include low-fat dairy in their meals. Mizan does not repeat the page’s medicine advice: ask your doctor about your medicines.',
+  },
+  'MOH-RAMADAN-HEART': {
+    authority: 'MOH', saudi: true, date: '2026-09-16',
+    title: 'Cardiovascular diseases (Ramadan)',
+    publisher: 'Ministry of Health (MOH), Saudi Arabia · Seasonal and festival health',
+    url: 'https://www.moh.gov.sa/en/awarenessplateform/seasonalandfestivalhealth/educational-content/pages/cardiovascular-diseases.aspx',
+    summary: 'Plan meal and sleep times before Ramadan. Fried and fatty foods, common in Ramadan, are harmful.',
+  },
   // ---- Ministry of Environment, Water and Agriculture (MEWA) and GASTAT
   'MEWA-LOCAL': {
     authority: 'MEWA', saudi: true,
@@ -196,6 +232,13 @@ export const SOURCES = {
     publisher: 'Mizan project team',
     url: null,
     summary: 'Thresholds chosen by the project team to prompt a nutrition team review of recorded intake. They are not a validated malnutrition screening tool; a hospital would apply its own nutrition screening and escalation policy.',
+  },
+  'MIZAN-PLATE': {
+    authority: 'Mizan', saudi: false,
+    title: 'Healthy plate builder: comparing a plate in plain words',
+    publisher: 'Mizan project team',
+    url: null,
+    summary: 'The plate builder turns “none, a little, medium, a lot” into a share of the plate and compares it with the Ministry of Health healthy plate. A share within 10 percentage points of the MOH share is called “about the same”. This is a display choice, not a health rule, and there is no score.',
   },
   'MIZAN-PORTIONS': {
     authority: 'Mizan', saudi: false,

@@ -18,6 +18,13 @@ export type DiaryEntry = {
   source?: 'self' | 'staff'; by?: string; byRole?: string;
   /** How the amount was entered (foods only; quick-add entries have none). */
   amount?: EntryAmount | null;
+  /** Healthy-plate group of the food, when it can be told (domain/plate.js). */
+  plateGroup?: 'vegetables' | 'grains' | 'protein' | 'fruit' | 'milk' | null;
+};
+/** Ramadan mode for the diary day (domain/health-service.js ramadanInfo). */
+export type RamadanInfo = {
+  mode: 'auto' | 'on' | 'off'; active: boolean; inRamadan: boolean; hijri: { year: number; month: number; day: number } | null;
+  diabetes: boolean; hypertension: boolean; patient: boolean;
 };
 export type EntryAmount = { servingIndex: number; quantity: number; grams?: undefined } | { grams: number; servingIndex?: undefined; quantity?: undefined };
 export type DiaryMeal = { id: MealId; label: string; entries: DiaryEntry[]; totals: Nutrients; missing: Partial<Record<NutrientKey, number>> };
@@ -29,8 +36,9 @@ export type Diary = {
   targets: Nutrients | null; targetsBasis: 'personal' | 'care-team' | null; recent: RecentFood[];
   /** Food ids the person starred (newest first). */
   favorites?: string[];
-  /** That day's water (cups), steps and active minutes, or null when not recorded. */
-  daily?: { water: number | null; steps: number | null; activity: number | null };
+  /** That day's water (cups), steps, active minutes and sleep (hours), or null when not recorded. */
+  daily?: { water: number | null; steps: number | null; activity: number | null; sleep?: number | null };
+  ramadan?: RamadanInfo;
 };
 
 export type Serving = { label: string; labelAr?: string; g: number | null; display: string; approx?: boolean };

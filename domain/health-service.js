@@ -15,6 +15,8 @@ import { scaleNutrition } from './nutrition.js';
 import { PERIODS, PERIOD_IDS, INTAKE_AMOUNTS, portionFactor, ALLERGENS, CONDITIONS } from './constants.js';
 import { addDays, isValidIso } from './dates.js';
 import { nearestPlan } from '../data/moh-calorie-guide.js';
+import { RAMADAN_MODES, cleanRamadanMode, hijriDate, isRamadan, ramadanActive, hasDiabetes, hasHypertension } from './ramadan.js';
+import { plateGroupOf } from './plate.js';
 
 /** Nutrients tracked in the diary, in display order. */
 export const DIARY_NUTRIENTS = [
@@ -41,12 +43,14 @@ export const READING_TYPES = [
  * Daily trackers: one value per day, typed in by the person (a website cannot count
  * steps by itself). Goals come from the MOH Calorie Guide for Weight Loss (MOH-GUIDE):
  * 6–8 cups of water a day; more than 7,500 steps a day; at least 150 minutes of
- * moderate activity a week.
+ * moderate activity a week; adults 7–8 hours of sleep a night (sleeping under 7 hours is
+ * linked with a higher BMI). Sleep is kept to the nearest half hour, on the day you woke up.
  */
 export const DAILY_TRACKERS = [
   { id: 'water', label: 'Water', unit: 'cups', min: 0, max: 30, step: 1, goal: 8, goalMin: 6, goalText: 'MOH advises 6–8 cups of water a day.', source: 'MOH-GUIDE' },
   { id: 'steps', label: 'Steps', unit: 'steps', min: 0, max: 100000, step: 100, goal: 7500, goalText: 'MOH advises more than 7,500 steps a day.', source: 'MOH-GUIDE' },
   { id: 'activity', label: 'Active minutes', unit: 'min', min: 0, max: 600, step: 5, weeklyGoal: 150, goalText: 'MOH advises at least 150 minutes of moderate activity a week.', source: 'MOH-GUIDE' },
+  { id: 'sleep', label: 'Sleep', unit: 'hours', min: 0, max: 24, step: 0.5, round: 0.5, goal: 7, goalMin: 7, goalMax: 8, goalText: 'MOH advises adults to sleep 7–8 hours a night.', source: 'MOH-GUIDE' },
 ];
 export const GLUCOSE_CONTEXT = [
   { id: 'fasting', label: 'Fasting' }, { id: 'before-meal', label: 'Before a meal' }, { id: 'after-meal', label: 'After a meal (2 h)' }, { id: 'random', label: 'Other time' },
@@ -225,7 +229,7 @@ export function createHealthService({ repo, today, stamp, requirePermission, acc
   function setDaily(actor, who, body = {}) {
     const sp = space(actor, who, { write: true });
     const tr = DAILY_TRACKERS.find((x) => x.id === body.type);
-    if (!tr) invalid('Choose water, steps or active minutes.', { type: 'Choose what to record.' });
+    if (!tr) invalid('Choose water, steps, active minutes or sleep.', { type: 'Choose what to record.' });
     const date = body.date || today();
     if (!isValidIso(date) || date > today() || date < addDays(today(), -60)) invalid('Choose a date in the last 60 days.', { date: 'Out of range.' });
     const old = dailyOf(sp.owner, tr.id, date);
@@ -233,7 +237,8 @@ export function createHealthService({ repo, today, stamp, requirePermission, acc
     if (body.clear) { if (old) repo.deleteHealth(old.id); return { type: tr.id, value: null, date, goal: tr.goal ?? null }; }
     const raw = Number(body.add != null ? (old?.value ?? 0) + Number(body.add) : body.value);
     if (!Number.isFinite(raw)) invalid('Enter a number.', { value: 'Enter a number.' });
-    const value = Math.max(tr.min, Math.min(tr.max, Math.round(raw)));
+    const rounded = tr.round ? Math.round(raw / tr.round) * tr.round : Math.round(raw);
+    const value = Math.max(tr.min, Math.min(tr.max, rounded));
     if (body.add == null && (raw < tr.min || raw > tr.max)) invalid(`Enter ${tr.min}–${tr.max} ${tr.unit}.`, { value: `Enter ${tr.min}–${tr.max}.` });
     const rec = { type: tr.id, value, unit: tr.unit, date, source: sp.self ? 'self' : 'staff', ...byWho(actor) };
     const out = old ? repo.updateHealth(old.id, { ...old, ...rec, updatedAt: stamp() }) : repo.addHealth({ owner: sp.owner, kind: 'reading', ...rec, createdAt: stamp() });
@@ -255,6 +260,7 @@ export function createHealthService({ repo, today, stamp, requirePermission, acc
       days.push({
         date: d, kcal: Math.round(kcal), logged: entries.length > 0, target,
         water: dailyOf(sp.owner, 'water', d)?.value ?? null, steps: dailyOf(sp.owner, 'steps', d)?.value ?? null, activity: dailyOf(sp.owner, 'activity', d)?.value ?? null,
+        sleep: dailyOf(sp.owner, 'sleep', d)?.value ?? null,
       });
     }
     const weights = repo.listHealth({ owner: sp.owner, kind: 'reading', from: addDays(end, -30), to: end }).filter((r) => r.type === 'weight');
@@ -266,7 +272,7 @@ export function createHealthService({ repo, today, stamp, requirePermission, acc
       daysLogged: days.filter((x) => x.logged).length,
       activityMinutes: days.reduce((n, x) => n + (x.activity ?? 0), 0),
       weightChange: before && last && before.id !== last.id ? Math.round((last.value - before.value) * 10) / 10 : null,
-      goals: Object.fromEntries(DAILY_TRACKERS.map((t) => [t.id, { goal: t.goal ?? null, goalMin: t.goalMin ?? null, weeklyGoal: t.weeklyGoal ?? null, text: t.goalText, unit: t.unit, label: t.label }])),
+      goals: Object.fromEntries(DAILY_TRACKERS.map((t) => [t.id, { goal: t.goal ?? null, goalMin: t.goalMin ?? null, goalMax: t.goalMax ?? null, weeklyGoal: t.weeklyGoal ?? null, text: t.goalText, unit: t.unit, label: t.label }])),
     };
   }
 
@@ -575,7 +581,8 @@ export function createHealthService({ repo, today, stamp, requirePermission, acc
   function getDiary(actor, who, { date } = {}) {
     const sp = space(actor, who);
     const day = date && isValidIso(date) ? date : today();
-    const own = repo.listHealth({ owner: sp.owner, kind: 'food', date: day });
+    // Each own food says which healthy-plate group it belongs to, when that can be told (the plate builder).
+    const own = repo.listHealth({ owner: sp.owner, kind: 'food', date: day }).map((e) => ({ ...e, plateGroup: e.foodId ? plateGroupOf(getFood(e.foodId)) : null }));
     const entries = [...hospitalMeals(sp, day), ...own];
     const meals = DIARY_MEALS.map((m) => {
       const list = entries.filter((e) => e.meal === m);
@@ -590,7 +597,32 @@ export function createHealthService({ repo, today, stamp, requirePermission, acc
       recent: recentFoods(sp.owner),
       favorites: profile.favorites ?? [],
       daily: Object.fromEntries(DAILY_TRACKERS.map((t) => [t.id, dailyOf(sp.owner, t.id, day)?.value ?? null])),
+      ramadan: ramadanInfo(sp, profile, day),
     };
+  }
+
+  // ------------------------------------------------------------ Ramadan mode (diary meal names)
+  /**
+   * Ramadan mode for one day: the person's setting (auto, on, off), whether the diary shows
+   * Suhoor, Iftar and Snacks after Iftar that day, the Umm al-Qura date, and which extra tips
+   * apply (diabetes, high blood pressure; hospital patients: the care team decides).
+   */
+  function ramadanInfo(sp, profile, day) {
+    const mode = cleanRamadanMode(profile.prefs?.ramadan);
+    const conditions = profile.conditions ?? [];
+    return {
+      mode, active: ramadanActive(mode, day), inRamadan: isRamadan(day), hijri: hijriDate(day),
+      diabetes: hasDiabetes(conditions), hypertension: hasHypertension(conditions), patient: sp.kind === 'patient',
+    };
+  }
+  /** The person changes their own Ramadan mode (the care team cannot). */
+  function setRamadanMode(actor, who, body = {}) {
+    const sp = space(actor, who, { write: true });
+    if (!sp.self) deny('Only the person can change their own diary settings.');
+    if (!RAMADAN_MODES.includes(body.mode)) invalid('Choose Auto, On or Off.', { mode: 'Choose Auto, On or Off.' });
+    const profile = profileOf(sp);
+    saveProfile(sp, actor, { prefs: { ...(profile.prefs ?? {}), ramadan: body.mode } });
+    return ramadanInfo(sp, { ...profile, prefs: { ...(profile.prefs ?? {}), ramadan: body.mode } }, today());
   }
 
   /** The person's most recently logged foods, for one-tap re-logging. */
@@ -701,7 +733,7 @@ export function createHealthService({ repo, today, stamp, requirePermission, acc
       listAssessments, saveAssessment, submitAssessment, reviewAssessment,
       getDiary, addDiaryEntry, deleteDiaryEntry, updateDiaryEntry, restoreDiaryEntry,
       findFoods, getFoodDetail, lookupBarcode, addCustomFood, listCustomFoods, updateCustomFood, deleteCustomFood,
-      setDaily, getWeek, toggleFavorite, listFavorites, repeatMeal,
+      setDaily, getWeek, toggleFavorite, listFavorites, repeatMeal, setRamadanMode,
       healthWorklist, healthReference: reference,
     },
   };

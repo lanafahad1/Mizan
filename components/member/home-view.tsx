@@ -15,32 +15,37 @@ import { MOH_GUIDE_META } from '@/data/moh-calorie-guide.js';
 import { cn } from '@/lib/utils';
 import { containerClass } from '@/components/site/page-head';
 import { useT } from '@/components/site/lang';
-import { MEAL_LABELS, mealIn, diaryKey, tMsg, type Diary, type MealId } from '@/components/diary/types';
+import { diaryKey, tMsg, type Diary, type MealId } from '@/components/diary/types';
+import { MealNamesProvider, makeMealNames, useMealNames } from '@/components/diary/meal-names';
 import type { Idea } from '@/app/meal-ideas/ideas-view';
 import { greetingForHour, mealForHour } from './meal-time';
 import { n0, WEEK_KEY, OVERVIEW_KEY, useRefreshHealth, type Week } from './daily';
 import { Trackers } from './trackers';
 import { WeekCard } from './week-card';
 import { WelcomeCard, welcomeHidden } from './onboarding';
+import { WinsStrip, type Wins } from './wins';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-type HomeDiary = Diary & { daily?: { water: number | null; steps: number | null; activity: number | null } };
+type HomeDiary = Diary;
 export type HomeIdea = (Idea & { mealKcal: number | null; meal: MealId }) | null;
 
-export function HomeView({ name, hour: serverHour, overview, diary, week, activityLevels, tip, idea }: {
-  name: string; hour: number; overview: any; diary: HomeDiary; week: Week; activityLevels: { id: string; label: string; hint: string }[];
+export function HomeView({ name, hour: serverHour, overview, diary, week, wins, activityLevels, tip, idea }: {
+  name: string; hour: number; overview: any; diary: HomeDiary; week: Week; wins: Wins; activityLevels: { id: string; label: string; hint: string }[];
   tip: { text: string; area: string }; idea: HomeIdea;
 }) {
   const { t, lang } = useT();
   const o = useApi<any>(OVERVIEW_KEY, overview).data ?? overview;
   const d = useApi<HomeDiary>(diaryKey(diary.date), diary).data ?? diary;
   const w = useApi<Week>(WEEK_KEY, week).data ?? week;
+  const won = useApi<Wins>('/api/care/me/wins', wins).data ?? wins;
 
   // The device's own clock decides the greeting and the meal (the server's hour is the first guess).
   const [hour, setHour] = React.useState(serverHour);
   React.useEffect(() => { setHour(new Date().getHours()); }, []);
-  const meal = mealForHour(hour);
+  const names = makeMealNames(Boolean(d.ramadan?.active), lang);
+  // In Ramadan mode there is no lunch to suggest: the next meal is Iftar.
+  const meal: MealId = names.ramadan && mealForHour(hour) === 'lunch' ? 'dinner' : mealForHour(hour);
   const logHref = `/today?add=${meal}`;
 
   const about = o.profile?.about ?? {};
@@ -66,6 +71,7 @@ export function HomeView({ name, hour: serverHour, overview, diary, week, activi
   const left = steps.filter((s) => !s.done).length;
 
   return (
+    <MealNamesProvider ramadan={names.ramadan}>
     <div className={cn(containerClass({ space: 'member' }), 'flex flex-col gap-6 pb-16 pt-8 sm:pt-10')}>
       {/* 1. Greeting */}
       <header className="flex flex-col gap-1">
@@ -85,13 +91,13 @@ export function HomeView({ name, hour: serverHour, overview, diary, week, activi
         <Link href="/today" className="flex flex-col gap-4 rounded-[18px] text-foreground no-underline hover:bg-background/70 sm:p-2">
           <MealBar meals={d.meals.map((m) => ({ id: m.id, kcal: m.totals?.kcal }))} target={target} size="lg" />
           <ul className="m-0 grid w-full list-none grid-cols-2 gap-2 p-0 sm:grid-cols-4">
-            {d.meals.map((m) => {
+            {d.meals.filter((m) => !names.ramadan || m.id !== 'lunch' || m.entries.length > 0).map((m) => {
               const has = m.entries.length > 0;
               return (
                 <li key={m.id} className={cn('flex min-h-11 items-center gap-2 rounded-[14px] px-3 py-2', has ? 'bg-secondary' : 'bg-muted')}>
                   {has ? <Check className="size-5 shrink-0 text-secondary-foreground" aria-hidden /> : <Circle className="size-5 shrink-0 text-muted-foreground" aria-hidden />}
                   <span className="flex min-w-0 flex-col leading-tight">
-                    <b className="flex items-center gap-1.5 font-display text-sm font-medium text-heading"><i aria-hidden className={cn('size-2 shrink-0 rounded-full', MEAL_COLOR[m.id])} />{t(MEAL_LABELS[m.id])}</b>
+                    <b className="flex items-center gap-1.5 font-display text-sm font-medium text-heading"><i aria-hidden className={cn('size-2 shrink-0 rounded-full', MEAL_COLOR[m.id])} />{t(names.label(m.id))}</b>
                     <span className="text-xs text-muted-foreground">{has ? t('{n} kcal', { n: n0(m.totals?.kcal ?? 0) }) : t('Not logged yet')}</span>
                   </span>
                 </li>
@@ -102,7 +108,7 @@ export function HomeView({ name, hour: serverHour, overview, diary, week, activi
         {!logged ? (
           <div className="flex items-center gap-3 rounded-[16px] bg-muted px-3 py-2.5">
             <Illustration name="empty-diary" className="size-12" />
-            <p className="m-0 text-sm text-foreground">{t('What did you eat today? Add your {meal} to start.', { meal: mealIn(meal, MEAL_LABELS[meal].toLowerCase(), lang) })}</p>
+            <p className="m-0 text-sm text-foreground">{t('What did you eat today? Add your {meal} to start.', { meal: names.inSentence(meal) })}</p>
           </div>
         ) : null}
         <Link href={logHref} className={cn(buttonVariants({ size: 'lg' }), 'w-full sm:w-fit')}><Utensils aria-hidden />{t('Add what you ate')}</Link>
@@ -110,7 +116,7 @@ export function HomeView({ name, hour: serverHour, overview, diary, week, activi
       </section>
 
       {/* 3. Trackers */}
-      <Trackers water={d.daily?.water ?? null} steps={d.daily?.steps ?? null} activityToday={d.daily?.activity ?? null} activityWeek={w.activityMinutes} />
+      <Trackers water={d.daily?.water ?? null} steps={d.daily?.steps ?? null} activityToday={d.daily?.activity ?? null} activityWeek={w.activityMinutes} sleep={d.daily?.sleep ?? null} />
 
       {/* 4. Next steps (new members) */}
       {left && welcome === 'hidden' ? (
@@ -148,6 +154,7 @@ export function HomeView({ name, hour: serverHour, overview, diary, week, activi
         </span>
         <ChevronRight className="size-4 shrink-0 text-muted-foreground rtl:rotate-180" aria-hidden />
       </Link>
+      <WinsStrip wins={won} />
 
       {/* 6. A MOH tip and an idea for the next meal */}
       <div className="grid gap-3 md:grid-cols-2">
@@ -162,11 +169,13 @@ export function HomeView({ name, hour: serverHour, overview, diary, week, activi
       </div>
 
     </div>
+    </MealNamesProvider>
   );
 }
 
 function IdeaCard({ idea }: { idea: HomeIdea }) {
   const { t, lang } = useT();
+  const names = useMealNames();
   const refresh = useRefreshHealth();
   const [busy, setBusy] = React.useState(false);
   if (!idea) {
@@ -178,7 +187,7 @@ function IdeaCard({ idea }: { idea: HomeIdea }) {
       </section>
     );
   }
-  const mealName = mealIn(idea.meal, MEAL_LABELS[idea.meal].toLowerCase(), lang);
+  const mealName = names.inSentence(idea.meal);
   const add = async () => {
     setBusy(true);
     try {

@@ -35,6 +35,7 @@ export default async function MyMealsPage({ searchParams }: Props) {
     }
   });
   const usedWeek = initial.weekFrom === week ? week : null;
+  const wins = await serviceCall((s) => s.getWins(actor, 'me'));
   const ref = await getReference();
   const v = ref.vocab;
   const reference = { vocab: { appetite: v.appetite, intakeAmounts: v.intakeAmounts, refusalReasons: v.refusalReasons, periods: v.periods, requestTypes: v.requestTypes } };
@@ -42,6 +43,6 @@ export default async function MyMealsPage({ searchParams }: Props) {
 
   return (
     <MyMealsView pid={pid} name={viewer!.name} demoId={viewer!.patientDemoId ?? ''} initial={initial} initialWeek={usedWeek}
-      initialView={view} initialPeriod={periodOk} reference={reference} />
+      initialView={view} initialPeriod={periodOk} reference={reference} wins={wins} />
   );
 }

@@ -53,7 +53,6 @@ export const MEMBER: Record<string, string> = {
   'More ideas': 'أفكار أكثر',
 
   // trackers
-  'Water, steps and activity': 'الماء والخطوات والنشاط',
   'Copy your steps and active minutes from your phone or watch. The website can’t count them for you.': 'انقل خطواتك ودقائق نشاطك من جوالك أو ساعتك، فالموقع لا يستطيع حسابها عنك.',
   'Water today': 'الماء اليوم',
   'cup': 'كوب',
@@ -117,7 +116,6 @@ export const MEMBER: Record<string, string> = {
   'Add your first meal': 'أضف أول وجبة',
 
   // Eat well
-  'Find meals you’ll enjoy, follow a simple plan from the Ministry of Health, and shop with a ready-made list.': 'اكتشف وجبات تحبها، واتبع خطة بسيطة من وزارة الصحة، وتسوّق بقائمة جاهزة.',
   'Eat well sections': 'أقسام الغذاء الصحي',
   'My plan': 'خطتي',
   'Shopping list': 'قائمة المشتريات',

@@ -17,6 +17,7 @@
 import { addDays, isValidIso, parseIso } from './dates.js';
 import { mealOutcomes, intakeFlags } from './indicators.js';
 import { ROLES, label } from './constants.js';
+import { computeWins } from './wins.js';
 
 export const SPECIALTIES = [
   { id: 'dietitian', label: 'Dietitian' },
@@ -454,6 +455,19 @@ export function createCareService(ctx) {
     while (set.has(d) && n < 400) { n += 1; d = addDays(d, -1); }
     return n;
   }
+  /**
+   * Small wins (domain/wins.js) from the whole history: days with food logged, the
+   * daily trackers and (patients) weekly check-ins. Members: their own space only.
+   */
+  function winsOf(sp) {
+    const daily = { water: {}, steps: {}, sleep: {} };
+    for (const r of repo.listHealth({ owner: sp.owner, kind: 'reading' })) if (r.type in daily && r.date) daily[r.type][r.date] = r.value;
+    const checkins = sp.kind === 'patient' ? repo.listHealth({ owner: sp.owner, kind: 'checkin' }).length : null;
+    return computeWins({ loggedDates: [...loggedDates(sp, null)], daily, checkins });
+  }
+  function getWins(actor, who) {
+    return winsOf(progressSpace(actor, who));
+  }
   function getProgress(actor, who) {
     const sp = progressSpace(actor, who);
     const from = addDays(today(), -180);
@@ -468,6 +482,7 @@ export function createCareService(ctx) {
       glucose: readings.filter((r) => r.type === 'glucose' && r.date >= addDays(today(), -90)).map((r) => ({ id: r.id, date: r.date, value: r.value, unit: r.unit, context: r.context ?? null })),
       week: health.getWeek(actor, who, {}),
       streak: streakOf(dates), daysLogged30: last30,
+      wins: winsOf(sp),
     };
     if (sp.kind === 'patient') {
       out.patient = { id: sp.patient.id, demoId: sp.patient.demoId, name: sp.patient.preferredName || sp.patient.demoId };
@@ -551,7 +566,7 @@ export function createCareService(ctx) {
       listNotes, addNote, deleteNote,
       saveCheckin, listCheckins,
       listMessages, sendMessage, markRead, unreadCount, inbox,
-      getProgress, careAttention, recordDiaryView, careReference: reference,
+      getProgress, getWins, careAttention, recordDiaryView, careReference: reference,
     },
   };
 }

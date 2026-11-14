@@ -11,7 +11,8 @@ import { cn } from '@/lib/utils';
 import { useT } from '@/components/site/lang';
 import { ArabicName, SourceBadge } from './source-badge';
 import { FoodPicker } from './food-picker';
-import { amountText, fmt, foodName, MEAL_IDS, MEAL_LABELS, mealIn, tMsg, withUnit, type DiaryEntry, type DiaryMeal, type Food, type MealId } from './types';
+import { amountText, fmt, foodName, tMsg, withUnit, type DiaryEntry, type DiaryMeal, type Food, type MealId } from './types';
+import { useMealNames } from './meal-names';
 
 /**
  * One meal of the day: a compact list of its entries (tap one for the details),
@@ -27,10 +28,10 @@ export function MealCard({ meal, onAdd, onDelete, onSaved, deleting, repeat, rea
   /** Offer to copy the day before's entries for this meal (only when this meal is empty). */
   repeat?: { count: number; busy: boolean; onRepeat: () => void; yesterday: boolean } | null;
 }) {
-  const { t, lang } = useT();
-  const english = MEAL_LABELS[meal.id] ?? meal.label;
-  const label = t(english);
-  const inSentence = mealIn(meal.id, english.toLowerCase(), lang);
+  const { t } = useT();
+  const names = useMealNames();
+  const label = t(names.label(meal.id) ?? meal.label);
+  const inSentence = names.inSentence(meal.id);
   const headingId = `meal-${meal.id}-h`;
   const empty = meal.entries.length === 0;
   return (
@@ -38,7 +39,7 @@ export function MealCard({ meal, onAdd, onDelete, onSaved, deleting, repeat, rea
       <header className="flex items-center justify-between gap-3 px-4 pb-1 pt-3 sm:px-5">
         <h2 id={headingId} className="text-lg">{label}</h2>
         <div className="flex items-center gap-2">
-          {!empty ? <span className="font-display text-sm font-medium text-heading tabular">{t('{n} kcal', { n: fmt(meal.totals.kcal ?? 0) })}</span> : null}
+          {!empty ? <span className="whitespace-nowrap font-display text-sm font-medium text-heading tabular">{t('{n} kcal', { n: fmt(meal.totals.kcal ?? 0) })}</span> : null}
           {readOnly ? null : (
             <Button variant="outline" size="sm" className="min-h-11 sm:min-h-9" onClick={onAdd}>
               <Plus aria-hidden />{t('Add')}<span className="sr-only"> {t('to {meal}', { meal: inSentence })}</span>
@@ -132,6 +133,7 @@ function EntryRow({ entry: e, meal, onDelete, onSaved, deleting, readOnly }: { e
  */
 function EntryEditor({ entry: e, meal, onSaved, onCancel }: { entry: DiaryEntry; meal: MealId; onSaved: (c: { amountLabel: string; meal: MealId }) => void; onCancel: () => void }) {
   const { t, lang } = useT();
+  const names = useMealNames();
   const [food, setFood] = React.useState<Food | null>(null);
   const [failed, setFailed] = React.useState<string | null>(null);
   const [toMeal, setToMeal] = React.useState<MealId>(meal);
@@ -162,7 +164,7 @@ function EntryEditor({ entry: e, meal, onSaved, onCancel }: { entry: DiaryEntry;
       <form onSubmit={move} className="flex flex-col gap-2">
         <Label htmlFor={selectId}>{t('Move to…')}</Label>
         <NativeSelect id={selectId} value={toMeal} onChange={(ev) => setToMeal(ev.target.value as MealId)}>
-          {MEAL_IDS.map((m) => <option key={m} value={m}>{t(MEAL_LABELS[m])}</option>)}
+          {names.ids(meal).map((m) => <option key={m} value={m}>{t(names.label(m))}</option>)}
         </NativeSelect>
         <p className="text-xs text-muted-foreground">{t('You can’t change the amount of a quick add. Remove it and add it again with the new amount.')}</p>
         <div className="flex flex-wrap gap-2">

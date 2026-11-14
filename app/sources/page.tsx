@@ -18,6 +18,7 @@ import { sfctConsistencyIssue } from '@/domain/nutrition.js';
 import { SFCT_META, SFCT_LIBRARY } from '@/data/sfct-dishes.js';
 import { SFCT_HOSPITAL_DISHES } from '@/data/sfct-hospital-dishes.js';
 import { getT, getLang } from '@/lib/i18n/server';
+import { formatDate } from '@/lib/format';
 import type { Lang, T } from '@/lib/i18n';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -27,7 +28,7 @@ export async function generateMetadata() {
   return publicMetadata({ title: t('Data Sources & Limitations'), description: t(DESCRIPTION), path: '/sources' });
 }
 
-type Source = { authority: string; saudi?: boolean; title: string; publisher: string; url?: string | null; summary: string; links?: { label: string; url: string }[] };
+type Source = { authority: string; saudi?: boolean; title: string; publisher: string; url?: string | null; summary: string; date?: string; links?: { label: string; url: string }[] };
 type Group = { id: string; title: string; intro: string; icon: typeof Landmark; badge: 'mint' | 'rose' | 'outline'; keep: (x: Source) => boolean };
 
 const GROUPS: Group[] = [
@@ -50,7 +51,7 @@ function SourceCard({ id, s, badge, t, lang }: { id: string; s: Source; badge: G
       <Card tone="plain" className="h-full gap-2.5 p-4 sm:p-5">
         <Badge variant={badge} className="w-fit">{t(s.authority)}</Badge>
         <h3 className="break-words text-[1.02rem] leading-snug">{s.url ? <ExtLink href={s.url}>{t(s.title)}<ExternalLink className="ms-1 inline size-3.5 align-[-2px]" aria-hidden /></ExtLink> : t(s.title)}</h3>
-        <p className="text-sm text-muted-foreground">{t(s.publisher)}</p>
+        <p className="text-sm text-muted-foreground">{t(s.publisher)}{s.date ? <> · {t('Updated {date}', { date: formatDate(s.date, { day: 'numeric', month: 'long', year: 'numeric' }, lang) })}</> : null}</p>
         <p className="text-[.95rem]">{lead}</p>
         {more ? (
           <Accordion className="border-t border-dashed border-border" headClassName="min-h-10 py-2 font-display text-sm font-medium text-heading" title={t('More detail')}>

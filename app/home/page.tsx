@@ -14,15 +14,16 @@ export async function generateMetadata() {
   return privateMetadata(t('Home'));
 }
 
-/** Member Home: the first page after logging in (today, trackers, next steps, this week, a MOH tip and a meal idea). */
+/** Member Home: the first page after logging in (today, trackers, next steps, this week, small wins, a MOH tip and a meal idea). */
 export default async function HomePage() {
   const actor = await requireActor('/home');
   if (actor.role !== 'member') redirect(homeFor(actor));
-  const [overview, diary, week, reference] = await Promise.all([
+  const [overview, diary, week, reference, wins] = await Promise.all([
     serviceCall((s) => s.getHealthOverview(actor, 'me')),
     serviceCall((s) => s.getDiary(actor, 'me', {})),
     serviceCall((s) => s.getWeek(actor, 'me', {})),
     healthReference(),
+    serviceCall((s) => s.getWins(actor, 'me')),
   ]);
   const hour = new Date().getHours();
   const day = dayNumber(diary.today);
@@ -38,6 +39,7 @@ export default async function HomePage() {
       overview={overview}
       diary={diary}
       week={week}
+      wins={wins}
       activityLevels={reference.activityLevels}
       tip={{ text: tip.text, area: tip.area }}
       idea={found ? { ...found, meal } : null}
