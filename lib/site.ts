@@ -22,7 +22,7 @@ export const SITE_DESCRIPTION = 'Your plate, your balance. Log what you eat, kno
 export const TEAM = ['Lana Fahad Alhari'];
 
 /** The website's developer (credited on every page). */
-export const DEVELOPER = { en: 'Lana Fahad Alhari', ar: 'لانا فهد الحريّ' };
+export const DEVELOPER = { en: 'Lana Fahad Alhari', ar: 'لانا فهد الحرّي' };
 /** The project's public contact address (also the sender of account emails). */
 export const CONTACT_EMAIL = 'mizan.careteam@gmail.com';
 
