@@ -1,5 +1,9 @@
 // Arabic for the auth area. Key = exact English text; value = Arabic.
 export const AUTH: Record<string, string> = {
+  'Log in / Sign up': 'تسجيل الدخول / إنشاء حساب',
+  'Personal and hospital care accounts are kept separate.': 'الحساب الشخصي وحساب رعاية المستشفى منفصلان.',
+  'Which account should I choose?': 'متى أختار كل حساب؟',
+  'Privacy and access details': 'تفاصيل الخصوصية والصلاحيات',
   // page titles and metadata
   'Log in': 'تسجيل الدخول',
   'Create account': 'إنشاء حساب',

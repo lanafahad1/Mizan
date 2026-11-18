@@ -5,17 +5,12 @@ import { Lock, HeartPulse, Hospital, ChevronRight, ShieldCheck, Calculator, type
 import { cn } from '@/lib/utils';
 import { Illustration } from '@/components/illustrations/illustration';
 import { useT } from '@/components/site/lang';
-import { DemoAccountList, type DemoAccount } from './demo-accounts';
 import { LoginForm } from './login-form';
 import { RegisterForm } from './register-form';
-
-export const DEMO_PASSWORD = 'Mizan#2026';
 
 /** The two Mizan spaces. Member = personal lifestyle use; hospital = patients and hospital staff. */
 export type Space = 'member' | 'hospital';
 type Mode = 'login' | 'register';
-
-const HOSPITAL_ROLES = ['admin', 'staff', 'patient'];
 
 const SPACE: Record<Space, { title: string; description: string; icon: LucideIcon; tone: string }> = {
   member: { title: 'Member', description: 'Track your own food, weight and health. Private to you.', icon: HeartPulse, tone: 'bg-mint text-sage-deep' },
@@ -92,9 +87,6 @@ function SpaceChoice({ headingRef, onChoose }: { headingRef: React.RefObject<HTM
           </button>
         );
       })}
-      <p className="text-sm text-muted-foreground">
-        {t('Work at a hospital and want Mizan for yourself too? Create a separate Member account. Your personal data stays private.')}
-      </p>
     </fieldset>
   );
 }
@@ -122,11 +114,11 @@ function SpaceHeader({ mode, space, headingRef, onChange }: { mode: Mode; space:
 
 /**
  * Shared frame for /login and /register. Step 1 asks "Member or Hospital care?";
- * step 2 shows the matching form and demo accounts. The choice only changes the
+ * step 2 shows the matching form and account guidance. The choice only changes the
  * wording and options: the server sends every account to its own role's home.
  */
-export function AuthShell({ mode, next, initialSpace, accounts, initialHospitalType = 'patient' }: {
-  mode: Mode; next: string | null; initialSpace: Space | null; accounts: DemoAccount[]; initialHospitalType?: 'patient' | 'staff';
+export function AuthShell({ mode, next, initialSpace, initialHospitalType = 'patient' }: {
+  mode: Mode; next: string | null; initialSpace: Space | null; initialHospitalType?: 'patient' | 'staff';
 }) {
   const { t } = useT();
   const [space, setSpace] = React.useState<Space | null>(initialSpace);
@@ -179,22 +171,8 @@ export function AuthShell({ mode, next, initialSpace, accounts, initialHospitalT
             : <>{t('Already have an account?')} <Link href={`/login${query}`} className="font-semibold">{t('Log in')}</Link></>}
         </p>
       </section>
-      <AuthAside space={space} accounts={accounts} next={next} />
+      <AuthAside space={space} />
     </div>
-  );
-}
-
-function DemoPanel({ title, intro, accounts, next }: { title: string; intro: React.ReactNode; accounts: DemoAccount[]; next: string | null }) {
-  const { t } = useT();
-  return (
-    <section aria-labelledby="demo-h" className="flex flex-col gap-4 rounded-xl border border-border bg-blush p-5 sm:p-6">
-      <h2 id="demo-h" className="text-xl sm:text-[1.4rem]">{title}</h2>
-      <p className="text-muted-foreground">{intro}</p>
-      <DemoAccountList accounts={accounts} password={DEMO_PASSWORD} next={next} />
-      {accounts.length ? <p className="text-sm text-muted-foreground">
-        {t('Or type in the demo username')} <code dir="ltr" className="rounded bg-card px-1.5 py-0.5 text-[.85em] text-heading">{accounts[0]?.username}</code> {t('and the shared password')} <code dir="ltr" className="rounded bg-card px-1.5 py-0.5 text-[.85em] text-heading">{DEMO_PASSWORD}</code>.
-      </p> : null}
-    </section>
   );
 }
 
@@ -207,41 +185,45 @@ function InfoPanel({ id, icon: Icon, title, children }: { id: string; icon: Luci
   );
 }
 
-function AuthAside({ space, accounts, next }: { space: Space | null; accounts: DemoAccount[]; next: string | null }) {
+function AccountDetails({ summary, children }: { summary: string; children: React.ReactNode }) {
+  return (
+    <details className="text-sm leading-[1.7]">
+      <summary className="cursor-pointer py-2 font-semibold text-primary-hover focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-primary">{summary}</summary>
+      <div className="mt-2.5">{children}</div>
+    </details>
+  );
+}
+
+function AuthAside({ space }: { space: Space | null }) {
   const { t } = useT();
   if (space === null) {
     return (
       <div className="flex min-w-0 flex-col gap-5">
         <InfoPanel id="spaces-h" icon={ShieldCheck} title={t('Two spaces, kept apart')}>
-          <dl className="flex flex-col gap-3 text-sm">
-            <div><dt className="font-display font-semibold text-heading">{t('Member')}</dt><dd>{t('Your own food diary, readings and goals. Not linked to any hospital, and private to you.')}</dd></div>
-            <div><dt className="font-display font-semibold text-heading">{t('Hospital care')}</dt><dd>{t('Patients join with a link code from their nutrition team. Healthcare providers send an access request that an admin approves.')}</dd></div>
-          </dl>
-          <p className="text-sm text-muted-foreground">{t('Work in a hospital and want personal use too? Keep your provider account for work and create a separate Member account for yourself.')}</p>
+          <p className="text-sm text-muted-foreground">{t('Personal and hospital care accounts are kept separate.')}</p>
+          <AccountDetails summary={t('Which account should I choose?')}>
+            <dl className="flex flex-col gap-3 text-sm">
+              <div><dt className="font-display font-semibold text-heading">{t('Member')}</dt><dd>{t('Your own food diary, readings and goals. Not linked to any hospital, and private to you.')}</dd></div>
+              <div><dt className="font-display font-semibold text-heading">{t('Hospital care')}</dt><dd>{t('Patients join with a link code from their nutrition team. Healthcare providers send an access request that an admin approves.')}</dd></div>
+            </dl>
+          </AccountDetails>
         </InfoPanel>
       </div>
     );
   }
 
   if (space === 'member') {
-    const members = accounts.filter((a) => a.role === 'member');
     return (
       <div className="flex min-w-0 flex-col gap-5">
-        {members.length ? (
-          <DemoPanel
-            title={t('Explore the demo member')}
-            intro={<><strong className="font-semibold text-foreground">{t('Demonstration access:')}</strong> {t('this member and their records are fictional, and no identity is checked. Everyone using this demo account sees the same changes.')}</>}
-            accounts={members}
-            next={next}
-          />
-        ) : null}
         <InfoPanel id="private-h" icon={Lock} title={t('Your member space is private')}>
-          <ul className="flex list-disc flex-col gap-1.5 ps-5 text-sm">
-            <li>{t('Only you can see your food diary, readings and goals. No hospital account can read them.')}</li>
-            <li>{t('You don’t need a link code, and your account isn’t linked to any hospital.')}</li>
-            <li>{t('Healthcare providers: keep your work account for work and use a separate member account for yourself.')}</li>
-            <li>{t('Your password is stored scrambled (hashed with scrypt), and you stay logged in through a secure HttpOnly cookie that page scripts can’t read.')}</li>
-          </ul>
+          <p className="text-sm text-muted-foreground">{t('Only you can see your food diary, readings and goals. No hospital account can read them.')}</p>
+          <AccountDetails summary={t('Privacy and access details')}>
+            <ul className="flex list-disc flex-col gap-1.5 ps-5 text-sm">
+              <li>{t('You don’t need a link code, and your account isn’t linked to any hospital.')}</li>
+              <li>{t('Healthcare providers: keep your work account for work and use a separate member account for yourself.')}</li>
+              <li>{t('Your password is stored scrambled (hashed with scrypt), and you stay logged in through a secure HttpOnly cookie that page scripts can’t read.')}</li>
+            </ul>
+          </AccountDetails>
         </InfoPanel>
         <Link href="/tools/calculator" className="flex min-h-11 items-center gap-2 self-start font-display text-sm font-semibold">
           <Calculator aria-hidden className="size-4" />{t('Try the BMI and calorie calculator first')}
@@ -250,22 +232,17 @@ function AuthAside({ space, accounts, next }: { space: Space | null; accounts: D
     );
   }
 
-  const hospital = accounts.filter((a) => HOSPITAL_ROLES.includes(a.role));
   return (
     <div className="flex min-w-0 flex-col gap-5">
-      <DemoPanel
-        title={t('Explore the demonstration hospital')}
-        intro={<><strong className="font-semibold text-foreground">{t('Demonstration access:')}</strong> {t('every patient, healthcare provider and record is fictional, and no identity is checked. Each account shows what that role can see and do. Everyone using the same demo account sees the same changes.')}</>}
-        accounts={hospital}
-        next={next}
-      />
       <InfoPanel id="protect-h" icon={Lock} title={t('How accounts are protected')}>
-        <ul className="flex list-disc flex-col gap-1.5 ps-5 text-sm">
-          <li>{t('Three roles: patients see their own meals and progress, healthcare providers follow patients and run the daily meal service, and admins manage everything, including clinical information and provider access.')}</li>
-          <li>{t('An admin assigns provider roles. Nobody picks their own role at sign-up.')}</li>
-          <li>{t('Only an admin can change diet orders, allergies or medical restrictions. Patients can ask for a change by sending a request.')}</li>
-          <li>{t('Your password is stored scrambled (hashed with scrypt), and you stay logged in through a secure HttpOnly cookie that page scripts can’t read.')}</li>
-        </ul>
+        <p className="text-sm text-muted-foreground">{t('Three roles: patients see their own meals and progress, healthcare providers follow patients and run the daily meal service, and admins manage everything, including clinical information and provider access.')}</p>
+        <AccountDetails summary={t('Privacy and access details')}>
+          <ul className="flex list-disc flex-col gap-1.5 ps-5 text-sm">
+            <li>{t('An admin assigns provider roles. Nobody picks their own role at sign-up.')}</li>
+            <li>{t('Only an admin can change diet orders, allergies or medical restrictions. Patients can ask for a change by sending a request.')}</li>
+            <li>{t('Your password is stored scrambled (hashed with scrypt), and you stay logged in through a secure HttpOnly cookie that page scripts can’t read.')}</li>
+          </ul>
+        </AccountDetails>
       </InfoPanel>
     </div>
   );

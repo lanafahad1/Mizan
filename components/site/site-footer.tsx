@@ -6,7 +6,7 @@ import { getT } from '@/lib/i18n/server';
 import { getViewer } from '@/lib/server/session';
 
 const COLS: [string, [string, string][]][] = [
-  ['Explore', [['/tools/calculator', 'Calculator'], ['/how-it-works', 'How It Works'], ['/menu', 'Hospital Meal Menu'], ['/login', 'Try the demo']]],
+  ['Explore', [['/tools/calculator', 'Calculator'], ['/how-it-works', 'How It Works'], ['/menu', 'Hospital Meal Menu'], ['/demo', 'Try the demo']]],
   ['About & Sources', [['/about', 'About the project'], ['/diets', 'Diets & rules'], ['/sources', 'Data sources & limitations'], ['/contact', 'Contact']]],
   ['Trust', [['/privacy', 'Privacy Policy'], ['/disclaimer', 'Medical Disclaimer'], ['/settings', 'Your account & data']]],
 ];

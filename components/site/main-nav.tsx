@@ -90,9 +90,9 @@ export function MainNav({ nav, more, viewer, home, logo, tabBar = false, account
             </>
           ) : (
             <>
-              <Link href="/login" className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'hidden sm:inline-flex')}>{t('Log in')}</Link>
+              <Link href="/login" className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'hidden sm:inline-flex')}>{t('Log in / Sign up')}</Link>
               {/* Short label on phones so the header never wraps (360–390px). */}
-              <Link href="/login" className={cn(buttonVariants({ size: 'sm' }), 'shrink-0 whitespace-nowrap max-[379px]:px-3')}><Sparkles aria-hidden className="max-[379px]:hidden" /><span className="sm:hidden">{t('Demo')}</span><span className="hidden sm:inline">{t('Try the demo')}</span></Link>
+              <Link href="/demo" className={cn(buttonVariants({ size: 'sm' }), 'shrink-0 whitespace-nowrap max-[379px]:px-3')}><Sparkles aria-hidden className="max-[379px]:hidden" /><span className="sm:hidden">{t('Demo')}</span><span className="hidden sm:inline">{t('Try the demo')}</span></Link>
             </>
           )}
           {/* Members and patients use the top tab strip on phones and tablets (components/member/tab-bar.tsx). */}

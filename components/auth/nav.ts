@@ -17,7 +17,7 @@ export function safeNext(value: unknown): string | null {
     const url = new URL(next, base);
     if (url.origin !== base) return null;
     // Never bounce back into the auth pages themselves.
-    if (['/login', '/register'].includes(url.pathname)) return null;
+    if (['/login', '/register', '/demo'].includes(url.pathname)) return null;
     return `${url.pathname}${url.search}${url.hash}`;
   } catch {
     return null;
